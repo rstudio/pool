@@ -1,9 +1,28 @@
 Package: pool
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Connection Pooling for Databases in R
 Version: 0.1.0
-Author: Who wrote it
+Authors@R: c(
+    person("Barbara", "Borges", role = c("aut", "cre"), email = "barbara@rstudio.com"),
+    person(family = "RStudio", role = "cph")
+    )
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: Creates connection pools for various ypes of databases in R to
+    make it less computationally expensive to get a connection.
+License: GPL-3
+Depends:
+    R (>= 3.0.0),
+    methods
+Imports:
+    DBI
+Suggests:
+    knitr,
+    rmarkdown
+URL: https://github.com/bborgesr/pool
+BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE
+VignetteBuilder: knitr
+Collate:
+    'utils.R'
+    'pool.R'
+RoxygenNote: 5.0.1
