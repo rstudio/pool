@@ -30,9 +30,10 @@ Pool <- R6Class("Pool",
       self$min <- min
       self$max <- max
       for (i in seq_len(self$min)) {
+        connection <- self$factory()
         self$connections[[i]] <- PooledConnection$new(
-          conn = self$factory(),
-          id = digest::digest(conn)
+          conn = connection,
+          id = digest::digest(connection)
         )
       }
     },
@@ -59,13 +60,9 @@ Pool <- R6Class("Pool",
       connection$activate()
       return(connection)
     },
-    ## takes in a connection and calls passivate
-    release = function() {
-
-    },
     ## passivates all connections and closes the pool
     ## (actually calls connnection$detroy())
-    close = function(connection) {
+    release = function(connection) {
       connection$passivate()
       if (length(self$connections) > self$max) {
         id <- connection$id
@@ -104,11 +101,13 @@ PooledConnection <- R6Class("PooledConnection",
 
 DBIConnectionFactory <- R6Class("DBIConnectionFactory",
   public = list(
-    driver = NULL,
-    initialize = function(driver, ...) {
-      self$driver <- driver
+    drv = NULL,
+    initialize = function(drv) {
+      self$drv <- drv
+    },
+    generate = function(...) {
       function() {
-        DBI::dbConnect(driver, ...)
+        DBI::dbConnect(self$drv, ...)
       }
     }
   )
@@ -127,16 +126,16 @@ setClass("DBIConnectionFactory")
 #********************** OPENING THE POOL **********************#
 #**************************************************************#
 
-setGeneric("createPool", function(x, ...) {
+setGeneric("createPool", function(drv, ...) {
   standardGeneric("createPool")
 })
 
-setMethod("createPool", "DBIDriver", function(x, ...) {
-  createPool(DBIConnectionFactory$new(x, ...)$initialize())
+setMethod("createPool", "DBIDriver", function(drv, ...) {
+  createPool(DBIConnectionFactory$new(drv), ...)
 })
 
-setMethod("createPool", "DBIConnectionFactory", function(x, ...) {
-  Pool$new(x)
+setMethod("createPool", "DBIConnectionFactory", function(drv, ...) {
+  Pool$new(drv$generate(...))
 })
 
 
@@ -146,6 +145,9 @@ setMethod("createPool", "DBIConnectionFactory", function(x, ...) {
 #**************************************************************#
 
 ## I don't need to setGeneric() for all existing DBI methods, right?
+# setGeneric("dbConnect",
+#   def = function(drv, ...) standardGeneric("dbConnect")
+# )
 
 ## To be used with care, since this puts the onus of releasing
 ## the connection on you
@@ -201,9 +203,10 @@ setMethod("dbSendQuery", "PooledConnection", function(conn, statement, ...) {
 ## cannot be dealt with using withTransaction(...)
 ## (here, conn is the Pool object)
 setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
+  connection <- conn$fetch()
   on.exit(conn$release(connection))
   ## relay to dbGetQuery method for Pooled Connection class
-  dbGetQuery(conn, statement, ...)
+  dbGetQuery(connection, statement, ...)
 })
 
 ## To be used with care, since this puts the onus of calling
