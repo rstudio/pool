@@ -7,11 +7,14 @@ Creates connection pools for various ypes of databases in R to make it less comp
 ## Sample Usage
 
 ```r
-library(DBI)   ## must be new version of DBI (nto currently on CRAN)
+## must be new version of DBI (not currently on CRAN)
+devtools::install_github("bborgesr/DBI")
+
+library(DBI)
 library(R6)
 library(RMySQL)
 
-source('~/RStudio/pool/R/pool.R')
+source('R/pool.R')
 
 pool <- createPool(
   drv = MySQL(), 
