@@ -3,10 +3,10 @@ Type: Package
 Title: Connection Pooling for Databases in R
 Version: 0.1.0
 Authors@R: c(
-    person("Barbara", "Borges", role = c("aut", "cre"), email = "barbara@rstudio.com"),
+    person("Barbara", "Borges", email = "barbara@rstudio.com",
+      role = c("aut", "cre")),
     person(family = "RStudio", role = "cph")
     )
-Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: Creates connection pools for various ypes of databases in R to
     make it less computationally expensive to get a connection.
 License: GPL-3
@@ -14,7 +14,9 @@ Depends:
     R (>= 3.0.0),
     methods
 Imports:
-    DBI
+    DBI,
+    R6,
+    digest
 Suggests:
     knitr,
     rmarkdown
