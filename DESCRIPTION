@@ -15,8 +15,7 @@ Depends:
     methods
 Imports:
     DBI,
-    R6,
-    digest
+    R6
 Suggests:
     knitr,
     rmarkdown

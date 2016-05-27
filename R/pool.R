@@ -21,22 +21,32 @@ Pool <- R6Class("Pool",
   public = list(
     ## initialize the pool with min number of connection
     initialize = function(connectionFactory, connectionClass,
-                          minConn, maxConn = 10) {
+                          minConn, maxConn) {
       private$factory <- connectionFactory
       private$connectionClass <- connectionClass
-      private$minConn <- if (!(missing(minConn))) minConn else 3
-      print(private$minConn)
+      private$minConn <- minConn
       private$maxConn <- maxConn
       private$freeConnections <- new.env()
       private$takenConnections <- new.env()
-      for (i in seq_len(private$min)) {
-        private$createConnection(private$freeConnections)
+      for (i in seq_len(private$minConn)) {
+        private$createConnection()
       }
+      reg.finalizer(self,
+        function(self) {
+          freeEnv <- private$freeConnections
+          takenEnv <- private$takenConnections
+          if (length(freeEnv) > 0 || length(takenEnv) > 0) {
+            warning("Closing leaked connections")
+            self$close()
+          }
+        },
+        onexit = TRUE)
     },
     ## calls activate and returns a connection
     fetch = function() {
-      ## see if there's any free connections
       freeEnv <- private$freeConnections
+      takenEnv <- private$takenConnections
+      ## see if there's any free connections
       if (length(freeEnv > 0)) {
         ## get first free connection we find
         id <- ls(freeEnv)[[1]]
@@ -44,16 +54,16 @@ Pool <- R6Class("Pool",
       } else {
         ## if we get here, there are no free connections
         ## and we must create a new one
-        takenEnv <- private$takenConnections
-        connection <- private$createConnection(takenEnv)
+        connection <- private$createConnection()
         id <- connection$id
         conn <- connection$conn
       }
       ## activate connection and return it
-      activate(conn)
+      private$toggleConnectionStatus(id, freeEnv, takenEnv)
+      onActivate(conn)
       attr(conn, "id") <- id
       attr(conn, "pool") <- self
-      class(conn) <- c("PooledConnection", class(conn))
+      class(conn) <- c(private$connectionClass, class(conn))
       return(conn)
     },
     ## passivates the connection and returns it back to
@@ -64,10 +74,22 @@ Pool <- R6Class("Pool",
       freeEnv <- private$freeConnections
       connection <- takenEnv[[id]]
       passivate(connection)
-      if (length(freeEnv) > private$max) {
+      private$toggleConnectionStatus(id, takenEnv, freeEnv)
+      if (length(freeEnv) > private$maxConn) {
         destroy(connection, envir = freeEnv)
         rm(id, envir = freeEnv)
       }
+    },
+    ## cleaning up and closing the pool
+    close = function() {
+      freeEnv <- private$freeConnections
+      takenEnv <- private$takenConnections
+      ## disconnect all connections
+      eapply(freeEnv, destroy)
+      eapply(takenEnv, destroy)
+      ## empty the connections' environments
+      rm(list = ls(freeEnv), envir = freeEnv)
+      rm(list = ls(takenEnv), envir = takenEnv)
     }
   ),
   private = list(
@@ -78,14 +100,23 @@ Pool <- R6Class("Pool",
     minConn = NULL,
     maxConn = NULL,
     ## creates a connection and assigns it to the
-    ## correct environment; returns the connection
+    ## free environment; returns the connection
     ## object and the accompanying id
-    createConnection = function(envir) {
-      print("created conn")
+    createConnection = function() {
+      ## always create a connection in the free envir
+      ## to guarantee that ids are unique
+      envir <- private$freeConnections
       id <- as.character(length(envir) + 1)
       conn <- private$factory()
       assign(id, conn, envir = envir)
       return(list(id, conn))
+    },
+    ## change the connection's environment when a
+    ## free connection gets taken and vice versa
+    toggleConnectionStatus = function(id, from, to) {
+      conn <- from[[id]]
+      rm(id, envir = from)
+      assign(id, conn, envir = to)
     }
   )
 )
@@ -122,7 +153,7 @@ Pool <- R6Class("Pool",
 DBIConnectionFactory <- R6Class("DBIConnectionFactory",
   public = list(
     drv = NULL,
-    initialize = function(drv, connectionClass) {
+    initialize = function(drv) {
       self$drv <- drv
     },
     generator = function(...) {
@@ -138,17 +169,56 @@ DBIConnectionFactory <- R6Class("DBIConnectionFactory",
 setClass("Pool")
 setClass("DBIConnectionFactory")
 
-PooledDBIConnection <- setClass("PooledDBIConnection",
-  slots = c(id = "numeric", conn = "DBIConnection"))
+PooledDBIConnection <- setClass("PooledDBIConnection")
 
 setGeneric("release", function(conn) {
   standardGeneric("release")
 })
 
-setMethod("release", "PooledDBIConnection", function(conn) {
+setGeneric("onActivate", function(conn) {
+  standardGeneric("onActivate")
+})
+
+setGeneric("onPassivate", function(conn) {
+  standardGeneric("onPassivate")
+})
+
+setGeneric("onDestroy", function(conn) {
+  standardGeneric("onDestroy")
+})
+
+setGeneric("onValidate", function(conn) {
+  standardGeneric("onValidate")
+})
+
+## Set method defaults
+setMethod("release", "ANY", function(conn) {
   id <- attr(conn, "id", exact = TRUE)
   pool <- attr(conn, "pool", exact = TRUE)
   pool$release(id)
+})
+
+setMethod("onActivate", "ANY", function(conn) {})
+setMethod("onPassivate", "ANY", function(conn) {})
+
+
+## Empty method because there's no need to deviate from the
+## defaults (or even set defaults)
+setMethod("release", "PooledDBIConnection", function(conn) {})
+setMethod("onActivate", "PooledDBIConnection", function(conn) {})
+
+setMethod("onPassivate", "PooledDBIConnection", function(conn) {
+  rs <- dbListResults(conn)
+  lapply(rs, dbRollback)
+  lapply(rs, dbClearResult)
+})
+
+setMethod("onDestroy", "PooledDBIConnection", function(conn) {
+
+})
+
+setMethod("onValidate", "PooledDBIConnection", function(conn) {
+
 })
 
 
@@ -170,15 +240,16 @@ setMethod("createPool", "DBIDriver", function(drv, connectionClass, ...) {
 setMethod("createPool", "DBIConnectionFactory",
   function(drv, connectionClass, ...) {
     args <- list(...)
-    if (!("minConn" %in% names(args))) minConn <- 3
-    if (!("maxConn" %in% names(args))) maxConn <- 10
-    print(minConn)
-    print(maxConn)
-    drvArgs <- unlist(args[setdiff(names(args), c("min", "max"))])
-    Pool$new(connectionFactory = drv$generator(drvArgs),
+    if ("minConn" %in% names(args)) minConn <- args$minConn
+    else minConn <- 3
+    if ("maxConn" %in% names(args)) maxConn <- args$maxConn
+    else maxConn <- 10
+    drvArgs <- args[setdiff(names(args), c("minConn", "maxConn"))]
+    connectionFactory <- do.call(drv$generator, drvArgs)
+    Pool$new(connectionFactory = connectionFactory,
              connectionClass = connectionClass,
              minConn = minConn,
-             max = maxConn)
+             maxConn = maxConn)
   }
 )
 
