@@ -14,98 +14,118 @@ NULL
 #' @import methods
 NULL
 
-
 #' Pool Class
 #'
 #' Some more details...
 Pool <- R6Class("Pool",
   public = list(
-    connections = NULL,
-    factory = NULL,
-    min = NULL,
-    max = NULL,
     ## initialize the pool with min number of connection
-    initialize = function(ConnectionFactory, min = 3, max = 10) {
-      self$factory <- ConnectionFactory
-      self$min <- min
-      self$max <- max
-      for (i in seq_len(self$min)) {
-        connection <- self$factory()
-        self$connections[[i]] <- PooledConnection$new(
-          conn = connection,
-          id = digest::digest(connection)
-        )
+    initialize = function(connectionFactory, connectionClass,
+                          minConn, maxConn = 10) {
+      private$factory <- connectionFactory
+      private$connectionClass <- connectionClass
+      private$minConn <- if (!(missing(minConn))) minConn else 3
+      print(private$minConn)
+      private$maxConn <- maxConn
+      private$freeConnections <- new.env()
+      private$takenConnections <- new.env()
+      for (i in seq_len(private$min)) {
+        private$createConnection(private$freeConnections)
       }
     },
     ## calls activate and returns a connection
     fetch = function() {
-      connection <- NULL
       ## see if there's any free connections
-      for (i in seq_len(length(self$connections))) {
-        if (self$connections[[i]]$free) {
-          connection <- self$connections[[i]]
-          break
-        }
-      }
-      if (is.null(connection)) {
+      freeEnv <- private$freeConnections
+      if (length(freeEnv > 0)) {
+        ## get first free connection we find
+        id <- ls(freeEnv)[[1]]
+        conn <- freeEnv[[id]]
+      } else {
         ## if we get here, there are no free connections
         ## and we must create a new one
-        connection <- PooledConnection$new(
-          connection = self$factory(),
-          id = digest::digest(connection)
-        )
-        self$connections <- c(self$connections, connection)
+        takenEnv <- private$takenConnections
+        connection <- private$createConnection(takenEnv)
+        id <- connection$id
+        conn <- connection$conn
       }
       ## activate connection and return it
-      connection$activate()
-      return(connection)
+      activate(conn)
+      attr(conn, "id") <- id
+      attr(conn, "pool") <- self
+      class(conn) <- c("PooledConnection", class(conn))
+      return(conn)
     },
-    ## passivates all connections and closes the pool
-    ## (actually calls connnection$detroy())
-    release = function(connection) {
-      connection$passivate()
-      if (length(self$connections) > self$max) {
-        id <- connection$id
-        connection$destroy()
-        for (i in seq_len(length(self$connections))) {
-          if (self$connections[[i]]$id == id) {
-            self$connections[[i]] <- NULL
-          }
-        }
+    ## passivates the connection and returns it back to
+    ## the pool (possibly destroys the connection if the
+    ## number of idle connections exceeds the maximum)
+    release = function(id) {
+      takenEnv <- private$takenConnections
+      freeEnv <- private$freeConnections
+      connection <- takenEnv[[id]]
+      passivate(connection)
+      if (length(freeEnv) > private$max) {
+        destroy(connection, envir = freeEnv)
+        rm(id, envir = freeEnv)
       }
+    }
+  ),
+  private = list(
+    freeConnections = NULL,
+    takenConnections = NULL,
+    factory = NULL,
+    connectionClass = NULL,
+    minConn = NULL,
+    maxConn = NULL,
+    ## creates a connection and assigns it to the
+    ## correct environment; returns the connection
+    ## object and the accompanying id
+    createConnection = function(envir) {
+      print("created conn")
+      id <- as.character(length(envir) + 1)
+      conn <- private$factory()
+      assign(id, conn, envir = envir)
+      return(list(id, conn))
     }
   )
 )
 
-PooledConnection <- R6Class("PooledConnection",
-  public = list(
-    conn = NULL,
-    id = NULL,
-    free = NULL,
-    initialize = function(conn, id) {
-      self$conn <- conn
-      self$id <- id
-      self$free <- TRUE
-    },
-    activate = function() {
-      self$free <- FALSE
-    },
-    passivate = function() {
-      self$free <- TRUE
-    },
-    destroy = function() {
-      DBI::dbDisconnect(self$conn)
-    }
-  )
-)
+# PooledConnection <- R6Class("PooledConnection",
+#   public = list(
+#     conn = NULL,
+#     id = NULL,
+#     free = NULL,
+#     initialize = function(conn, id) {
+#       self$conn <- conn
+#       self$id <- id
+#       self$free <- TRUE
+#     },
+#     activate = function() {
+#       self$free <- FALSE
+#     },
+#     passivate = function() {
+#       self$free <- TRUE
+#     },
+#     destroy = function() {
+#       dbDisconnect(self$conn)
+#     }
+#   )
+# )
+
+# DBIConnectionFactory <- function() {
+#   function() {
+#
+#   }
+# }
+
 
 DBIConnectionFactory <- R6Class("DBIConnectionFactory",
   public = list(
     drv = NULL,
-    initialize = function(drv) {
+    initialize = function(drv, connectionClass) {
       self$drv <- drv
     },
-    generate = function(...) {
+    generator = function(...) {
       function() {
         DBI::dbConnect(self$drv, ...)
       }
@@ -116,8 +136,21 @@ DBIConnectionFactory <- R6Class("DBIConnectionFactory",
 ## set S4 classes for consistency with DBI conventions
 ## (I'm pretty sure this naive approach won't work, however)
 setClass("Pool")
-setClass("PooledConnection")
 setClass("DBIConnectionFactory")
+
+PooledDBIConnection <- setClass("PooledDBIConnection",
+  slots = c(id = "numeric", conn = "DBIConnection"))
+
+setGeneric("release", function(conn) {
+  standardGeneric("release")
+})
+
+setMethod("release", "PooledDBIConnection", function(conn) {
+  id <- attr(conn, "id", exact = TRUE)
+  pool <- attr(conn, "pool", exact = TRUE)
+  pool$release(id)
+})
+
 
 ## set S4 methods for consistency with DBI conventions
 
@@ -126,18 +159,28 @@ setClass("DBIConnectionFactory")
 #********************** OPENING THE POOL **********************#
 #**************************************************************#
 
-setGeneric("createPool", function(drv, ...) {
+setGeneric("createPool", function(drv, connectionClass, ...) {
   standardGeneric("createPool")
 })
 
-setMethod("createPool", "DBIDriver", function(drv, ...) {
-  createPool(DBIConnectionFactory$new(drv), ...)
+setMethod("createPool", "DBIDriver", function(drv, connectionClass, ...) {
+  createPool(DBIConnectionFactory$new(drv), connectionClass, ...)
 })
 
-setMethod("createPool", "DBIConnectionFactory", function(drv, ...) {
-  Pool$new(drv$generate(...))
-})
-
+setMethod("createPool", "DBIConnectionFactory",
+  function(drv, connectionClass, ...) {
+    args <- list(...)
+    if (!("minConn" %in% names(args))) minConn <- 3
+    if (!("maxConn" %in% names(args))) maxConn <- 10
+    print(minConn)
+    print(maxConn)
+    drvArgs <- unlist(args[setdiff(names(args), c("min", "max"))])
+    Pool$new(connectionFactory = drv$generator(drvArgs),
+             connectionClass = connectionClass,
+             minConn = minConn,
+             max = maxConn)
+  }
+)
 
 #**************************************************************#
 #**************************************************************#
@@ -156,13 +199,6 @@ setMethod("dbConnect", "Pool", function(drv, ...) {
   # fetch a connection
   drv$fetch()
 })
-
-## No way this works, because we cannot call the Pool object
-## given just a PooledConnection object
-# setMethod("dbDisconnect", "PooledConnection", function(conn, ...) {
-#   # fetch a connection
-#   drv$fetch()
-# })
 
 #***************** THIS MAKES NO SENSE DUM DUM *****************#
 # You would never call dbConnect if you already had a connection!
@@ -192,8 +228,8 @@ setMethod("dbConnect", "Pool", function(drv, ...) {
 ## conn <- dbConnect(pool) and dbDisconnect(conn) (which is really
 ## just pool$release(conn), because no way to do dbDisconnect(conn))
 ## on you
-setMethod("dbSendQuery", "PooledConnection", function(conn, statement, ...) {
-  # get the actual connection from the PooledConnection object
+setMethod("dbSendQuery", "PooledDBIConnection", function(conn, statement, ...) {
+  # get the actual connection from the PooledDBIConnection object
   DBI::dbSendQuery(conn$conn, statement, ...)
 })
 
@@ -211,7 +247,7 @@ setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
 
 ## To be used with care, since this puts the onus of calling
 ## pool$release(conn) on you
-setMethod("dbGetQuery", "PooledConnection", function(conn, statement, ...) {
-  # get the actual connection from the PooledConnection object
+setMethod("dbGetQuery", "PooledDBIConnection", function(conn, statement, ...) {
+  # get the actual connection from the PooledDBIConnection object
   DBI::dbGetQuery(conn$conn, statement, ...)
 })
