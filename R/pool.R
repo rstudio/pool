@@ -1,10 +1,11 @@
 #' @include utils.R
 NULL
 
-#' Connection Pooling for Databases in R
+#' Object Pooling in R.
 #'
-#' Creates connection pools for various ypes of databases in R to
-#' make it less computationally expensive to get a connection.
+#' Creates objects pools for various types of objects in R to
+#' make it less computationally expensive to get a fetch and
+#' release them.
 #'
 #' @name pool
 #' @docType package
@@ -14,311 +15,168 @@ NULL
 #' @import methods
 NULL
 
-#' Pool Class
+#' Pool Class.
 #'
-#' Some more details...
+#' A generic pool class that holds objects. These can be fetched
+#' from the pool and released back to it at will, with very
+#' little computaional cost. The pool should be created only once
+#' and closed when it is no longer needed, to prevent leaks.
+#'
+#' @usage createPool(drv, ...)
+#'
+#' @format A pool instance with the following public methods:
+#' \itemize{
+#'  \item \strong{\code{pool$fetch()}} Fetches and returns an
+#'  object from the pool.
+#'  \item \strong{\code{pool$release(id)}} Releases the object
+#'  with \code{id} back to the pool.
+#'  \item \strong{\code{pool$close()}} Closes the pool,
+#'  terminating any active objects.
+#' }
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' pool <- createPool(
+#'   drv = MySQL(),
+#'   dbname = "shinydemo",
+#'   host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+#'   username = "guest",
+#'   password = "guest"
+#' )
+#'
+#' dbGetQuery(pool, "SELECT * from City WHERE ID < 5")
+#' #>   ID           Name CountryCode      District Population
+#' #> 1  1          Kabul         AFG         Kabol    1780000
+#' #> 2  2       Qandahar         AFG      Qandahar     237500
+#' #> 3  3          Herat         AFG         Herat     186800
+#' #> 4  4 Mazar-e-Sharif         AFG         Balkh     127800
+#'
+#' pool$close()
+#' }
 Pool <- R6Class("Pool",
   public = list(
-    ## initialize the pool with min number of connection
-    initialize = function(connectionFactory, connectionClass,
-                          minConn, maxConn) {
-      private$factory <- connectionFactory
-      private$connectionClass <- connectionClass
-      private$minConn <- minConn
-      private$maxConn <- maxConn
-      private$freeConnections <- new.env()
-      private$takenConnections <- new.env()
-      for (i in seq_len(private$minConn)) {
-        private$createConnection()
+    ## initialize the pool with min number of objects
+    initialize = function(factory, minSize, maxSize) {
+      private$factory <- factory
+      private$minSize <- minSize
+      private$maxSize <- maxSize
+      private$freeObjects <- new.env()
+      private$takenObjects <- new.env()
+      for (i in seq_len(private$minSize)) {
+        private$createObject()
       }
       reg.finalizer(self,
         function(self) {
-          freeEnv <- private$freeConnections
-          takenEnv <- private$takenConnections
-          if (length(freeEnv) > 0 || length(takenEnv) > 0) {
+          freeEnv <- private$freeObjects
+          takenEnv <- private$takenObjects
+          if (length(freeEnv) > 0 || length(takenEnv) > 0) { ### NEED TO RETHINK THIS
             warning("Closing leaked connections")
             self$close()
           }
         },
         onexit = TRUE)
     },
-    ## calls activate and returns a connection
+    ## calls activate and returns an object
     fetch = function() {
-      freeEnv <- private$freeConnections
-      takenEnv <- private$takenConnections
-      ## see if there's any free connections
+      freeEnv <- private$freeObjects
+      takenEnv <- private$takenObjects
+      ## see if there's any free objects
       if (length(freeEnv > 0)) {
-        ## get first free connection we find
+        ## get first free object we find
         id <- ls(freeEnv)[[1]]
-        conn <- freeEnv[[id]]
+        object <- freeEnv[[id]]
       } else {
-        ## if we get here, there are no free connections
+        ## if we get here, there are no free objects
         ## and we must create a new one
-        connection <- private$createConnection()
-        id <- connection$id
-        conn <- connection$conn
+        object <- private$createObject()
+        id <- attr(object, "id", exact = TRUE)
       }
-      ## activate connection and return it
-      private$toggleConnectionStatus(id, freeEnv, takenEnv)
-      onActivate(conn)
-      attr(conn, "id") <- id
-      attr(conn, "pool") <- self
-      class(conn) <- c(private$connectionClass, class(conn))
-      return(conn)
+      ## activate object and return it
+      private$toggleObjectStatus(id, freeEnv, takenEnv)
+      onActivate(object)
+      return(object)
     },
-    ## passivates the connection and returns it back to
-    ## the pool (possibly destroys the connection if the
-    ## number of idle connections exceeds the maximum)
+    ## passivates the object and returns it back to
+    ## the pool (possibly destroys the object if the
+    ## number of total object exceeds the maximum)
     release = function(id) {
-      takenEnv <- private$takenConnections
-      freeEnv <- private$freeConnections
-      connection <- takenEnv[[id]]
-      passivate(connection)
-      private$toggleConnectionStatus(id, takenEnv, freeEnv)
-      if (length(freeEnv) > private$maxConn) {
-        destroy(connection, envir = freeEnv)
+      freeEnv <- private$freeObjects
+      takenEnv <- private$takenObjects
+      object <- takenEnv[[id]]
+      onPassivate(object)
+      private$toggleObjectStatus(id, takenEnv, freeEnv)
+      if (length(freeEnv) > private$maxSize) {
+        onDestroy(object, envir = freeEnv)
         rm(id, envir = freeEnv)
       }
     },
     ## cleaning up and closing the pool
     close = function() {
-      freeEnv <- private$freeConnections
-      takenEnv <- private$takenConnections
-      ## disconnect all connections
-      eapply(freeEnv, destroy)
-      eapply(takenEnv, destroy)
-      ## empty the connections' environments
+      freeEnv <- private$freeObjects
+      takenEnv <- private$takenObjects
+      ## destroy all objects
+      eapply(freeEnv, onDestroy)
+      eapply(takenEnv, onDestroy)
+      ## empty the objects' environments
       rm(list = ls(freeEnv), envir = freeEnv)
       rm(list = ls(takenEnv), envir = takenEnv)
     }
   ),
   private = list(
-    freeConnections = NULL,
-    takenConnections = NULL,
+    freeObjects = NULL,
+    takenObjects = NULL,
     factory = NULL,
-    connectionClass = NULL,
-    minConn = NULL,
-    maxConn = NULL,
-    ## creates a connection and assigns it to the
-    ## free environment; returns the connection
-    ## object and the accompanying id
-    createConnection = function() {
-      ## always create a connection in the free envir
+    minSize = NULL,
+    maxSize = NULL,
+    ## creates an object, assigns it to the
+    ## free environment and returns it
+    createObject = function() {
+      ## always create an object in the free envir
       ## to guarantee that ids are unique
-      envir <- private$freeConnections
+      envir <- private$freeObjects
       id <- as.character(length(envir) + 1)
-      conn <- private$factory()
-      assign(id, conn, envir = envir)
-      return(list(id, conn))
+      object <- private$factory()
+      assign(id, object, envir = envir)
+      attr(object, "id") <- id
+      attr(object, "pool") <- self
+      return(object)
     },
-    ## change the connection's environment when a
-    ## free connection gets taken and vice versa
+    ## change the objects's environment when a
+    ## free object gets taken and vice versa
     toggleConnectionStatus = function(id, from, to) {
-      conn <- from[[id]]
+      object <- from[[id]]
       rm(id, envir = from)
-      assign(id, conn, envir = to)
+      assign(id, object, envir = to)
     }
   )
 )
 
-# PooledConnection <- R6Class("PooledConnection",
-#   public = list(
-#     conn = NULL,
-#     id = NULL,
-#     free = NULL,
-#     initialize = function(conn, id) {
-#       self$conn <- conn
-#       self$id <- id
-#       self$free <- TRUE
-#     },
-#     activate = function() {
-#       self$free <- FALSE
-#     },
-#     passivate = function() {
-#       self$free <- TRUE
-#     },
-#     destroy = function() {
-#       dbDisconnect(self$conn)
-#     }
-#   )
-# )
-
-# DBIConnectionFactory <- function() {
-#   function() {
-#
-#   }
-# }
-
-
-DBIConnectionFactory <- R6Class("DBIConnectionFactory",
-  public = list(
-    drv = NULL,
-    initialize = function(drv) {
-      self$drv <- drv
-    },
-    generator = function(...) {
-      function() {
-        DBI::dbConnect(self$drv, ...)
-      }
-    }
-  )
-)
-
-## set S4 classes for consistency with DBI conventions
-## (I'm pretty sure this naive approach won't work, however)
+#*********************************************************#
+#*** set S4 class and generic for consistency with DBI ***#
+#*********************************************************#
+#' @rdname Pool
+#' @export
 setClass("Pool")
-setClass("DBIConnectionFactory")
 
-PooledDBIConnection <- setClass("PooledDBIConnection")
-
-setGeneric("release", function(conn) {
-  standardGeneric("release")
-})
-
-setGeneric("onActivate", function(conn) {
-  standardGeneric("onActivate")
-})
-
-setGeneric("onPassivate", function(conn) {
-  standardGeneric("onPassivate")
-})
-
-setGeneric("onDestroy", function(conn) {
-  standardGeneric("onDestroy")
-})
-
-setGeneric("onValidate", function(conn) {
-  standardGeneric("onValidate")
-})
-
-## Set method defaults
-setMethod("release", "ANY", function(conn) {
-  id <- attr(conn, "id", exact = TRUE)
-  pool <- attr(conn, "pool", exact = TRUE)
-  pool$release(id)
-})
-
-setMethod("onActivate", "ANY", function(conn) {})
-setMethod("onPassivate", "ANY", function(conn) {})
-
-
-## Empty method because there's no need to deviate from the
-## defaults (or even set defaults)
-setMethod("release", "PooledDBIConnection", function(conn) {})
-setMethod("onActivate", "PooledDBIConnection", function(conn) {})
-
-setMethod("onPassivate", "PooledDBIConnection", function(conn) {
-  rs <- dbListResults(conn)
-  lapply(rs, dbRollback)
-  lapply(rs, dbClearResult)
-})
-
-setMethod("onDestroy", "PooledDBIConnection", function(conn) {
-
-})
-
-setMethod("onValidate", "PooledDBIConnection", function(conn) {
-
-})
-
-
-## set S4 methods for consistency with DBI conventions
-
-#**************************************************************#
-#**************************************************************#
-#********************** OPENING THE POOL **********************#
-#**************************************************************#
-
-setGeneric("createPool", function(drv, connectionClass, ...) {
-  standardGeneric("createPool")
-})
-
-setMethod("createPool", "DBIDriver", function(drv, connectionClass, ...) {
-  createPool(DBIConnectionFactory$new(drv), connectionClass, ...)
-})
-
-setMethod("createPool", "DBIConnectionFactory",
-  function(drv, connectionClass, ...) {
-    args <- list(...)
-    if ("minConn" %in% names(args)) minConn <- args$minConn
-    else minConn <- 3
-    if ("maxConn" %in% names(args)) maxConn <- args$maxConn
-    else maxConn <- 10
-    drvArgs <- args[setdiff(names(args), c("minConn", "maxConn"))]
-    connectionFactory <- do.call(drv$generator, drvArgs)
-    Pool$new(connectionFactory = connectionFactory,
-             connectionClass = connectionClass,
-             minConn = minConn,
-             maxConn = maxConn)
+#' @usage createPool(drv, minSize = 3, maxSize = Inf, ...)
+#'
+#' @param drv The driver used to connect to the generator of
+#' the objects that the pool will hold.
+#' @param minSize An optional number specifying the minimum
+#' number of objects that the pool should have at all times.
+#' @param maxSize An optional number specifying the maximum
+#' number of objects that the pool should have at all times.
+#' @param ... Authorization arguments needed by the object
+#' instance generated by the \code{drv}.
+#'
+#' @seealso \link[DBI]{dbConnect}
+#'
+#' @rdname Pool
+#' @export
+setGeneric("createPool",
+  function(drv, minSize = 3, maxSize = Inf, ...) {
+    standardGeneric("createPool")
   }
 )
 
-#**************************************************************#
-#**************************************************************#
-#********* CREATING METHODS FOR DBI-DEFINED GENERICS **********#
-#**************************************************************#
-
-## I don't need to setGeneric() for all existing DBI methods, right?
-# setGeneric("dbConnect",
-#   def = function(drv, ...) standardGeneric("dbConnect")
-# )
-
-## To be used with care, since this puts the onus of releasing
-## the connection on you
-## (here, drv is the Pool object)
-setMethod("dbConnect", "Pool", function(drv, ...) {
-  # fetch a connection
-  drv$fetch()
-})
-
-#***************** THIS MAKES NO SENSE DUM DUM *****************#
-# You would never call dbConnect if you already had a connection!
-# That's the whole point of this function -- to get a connection!
-#***************************************************************#
-## To be used with care, since this puts the onus of passivating
-## the connection on you
-## (here, drv is the PooledConnection object)
-# setMethod("dbConnect", "PooledConnection", function(drv, ...) {
-#   drv$activate()
-#   drv$conn
-# })
-
-#******************* IS THIS EVEN POSSIBLE? ********************#
-# There's no way we can actually support this within a pool logic,
-# right?
-#***************************************************************#
-# ## Always use this, except if dealing with transsactions that
-# ## cannot be dealt with using withTransaction(...)
-# ## (here, conn is the Pool object)
-# setMethod("dbSendQuery", "Pool", function(conn, statement, ...) {
-#   # fetch a connection
-#   DBI::dbSendQuery(conn$fetch(), statement, ...)
-# })
-
-## To be used with care, since this puts the onus of calling
-## conn <- dbConnect(pool) and dbDisconnect(conn) (which is really
-## just pool$release(conn), because no way to do dbDisconnect(conn))
-## on you
-setMethod("dbSendQuery", "PooledDBIConnection", function(conn, statement, ...) {
-  # get the actual connection from the PooledDBIConnection object
-  DBI::dbSendQuery(conn$conn, statement, ...)
-})
-
-
-
-## Always use this, except if dealing with transsactions that
-## cannot be dealt with using withTransaction(...)
-## (here, conn is the Pool object)
-setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
-  connection <- conn$fetch()
-  on.exit(conn$release(connection))
-  ## relay to dbGetQuery method for Pooled Connection class
-  dbGetQuery(connection, statement, ...)
-})
-
-## To be used with care, since this puts the onus of calling
-## pool$release(conn) on you
-setMethod("dbGetQuery", "PooledDBIConnection", function(conn, statement, ...) {
-  # get the actual connection from the PooledDBIConnection object
-  DBI::dbGetQuery(conn$conn, statement, ...)
-})

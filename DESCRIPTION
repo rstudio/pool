@@ -26,4 +26,7 @@ VignetteBuilder: knitr
 Collate:
     'utils.R'
     'pool.R'
+    'object.R'
+    'DBI.R'
+    'DBIConnection.R'
 RoxygenNote: 5.0.1
