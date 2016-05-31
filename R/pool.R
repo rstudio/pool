@@ -147,7 +147,8 @@ Pool <- R6Class("Pool",
     toggleObjectStatus = function(id, from, to) {
       object <- from[[id]]
       print(id)
-      rm(id, envir = from)
+      id123 <- id
+      rm(id123, envir = from)
       assign(id, object, envir = to)
     }
   )
