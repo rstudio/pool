@@ -13,7 +13,7 @@ setMethod("onPassivate", "DBIConnection", function(object) {
 })
 
 #' @export
-setMethod("onDestroy", "DBIConnection", function(object) {NULL})
+setMethod("onDestroy", "DBIConnection", function(object, envir) {NULL})
 
 #' @export
 setMethod("onValidate", "DBIConnection", function(object) {NULL})

@@ -82,7 +82,7 @@ Pool <- R6Class("Pool",
       freeEnv <- private$freeObjects
       takenEnv <- private$takenObjects
       ## see if there's any free objects
-      if (length(freeEnv > 0)) {
+      if (length(freeEnv) > 0) {
         ## get first free object we find
         id <- ls(freeEnv)[[1]]
         object <- freeEnv[[id]]
@@ -137,15 +137,16 @@ Pool <- R6Class("Pool",
       envir <- private$freeObjects
       id <- as.character(length(envir) + 1)
       object <- private$factory()
-      assign(id, object, envir = envir)
       attr(object, "id") <- id
       attr(object, "pool") <- self
+      assign(id, object, envir = envir)
       return(object)
     },
     ## change the objects's environment when a
     ## free object gets taken and vice versa
-    toggleConnectionStatus = function(id, from, to) {
+    toggleObjectStatus = function(id, from, to) {
       object <- from[[id]]
+      print(id)
       rm(id, envir = from)
       assign(id, object, envir = to)
     }
@@ -179,4 +180,3 @@ setGeneric("createPool",
     standardGeneric("createPool")
   }
 )
-

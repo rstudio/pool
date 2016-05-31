@@ -20,7 +20,7 @@ setGeneric("onPassivate", function(object) {
   standardGeneric("onPassivate")
 })
 
-setGeneric("onDestroy", function(object) {
+setGeneric("onDestroy", function(object, envir) {
   standardGeneric("onDestroy")
 })
 
@@ -45,7 +45,7 @@ setMethod("onActivate", "ANY", function(object) {NULL})
 setMethod("onPassivate", "ANY", function(object) {NULL})
 
 #' @export
-setMethod("onDestroy", "ANY", function(object) {NULL})
+setMethod("onDestroy", "ANY", function(object, envir) {NULL})
 
 #' @export
 setMethod("onValidate", "ANY", function(object) {NULL})
