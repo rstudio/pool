@@ -1,0 +1,41 @@
+#' @include DBI.R
+NULL
+
+#' Make R identifiers into legal SQL identifiers.
+#'
+#' Pool object wrappers around DBIObject methods. See
+#' \code{\link[DBI]{make.db.names}} for the original documentation.
+#' Note that these methods are DEPRECATED. Please use
+#' \code{dbQuoteIdentifier} (or possibly \code{dbQuoteString})
+#' instead, as documented in \code{\link{DBI-connection-quote}}.
+#'
+#' @name DBI-object-deprecated
+NULL
+
+#' @export
+#' @rdname DBI-object-deprecated
+setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
+  definition = function(dbObj, snames, keywords, unique, allow.keywords, ...) {
+    connection <- dbObj$fetch()
+    on.exit(release(connection))
+    DBI::make.db.names(connection, snames, keywords, unique, allow.keywords, ...)
+  }
+)
+
+#' @export
+#' @rdname DBI-object-deprecated
+setMethod("isSQLKeyword", signature(dbObj="Pool", name="character"),
+  definition = function(dbObj, name, keywords, case, ...) {
+    connection <- dbObj$fetch()
+    on.exit(release(connection))
+    DBI::isSQLKeyword(connection, name, keywords, case, ...)
+  }
+)
+
+#' @export
+#' @rdname DBI-object-deprecated
+setMethod("SQLKeywords", "Pool", function(dbObj, ...) {
+  connection <- dbObj$fetch()
+  on.exit(release(connection))
+  DBI::SQLKeywords(connection, ...)
+})

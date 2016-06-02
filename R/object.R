@@ -1,36 +1,17 @@
 #' @include pool.R
 NULL
 
-#*********************************************************#
-#******** set S4 generics for consistency with DBI *******#
-#*********************************************************#
 #' Releases an object back to the pool.
+#'
+#' Should be called by the end user if they previously fetched an
+#' object directly using \code{obj <- pool$fetch()} and are now
+#' done with said object.
+#'
 #' @export
 setGeneric("release", function(object) {
   standardGeneric("release")
 })
 
-#***************** for internal use only *****************#
-#********* should not be called by the end user **********#
-setGeneric("onActivate", function(object) {
-  standardGeneric("onActivate")
-})
-
-setGeneric("onPassivate", function(object) {
-  standardGeneric("onPassivate")
-})
-
-setGeneric("onDestroy", function(object, envir) {
-  standardGeneric("onDestroy")
-})
-
-setGeneric("onValidate", function(object) {
-  standardGeneric("onValidate")
-})
-
-#*********************************************************#
-#****************** set method defaults ******************#
-#*********************************************************#
 #' @export
 setMethod("release", "ANY", function(object) {
   id <- attr(object, "id", exact = TRUE)
@@ -38,14 +19,52 @@ setMethod("release", "ANY", function(object) {
   pool$release(id)
 })
 
-#' @export
-setMethod("onActivate", "ANY", function(object) {NULL})
+#' Pooled object methods.
+#'
+#' For backend authors only. Authors should implement all of these,
+#' which are then called in the within the Pool class methods. These
+#' should not be called directly either by backend authors or by the
+#' end users.
+#'
+#' @name object
+NULL
+
+#' @rdname object
+setGeneric("onActivate", function(object) {
+  standardGeneric("onActivate")
+})
+
+#' @rdname object
+setGeneric("onPassivate", function(object) {
+  standardGeneric("onPassivate")
+})
+
+#' @rdname object
+setGeneric("onDestroy", function(object, envir) {
+  standardGeneric("onDestroy")
+})
+
+#' @rdname object
+setGeneric("onValidate", function(object) {
+  standardGeneric("onValidate")
+})
 
 #' @export
-setMethod("onPassivate", "ANY", function(object) {NULL})
+setMethod("onActivate", "ANY", function(object) {
+  invisible()
+})
 
 #' @export
-setMethod("onDestroy", "ANY", function(object, envir) {NULL})
+setMethod("onPassivate", "ANY", function(object) {
+  invisible()
+})
 
 #' @export
-setMethod("onValidate", "ANY", function(object) {NULL})
+setMethod("onDestroy", "ANY", function(object, envir) {
+  invisible()
+})
+
+#' @export
+setMethod("onValidate", "ANY", function(object) {
+  invisible()
+})

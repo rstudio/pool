@@ -7,6 +7,8 @@
 release(object)
 }
 \description{
-Releases an object back to the pool.
+Should be called by the end user if they previously fetched an
+object directly using \code{obj <- pool$fetch()} and are now
+done with said object.
 }
 
