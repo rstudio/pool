@@ -7,6 +7,9 @@ NULL
 #' object directly using \code{obj <- pool$fetch()} and are now
 #' done with said object.
 #'
+#' @param object A pooled object.
+#'
+#' @aliases release,ANY-method
 #' @export
 setGeneric("release", function(object) {
   standardGeneric("release")
@@ -26,24 +29,34 @@ setMethod("release", "ANY", function(object) {
 #' should not be called directly either by backend authors or by the
 #' end users.
 #'
+#' @param object A pooled object.
+#'
 #' @name object
 NULL
 
+#' @aliases onActivate,ANY-method
+#' @export
 #' @rdname object
 setGeneric("onActivate", function(object) {
   standardGeneric("onActivate")
 })
 
+#' @aliases onPassivate,ANY-method
+#' @export
 #' @rdname object
 setGeneric("onPassivate", function(object) {
   standardGeneric("onPassivate")
 })
 
+#' @aliases onDestroy,ANY-method
+#' @export
 #' @rdname object
-setGeneric("onDestroy", function(object, envir) {
+setGeneric("onDestroy", function(object) {
   standardGeneric("onDestroy")
 })
 
+#' @aliases onValidate,ANY-method
+#' @export
 #' @rdname object
 setGeneric("onValidate", function(object) {
   standardGeneric("onValidate")
@@ -60,7 +73,7 @@ setMethod("onPassivate", "ANY", function(object) {
 })
 
 #' @export
-setMethod("onDestroy", "ANY", function(object, envir) {
+setMethod("onDestroy", "ANY", function(object) {
   invisible()
 })
 

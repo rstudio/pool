@@ -20,11 +20,9 @@ NULL
 #' @name DBI-connection
 NULL
 
-## Wrap DBIConnection methods using the pool object directly,
-## rather than the fetched connection.
-
 ## Throw error here since this would require keeping a connection
 ## open and never releasing it back to the pool.
+#' @param conn,statement,... See \code{\link[DBI]{dbSendQuery}}.
 #' @export
 #' @rdname DBI-connection
 setMethod("dbSendQuery", "Pool", function(conn, statement, ...) {
@@ -73,6 +71,7 @@ setMethod("dbReadTable", "Pool", function(conn, name, ...) {
   DBI::dbReadTable(connection, name, ...)
 })
 
+#' @param name,value See \code{\link[DBI]{dbWriteTable}}.
 #' @export
 #' @rdname DBI-connection
 setMethod("dbWriteTable", "Pool", function(conn, name, value, ...) {

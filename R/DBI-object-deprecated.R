@@ -12,6 +12,8 @@ NULL
 #' @name DBI-object-deprecated
 NULL
 
+#' @param dbObj,snames,keywords,unique,allow.keywords,name,case,...
+#'   see \code{\link[DBI]{make.db.names}}
 #' @export
 #' @rdname DBI-object-deprecated
 setMethod("make.db.names", signature(dbObj="Pool", snames="character"),

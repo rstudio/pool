@@ -7,6 +7,11 @@
 \usage{
 \S4method{dbConnect}{Pool}(drv, ...)
 }
+\arguments{
+\item{drv}{A pool object.}
+
+\item{...}{Not in use.}
+}
 \description{
 Fetch a DBIConnection object from the pool. This method should
 be used with care, since this puts the onus of releasing the

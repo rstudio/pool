@@ -1,7 +1,6 @@
 #' @include object.R
 NULL
 
-#' @export
 DBIConnectionFactory <- R6Class("DBIConnectionFactory",
   public = list(
     drv = NULL,
@@ -16,7 +15,6 @@ DBIConnectionFactory <- R6Class("DBIConnectionFactory",
   )
 )
 
-#' @export
 setClass("DBIConnectionFactory")
 
 #' @rdname Pool
@@ -28,8 +26,6 @@ setMethod("createPool", "DBIDriver",
   }
 )
 
-#' @rdname Pool
-#' @export
 setMethod("createPool", "DBIConnectionFactory",
   function(drv, minSize, maxSize, ...) {
     Pool$new(drv$generator(...), minSize, maxSize)

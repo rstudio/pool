@@ -12,6 +12,7 @@ NULL
 #' @name DBI-connection-sql
 NULL
 
+#' @param con,value,row.names,... See \code{\link[DBI]{sqlData}}.
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
@@ -20,6 +21,7 @@ setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
   DBI::sqlData(connection, value, row.names = NA, ...)
 })
 
+#' @param table,fields,temporary See \code{\link[DBI]{sqlCreateTable}}.
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlCreateTable", "Pool",
@@ -31,6 +33,7 @@ setMethod("sqlCreateTable", "Pool",
   }
 )
 
+#' @param values See \code{\link[DBI]{sqlAppendTable}}.
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlAppendTable", "Pool",
@@ -40,22 +43,3 @@ setMethod("sqlAppendTable", "Pool",
     DBI::sqlAppendTable(connection, table, values, row.names, ...)
   }
 )
-
-#' @export
-#' @rdname DBI-connection-sql
-sqlAppendTableTemplate <- function(obj, table, values,
-                                   row.names = NA, prefix = "?", ...) {
-  if (inherits(obj, "DBIConnection")) {
-    DBI::sqlAppendTableTemplate(obj, table, values,
-                                row.names, prefix, ...)
-  }
-  else if (inherits(obj, "Pool")) {
-    connection <- obj$fetch()
-    on.exit(release(connection))
-    DBI::sqlAppendTableTemplate(connection, table, values,
-                                row.names, prefix, ...)
-  } else {
-    stop("The class of `obj` must be either 'DBIConnection'",
-         "or 'Pool'.")
-  }
-}

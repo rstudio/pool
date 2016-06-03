@@ -13,6 +13,7 @@ NULL
 #' @name DBI-connection-interpolate
 NULL
 
+#' @param _con,`_sql`,... See \code{\link[DBI]{sqlInterpolate}}.
 #' @export
 #' @rdname DBI-connection-interpolate
 setMethod("sqlInterpolate", "Pool", function(`_con`, `_sql`, ...) {
@@ -21,6 +22,7 @@ setMethod("sqlInterpolate", "Pool", function(`_con`, `_sql`, ...) {
   DBI::sqlInterpolate(`_connection`, `_sql`, ...)
 })
 
+#' @param con,sql See \code{\link[DBI]{sqlParseVariables}}.
 #' @export
 #' @rdname DBI-connection-interpolate
 setMethod("sqlParseVariables", "Pool", function(con, sql, ...) {

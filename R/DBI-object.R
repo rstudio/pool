@@ -4,25 +4,29 @@ NULL
 #' DBIObject methods.
 #'
 #' Pool object wrappers around DBIObject methods. See
-#' \code{\link[DBI]{show}}, \code{\link[DBI]{dbDataType}},
-#' \code{\link[DBI]{dbGetInfo}} and \code{\link[DBI]{dbIsValid}}
-#' for the original documentation.
+#' \code{\link[DBI]{dbDataType}}, \code{\link[DBI]{dbGetInfo}}
+#' and \code{\link[DBI]{dbIsValid}} for the original
+#' documentation.
 #'
 #' @name DBI-object
 NULL
 
+#' Show method
+#' @param object A Pool object.
 #' @export
-#' @rdname DBI-object
 setMethod("show", "Pool", function(object) {
   connection <- object$fetch()
   on.exit(release(connection))
   DBI::show(connection)
 })
 
+#' @param dbObj,obj,... See \code{\link[DBI]{dbDataType}}.
 #' @export
 #' @rdname DBI-object
 setMethod("dbDataType", "Pool", function(dbObj, obj, ...) {
-  DBI:::dbiDataType(obj)
+  connection <- dbObj$fetch()
+  on.exit(release(connection))
+  DBI::dbDataType(connection, obj, ...)
 })
 
 #' @export

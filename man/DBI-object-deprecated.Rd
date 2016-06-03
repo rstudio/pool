@@ -16,6 +16,9 @@
 
 \S4method{SQLKeywords}{Pool}(dbObj, ...)
 }
+\arguments{
+\item{dbObj, snames, keywords, unique, allow.keywords, name, case, ...}{see \code{\link[DBI]{make.db.names}}}
+}
 \description{
 Pool object wrappers around DBIObject methods. See
 \code{\link[DBI]{make.db.names}} for the original documentation.

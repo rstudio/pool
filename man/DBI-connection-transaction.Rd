@@ -15,6 +15,9 @@ Pool objects.}
 
 \S4method{dbRollback}{Pool}(conn, ...)
 }
+\arguments{
+\item{conn, ...}{See \code{\link[DBI]{transactions}}.}
+}
 \description{
 You cannot perfrom SQL transaction using a Pool object directly
 (because that would imply keeping a connection open and not
@@ -32,8 +35,7 @@ For simple transactions, consider using \code{withTransaction}
 instead, which is safer since it does not require you to fetch
 and release the connection yourself.
 
-See \code{\link[DBI]{dbBegin}}, \code{\link[DBI]{dbCommit}}
-and \code{\link[DBI]{dbRollback}} for the original
+See \code{\link[DBI]{transactions}} for the original
 documentation.
 }
 

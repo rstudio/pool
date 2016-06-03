@@ -20,6 +20,9 @@
 
 \S4method{dbQuoteString}{Pool,SQL}(conn, x, ...)
 }
+\arguments{
+\item{conn, x, ...}{See \code{\link[DBI]{SQL}}.}
+}
 \description{
 Pool object wrappers around DBIConnection methods that deal
 with SQL escaping needs. See \code{\link[DBI]{SQL}} for the

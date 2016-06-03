@@ -11,18 +11,10 @@ NULL
 #' you are now yourself responsible for releasing the connection
 #' (using \code{release(conn)}) at the appropriate time.
 #'
+#' @param drv A pool object.
+#' @param ... Not in use.
+#'
 #' @export
 setMethod("dbConnect", "Pool", function(drv, ...) {
   drv$fetch()
-})
-
-#' List currently open connections.
-#'
-#' Pool object wrapper around the original DBI method for
-#' DBIDriver objects. See \code{\link[DBI]{dbListConnections}} for
-#' the original documentation.
-#'
-#' @export
-setMethod("dbListConnections", "Pool", function(drv, ...) {
-  list()  #### CHANGE THIS! (once public Pool counters exist)
 })

@@ -7,6 +7,11 @@
 \usage{
 \S4method{dbDisconnect}{DBIConnection}(conn, ...)
 }
+\arguments{
+\item{conn}{A DBIConnection object previously fetched from the pool.}
+
+\item{...}{Not in use.}
+}
 \description{
 A wrapper around \code{release(conn)}. Unlike its namesake in DBI,
 in the context of the \code{pool} package, \code{dbDisconnect} does

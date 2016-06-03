@@ -9,25 +9,30 @@ NULL
 #' it simply releases the connection back to pool, which then decides
 #' whether to keep it around or actually destroy it.
 #'
+#' @param conn A DBIConnection object previously fetched from the pool.
+#' @param ... Not in use.
+#'
 #' @export
 setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   release(conn)
 })
 
-## Include only methods that deviate from the defaults set in object.R
-## (no documentation because these are not meant to be used directly
-## by the end user)
-
+#' @export
+#' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
   rs <- dbListResults(object)
   lapply(rs, dbRollback)
   lapply(rs, dbClearResult)
 })
 
-setMethod("onDestroy", "DBIConnection", function(object, envir) {
+#' @export
+#' @rdname object
+setMethod("onDestroy", "DBIConnection", function(object) {
   invisible()
 })
 
+#' @export
+#' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
   invisible()
 })

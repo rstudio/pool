@@ -6,21 +6,21 @@
 \alias{dbDataType,Pool-method}
 \alias{dbGetInfo,Pool-method}
 \alias{dbIsValid,Pool-method}
-\alias{show,Pool-method}
 \title{DBIObject methods.}
 \usage{
-\S4method{show}{Pool}(object)
-
 \S4method{dbDataType}{Pool}(dbObj, obj, ...)
 
 \S4method{dbGetInfo}{Pool}(dbObj, ...)
 
 \S4method{dbIsValid}{Pool}(dbObj, obj, ...)
 }
+\arguments{
+\item{dbObj, obj, ...}{See \code{\link[DBI]{dbDataType}}.}
+}
 \description{
 Pool object wrappers around DBIObject methods. See
-\code{\link[DBI]{show}}, \code{\link[DBI]{dbDataType}},
-\code{\link[DBI]{dbGetInfo}} and \code{\link[DBI]{dbIsValid}}
-for the original documentation.
+\code{\link[DBI]{dbDataType}}, \code{\link[DBI]{dbGetInfo}}
+and \code{\link[DBI]{dbIsValid}} for the original
+documentation.
 }
 

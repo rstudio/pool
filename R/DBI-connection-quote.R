@@ -7,6 +7,8 @@ NULL
 #' with SQL escaping needs. See \code{\link[DBI]{SQL}} for the
 #' original documentation.
 #'
+#' @param conn,x,... See \code{\link[DBI]{SQL}}.
+#'
 #' @name DBI-connection-quote
 NULL
 

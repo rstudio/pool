@@ -2,9 +2,13 @@
 % Please edit documentation in R/object.R
 \name{release}
 \alias{release}
+\alias{release,ANY-method}
 \title{Releases an object back to the pool.}
 \usage{
 release(object)
+}
+\arguments{
+\item{object}{A pooled object.}
 }
 \description{
 Should be called by the end user if they previously fetched an

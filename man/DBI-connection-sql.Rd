@@ -4,7 +4,6 @@
 \name{DBI-connection-sql}
 \alias{DBI-connection-sql}
 \alias{sqlAppendTable,Pool-method}
-\alias{sqlAppendTableTemplate}
 \alias{sqlCreateTable,Pool-method}
 \alias{sqlData,Pool-method}
 \title{Creating and manipulating SQL tables.}
@@ -15,9 +14,13 @@
   temporary = FALSE, ...)
 
 \S4method{sqlAppendTable}{Pool}(con, table, values, row.names = NA, ...)
+}
+\arguments{
+\item{con, value, row.names, ...}{See \code{\link[DBI]{sqlData}}.}
 
-sqlAppendTableTemplate(obj, table, values, row.names = NA, prefix = "?",
-  ...)
+\item{table, fields, temporary}{See \code{\link[DBI]{sqlCreateTable}}.}
+
+\item{values}{See \code{\link[DBI]{sqlAppendTable}}.}
 }
 \description{
 Pool object wrappers around DBIConnection methods that deal
