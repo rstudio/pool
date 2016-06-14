@@ -11,6 +11,8 @@ MockPooledObj <- R6Class(
 setClass("MockPooledObj")
 
 setMethod("onDestroy", "MockPooledObj", function(object) {
+  if (object$closed)
+    stop("onDestroy called twice on the same object")
   object$closed <- TRUE
 })
 

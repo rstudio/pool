@@ -96,7 +96,7 @@ Pool <- R6Class("Pool",
         taskHandle <- scheduleTask(private$idleTimeout, function() {
           if (self$counters$free + self$counters$taken > private$minSize) {
             private$changeObjectStatus(id, object, "free", NULL)
-            onDestroy(object)
+            private$destroyObject(object)
           }
         })
         attr(object, "reapTaskHandle") <- taskHandle
@@ -109,7 +109,7 @@ Pool <- R6Class("Pool",
       self$valid <- FALSE
       freeEnv <- private$freeObjects
       ## destroy all objects
-      eapply(freeEnv, onDestroy)
+      eapply(freeEnv, private$destroyObject)
       ## empty the objects' environments
       rm(list = ls(freeEnv), envir = freeEnv)
       ## TODO: deal with leaked connections, since there's no longer a takenEnv to check
@@ -134,19 +134,30 @@ Pool <- R6Class("Pool",
 
       # Leak detection logic
       canary <- new.env(parent = emptyenv())
+      canary$closed <- FALSE
       attr(object, "canary") <- canary
       reg.finalizer(canary, function(e) {
         protectDefaultScheduler({
-          warning("You have leaked pooled objects. Closing them.")
-          scheduleTask(1, function() {
-            private$changeObjectStatus(id, object, "taken", NULL)
-            onDestroy(object)
-          })
+          if (!canary$closed) {
+            warning("You have leaked pooled objects. Closing them.")
+            scheduleTask(1, function() {
+              private$changeObjectStatus(id, object, "taken", NULL)
+              private$destroyObject(object)
+            })
+          }
         })
       })
 
       private$changeObjectStatus(id, object, NULL, "free")
       return(object)
+    },
+    destroyObject = function(object) {
+      canary <- attr(object, "canary", exact = TRUE)
+      if (canary$closed) {
+        warning("Object was destroyed twice")
+      }
+      canary$closed <- TRUE
+      onDestroy(object)
     },
     ## change the objects's environment when a
     ## free object gets taken and vice versa.
