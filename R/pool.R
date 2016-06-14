@@ -19,31 +19,30 @@ NULL
 Pool <- R6Class("Pool",
   public = list(
     valid = NULL,
-    freeObjCounter = NULL,
-    takenObjCounter = NULL,
-    leakedObjCounter = NULL, ### Does this make sense??
+    counters = NULL,
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize) {
       self$valid <- TRUE
-      self$freeObjCounter <- 0
-      self$takenObjCounter <- 0
-      self$leakedObjCounter <- 0
+
+      self$counters <- new.env(parent = emptyenv())
+      self$counters$free <- 0
+      self$counters$taken <- 0
+      self$counters$leaked <- 0
+
       private$factory <- factory
       private$minSize <- minSize
       private$maxSize <- maxSize
+
       private$freeObjects <- new.env(parent = emptyenv())
-      #private$takenObjects <- new.env(parent = emptyenv())
       private$leakedObjects <- new.env(parent = emptyenv())
+
       for (i in seq_len(private$minSize)) {
         private$createObject()
       }
       reg.finalizer(self,
         function(self) {
           freeEnv <- private$freeObjects
-          #takenEnv <- private$takenObjects
-          #if (length(freeEnv) > 0 || length(takenEnv) > 0) { ### NEED TO RETHINK THIS
           if (length(freeEnv) > 0) {
-            warning("Closing leaked connections")
             self$close()
           }
         },
@@ -52,7 +51,6 @@ Pool <- R6Class("Pool",
     ## calls activate and returns an object
     fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
       freeEnv <- private$freeObjects
-      #takenEnv <- private$takenObjects
       ## see if there's any free objects
       if (length(freeEnv) > 0) {
         ## get first free object we find
@@ -65,20 +63,8 @@ Pool <- R6Class("Pool",
         id <- attr(object, "id", exact = TRUE)
       }
       ## activate object and return it
-      private$toggleObjectStatus(id, object, "free", "taken")
+      private$changeObjectStatus(id, object, "free", "taken")
       onActivate(object)
-
-      canary <- new.env(parent = emptyenv())
-      attr(object, "canary") <- canary
-      reg.finalizer(canary, function(e) {
-        if (length(self$takenObjCounter) > 0) {
-          warning("You have leaked connections. Closing them...")
-          assign(id, object, envir = private$leakedObjects)
-          self$takenObjCounter <- self$takenObjCounter - 1
-          self$leakedObjCounter <- self$leakedObjCounter + 1
-        }
-        # Warn if not closed properly
-      })
 
       return(object)
     },
@@ -87,26 +73,21 @@ Pool <- R6Class("Pool",
     ## number of total object exceeds the maximum)
     release = function(id, object) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
       freeEnv <- private$freeObjects
-      #takenEnv <- private$takenObjects
-      #object <- takenEnv[[id]]
       onPassivate(object)
-      private$toggleObjectStatus(id, object, "taken", "free")
+      private$changeObjectStatus(id, object, "taken", "free")
       if (length(freeEnv) > private$maxSize) {
-        onDestroy(object) #, envir = freeEnv)
-        rm(id, envir = freeEnv)
+        private$changeObjectStatus(id, object, "free", NULL)
+        onDestroy(object)
       }
     },
     ## cleaning up and closing the pool
     close = function() {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
       self$valid <- FALSE
       freeEnv <- private$freeObjects
-      #takenEnv <- private$takenObjects
       ## destroy all objects
       eapply(freeEnv, onDestroy)
-      #eapply(takenEnv, onDestroy)
       ## empty the objects' environments
       rm(list = ls(freeEnv), envir = freeEnv)
-      #rm(list = ls(takenEnv), envir = takenEnv)
       ## TODO: deal with leaked connections, since there's no longer a takenEnv to check
     }
   ),
@@ -127,26 +108,48 @@ Pool <- R6Class("Pool",
       object <- private$factory()
       attr(object, "id") <- id
       attr(object, "pool") <- self
-      assign(id, object, envir = freeEnv)
-      self$freeObjCounter <- self$freeObjCounter + 1
+
+      # Leak detection logic
+      canary <- new.env(parent = emptyenv())
+      attr(object, "canary") <- canary
+      reg.finalizer(canary, function(e) {
+        warning("You have leaked connections. Closing them...")
+        private$changeObjectStatus(id, object, "taken", "leaked")
+      })
+
+      private$changeObjectStatus(id, object, NULL, "free")
       return(object)
     },
     ## change the objects's environment when a
-    ## free object gets taken and vice versa
-    toggleObjectStatus = function(id, object, from, to) {
-      freeEnv <- private$freeObjects
-      if (from == "free") {
-        #object <- freeEnv[[id]]
-        rm(list = id, envir = freeEnv)
-        #assign(id, object, envir = to)
-        self$freeObjCounter <- self$freeObjCounter - 1
-        self$takenObjCounter <- self$takenObjCounter + 1
-      } else if (from == "taken") {
-        assign(id, object, envir = freeEnv)
-        self$freeObjCounter <- self$freeObjCounter + 1
-        self$takenObjCounter <- self$takenObjCounter - 1
-      } else {
-        stop("`from` must be wither 'free' or 'taken'")
+    ## free object gets taken and vice versa.
+    ## Valid values for `from` and `to` are:
+    ## NULL, "free", "taken", "leaked"
+    changeObjectStatus = function(id, object, from, to) {
+      # Remove from environment if necessary, and
+      # decrement counter
+      if (!is.null(from)) {
+        removeFrom <- switch(from,
+          free = private$freeObjects,
+          leaked = private$leakedObjects,
+          NULL
+        )
+        if (!is.null(removeFrom)) {
+          rm(list = id, envir = removeFrom)
+        }
+        self$counters[[from]] <- self$counters[[from]] - 1
+      }
+
+      if (!is.null(to)) {
+        # Add to environment if necessary, and increment counter
+        addTo <- switch(to,
+          free = private$freeObjects,
+          leaked = private$leakedObjects,
+          NULL
+        )
+        if (!is.null(addTo)) {
+          assign(id, object, envir = addTo)
+        }
+        self$counters[[to]] <- self$counters[[to]] + 1
       }
     }
   )
