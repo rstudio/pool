@@ -1,4 +1,5 @@
 #' @include utils.R
+#' @include scheduler.R
 NULL
 
 #' Object Pooling in R.
@@ -21,64 +22,87 @@ Pool <- R6Class("Pool",
     valid = NULL,
     counters = NULL,
     ## initialize the pool with min number of objects
-    initialize = function(factory, minSize, maxSize) {
+    initialize = function(factory, minSize, maxSize, idleTimeout) {
       self$valid <- TRUE
 
       self$counters <- new.env(parent = emptyenv())
       self$counters$free <- 0
       self$counters$taken <- 0
-      self$counters$leaked <- 0
 
       private$factory <- factory
       private$minSize <- minSize
       private$maxSize <- maxSize
+      private$idleTimeout <- idleTimeout
 
       private$freeObjects <- new.env(parent = emptyenv())
-      private$leakedObjects <- new.env(parent = emptyenv())
 
       for (i in seq_len(private$minSize)) {
         private$createObject()
       }
       reg.finalizer(self,
         function(self) {
-          freeEnv <- private$freeObjects
-          if (length(freeEnv) > 0) {
-            self$close()
-          }
+          protectDefaultScheduler({
+            freeEnv <- private$freeObjects
+            if (length(freeEnv) > 0) {
+              self$close()
+            }
+          })
         },
         onexit = TRUE)
     },
     ## calls activate and returns an object
     fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
-      freeEnv <- private$freeObjects
-      ## see if there's any free objects
-      if (length(freeEnv) > 0) {
-        ## get first free object we find
-        id <- ls(freeEnv)[[1]]
-        object <- freeEnv[[id]]
-      } else {
-        ## if we get here, there are no free objects
-        ## and we must create a new one
-        object <- private$createObject()
-        id <- attr(object, "id", exact = TRUE)
-      }
-      ## activate object and return it
-      private$changeObjectStatus(id, object, "free", "taken")
-      onActivate(object)
+      protectDefaultScheduler({
+        if (self$counters$free + self$counters$taken >= private$maxSize) {
+          stop("Maximum number of objects in pool has been reached")
+        }
 
-      return(object)
+        freeEnv <- private$freeObjects
+        ## see if there's any free objects
+        if (length(freeEnv) > 0) {
+          ## get first free object we find
+          id <- ls(freeEnv)[[1]]
+          object <- freeEnv[[id]]
+
+          taskHandle <- attr(object, "reapTaskHandle", exact = TRUE)
+          if (!is.null(taskHandle)) {
+            attr(object, "reapTaskHandle") <- NULL
+            # Cancel the reap task.
+            taskHandle()
+          }
+
+        } else {
+          ## if we get here, there are no free objects
+          ## and we must create a new one
+          object <- private$createObject()
+          id <- attr(object, "id", exact = TRUE)
+        }
+        ## activate object and return it
+        private$changeObjectStatus(id, object, "free", "taken")
+        onActivate(object)
+
+        return(object)
+      })
     },
     ## passivates the object and returns it back to
     ## the pool (possibly destroys the object if the
     ## number of total object exceeds the maximum)
     release = function(id, object) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
-      freeEnv <- private$freeObjects
-      onPassivate(object)
-      private$changeObjectStatus(id, object, "taken", "free")
-      if (length(freeEnv) > private$maxSize) {
-        private$changeObjectStatus(id, object, "free", NULL)
-        onDestroy(object)
-      }
+      protectDefaultScheduler({
+        freeEnv <- private$freeObjects
+        onPassivate(object)
+
+        # TODO: Take timeout param
+        taskHandle <- scheduleTask(private$idleTimeout, function() {
+          if (self$counters$free + self$counters$taken > private$minSize) {
+            private$changeObjectStatus(id, object, "free", NULL)
+            onDestroy(object)
+          }
+        })
+        attr(object, "reapTaskHandle") <- taskHandle
+
+        private$changeObjectStatus(id, object, "taken", "free")
+      })
     },
     ## cleaning up and closing the pool
     close = function() {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
@@ -93,11 +117,10 @@ Pool <- R6Class("Pool",
   ),
   private = list(
     freeObjects = NULL,
-    #takenObjects = NULL,
-    leakedObjects = NULL,
     factory = NULL,
     minSize = NULL,
     maxSize = NULL,
+    idleTimeout = NULL,
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
@@ -113,8 +136,13 @@ Pool <- R6Class("Pool",
       canary <- new.env(parent = emptyenv())
       attr(object, "canary") <- canary
       reg.finalizer(canary, function(e) {
-        warning("You have leaked connections. Closing them...")
-        private$changeObjectStatus(id, object, "taken", "leaked")
+        protectDefaultScheduler({
+          warning("You have leaked pooled objects. Closing them.")
+          scheduleTask(1, function() {
+            private$changeObjectStatus(id, object, "taken", NULL)
+            onDestroy(object)
+          })
+        })
       })
 
       private$changeObjectStatus(id, object, NULL, "free")
@@ -123,14 +151,13 @@ Pool <- R6Class("Pool",
     ## change the objects's environment when a
     ## free object gets taken and vice versa.
     ## Valid values for `from` and `to` are:
-    ## NULL, "free", "taken", "leaked"
+    ## NULL, "free", "taken"
     changeObjectStatus = function(id, object, from, to) {
       # Remove from environment if necessary, and
       # decrement counter
       if (!is.null(from)) {
         removeFrom <- switch(from,
           free = private$freeObjects,
-          leaked = private$leakedObjects,
           NULL
         )
         if (!is.null(removeFrom)) {
@@ -143,7 +170,6 @@ Pool <- R6Class("Pool",
         # Add to environment if necessary, and increment counter
         addTo <- switch(to,
           free = private$freeObjects,
-          leaked = private$leakedObjects,
           NULL
         )
         if (!is.null(addTo)) {
@@ -163,7 +189,7 @@ setClass("Pool")
 ## documented manually, with the Pool object
 #' @export
 setGeneric("poolCreate",
-  function(src, minSize = 3, maxSize = Inf, ...) {
+  function(src, minSize = 3, maxSize = Inf, idleTimeout = 60000, ...) {
     standardGeneric("poolCreate")
   }
 )

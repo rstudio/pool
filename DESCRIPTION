@@ -25,6 +25,7 @@ BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE
 VignetteBuilder: knitr
 Collate:
+    'scheduler.R'
     'utils.R'
     'pool.R'
     'object.R'
