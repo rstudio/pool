@@ -15,7 +15,7 @@ NULL
 #' @export
 #' @rdname DBI-object
 setMethod("dbDataType", "Pool", function(dbObj, obj, ...) {
-  connection <- dbObj$fetch()
+  connection <- poolCheckout(dbObj)
   on.exit(poolReturn(connection))
   DBI::dbDataType(connection, obj, ...)
 })
@@ -23,7 +23,15 @@ setMethod("dbDataType", "Pool", function(dbObj, obj, ...) {
 #' @export
 #' @rdname DBI-object
 setMethod("dbGetInfo", "Pool", function(dbObj, ...) {
-  list()  #### CHANGE THIS!!! (once public Pool counters exist)
+  pooledObj <- poolCheckout(dbObj)
+  on.exit(poolReturn(pooledObj))
+  list(class = is(dbObj),
+       minSize = dbObj$minSize,
+       maxSize = dbObj$maxSize,
+       pooledObjectClass = is(pooledObj)[1],
+       numberFreeObjects = dbObj$freeObjCounter,
+       numberTakenObjects = dbObj$takenObjCounter,
+       numberLeakedObjects = dbObj$leakedObjCounter)
 })
 
 #' @export

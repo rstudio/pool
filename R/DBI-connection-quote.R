@@ -16,7 +16,7 @@ NULL
 #' @rdname DBI-connection-quote
 setMethod("dbQuoteIdentifier", c("Pool", "character"),
   function(conn, x, ...) {
-    connection <- conn$fetch()
+    connection <- poolCheckout(conn)
     on.exit(poolReturn(connection))
     DBI::dbQuoteIdentifier(connection, x, ...)
   }
@@ -26,7 +26,7 @@ setMethod("dbQuoteIdentifier", c("Pool", "character"),
 #' @rdname DBI-connection-quote
 setMethod("dbQuoteIdentifier", c("Pool", "SQL"),
   function(conn, x, ...) {
-    connection <- conn$fetch()
+    connection <- poolCheckout(conn)
     on.exit(poolReturn(connection))
     DBI::dbQuoteIdentifier(connection, x, ...)
   }
@@ -36,7 +36,7 @@ setMethod("dbQuoteIdentifier", c("Pool", "SQL"),
 #' @rdname DBI-connection-quote
 setMethod("dbQuoteIdentifier", c("Pool", "Table"),
   function(conn, x, ...) {
-    connection <- conn$fetch()
+    connection <- poolCheckout(conn)
     on.exit(poolReturn(connection))
     DBI::dbQuoteIdentifier(connection, x, ...)
   }
@@ -46,7 +46,7 @@ setMethod("dbQuoteIdentifier", c("Pool", "Table"),
 #' @rdname DBI-connection-quote
 setMethod("dbQuoteString", c("Pool", "character"),
   function(conn, x, ...) {
-    connection <- conn$fetch()
+    connection <- poolCheckout(conn)
     on.exit(poolReturn(connection))
     DBI::dbQuoteString(connection, x, ...)
   }
@@ -56,7 +56,7 @@ setMethod("dbQuoteString", c("Pool", "character"),
 #' @rdname DBI-connection-quote
 setMethod("dbQuoteString", c("Pool", "SQL"),
   function(conn, x, ...) {
-    connection <- conn$fetch()
+    connection <- poolCheckout(conn)
     on.exit(poolReturn(connection))
     DBI::dbQuoteString(connection, x, ...)
   }

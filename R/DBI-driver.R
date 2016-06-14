@@ -18,5 +18,5 @@ NULL
 #'
 #' @export
 setMethod("dbConnect", "Pool", function(drv, ...) {
-  drv$fetch()
+  poolCheckout(drv)
 })

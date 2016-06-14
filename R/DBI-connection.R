@@ -36,7 +36,7 @@ setMethod("dbSendQuery", "Pool", function(conn, statement, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbGetQuery(connection, statement, ...)
 })
@@ -50,7 +50,7 @@ setMethod("dbListResults", "Pool", function(conn, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbListFields", "Pool", function(conn, name, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbListFields(connection, name)
 })
@@ -58,7 +58,7 @@ setMethod("dbListFields", "Pool", function(conn, name, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbListTables", "Pool", function(conn, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbListTables(connection)
 })
@@ -66,7 +66,7 @@ setMethod("dbListTables", "Pool", function(conn, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbReadTable", "Pool", function(conn, name, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbReadTable(connection, name, ...)
 })
@@ -75,7 +75,7 @@ setMethod("dbReadTable", "Pool", function(conn, name, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbWriteTable", "Pool", function(conn, name, value, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbWriteTable(connection, name, value, ...)
 })
@@ -83,7 +83,7 @@ setMethod("dbWriteTable", "Pool", function(conn, name, value, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbExistsTable", "Pool", function(conn, name, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbExistsTable(connection, name, ...)
 })
@@ -91,7 +91,7 @@ setMethod("dbExistsTable", "Pool", function(conn, name, ...) {
 #' @export
 #' @rdname DBI-connection
 setMethod("dbRemoveTable", "Pool", function(conn, name, ...) {
-  connection <- conn$fetch()
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbRemoveTable(connection, name, ...)
 })

@@ -19,22 +19,30 @@ NULL
 Pool <- R6Class("Pool",
   public = list(
     valid = NULL,
+    freeObjCounter = NULL,
+    takenObjCounter = NULL,
+    leakedObjCounter = NULL, ### Does this make sense??
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize) {
       self$valid <- TRUE
+      self$freeObjCounter <- 0
+      self$takenObjCounter <- 0
+      self$leakedObjCounter <- 0
       private$factory <- factory
       private$minSize <- minSize
       private$maxSize <- maxSize
-      private$freeObjects <- new.env()
-      private$takenObjects <- new.env()
+      private$freeObjects <- new.env(parent = emptyenv())
+      #private$takenObjects <- new.env(parent = emptyenv())
+      private$leakedObjects <- new.env(parent = emptyenv())
       for (i in seq_len(private$minSize)) {
         private$createObject()
       }
       reg.finalizer(self,
         function(self) {
           freeEnv <- private$freeObjects
-          takenEnv <- private$takenObjects
-          if (length(freeEnv) > 0 || length(takenEnv) > 0) { ### NEED TO RETHINK THIS
+          #takenEnv <- private$takenObjects
+          #if (length(freeEnv) > 0 || length(takenEnv) > 0) { ### NEED TO RETHINK THIS
+          if (length(freeEnv) > 0) {
             warning("Closing leaked connections")
             self$close()
           }
@@ -44,7 +52,7 @@ Pool <- R6Class("Pool",
     ## calls activate and returns an object
     fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
       freeEnv <- private$freeObjects
-      takenEnv <- private$takenObjects
+      #takenEnv <- private$takenObjects
       ## see if there's any free objects
       if (length(freeEnv) > 0) {
         ## get first free object we find
@@ -57,19 +65,32 @@ Pool <- R6Class("Pool",
         id <- attr(object, "id", exact = TRUE)
       }
       ## activate object and return it
-      private$toggleObjectStatus(id, freeEnv, takenEnv)
+      private$toggleObjectStatus(id, object, "free", "taken")
       onActivate(object)
+
+      canary <- new.env(parent = emptyenv())
+      attr(object, "canary") <- canary
+      reg.finalizer(canary, function(e) {
+        if (length(self$takenObjCounter) > 0) {
+          warning("You have leaked connections. Closing them...")
+          assign(id, object, envir = private$leakedObjects)
+          self$takenObjCounter <- self$takenObjCounter - 1
+          self$leakedObjCounter <- self$leakedObjCounter + 1
+        }
+        # Warn if not closed properly
+      })
+
       return(object)
     },
     ## passivates the object and returns it back to
     ## the pool (possibly destroys the object if the
     ## number of total object exceeds the maximum)
-    release = function(id) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
+    release = function(id, object) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
       freeEnv <- private$freeObjects
-      takenEnv <- private$takenObjects
-      object <- takenEnv[[id]]
+      #takenEnv <- private$takenObjects
+      #object <- takenEnv[[id]]
       onPassivate(object)
-      private$toggleObjectStatus(id, takenEnv, freeEnv)
+      private$toggleObjectStatus(id, object, "taken", "free")
       if (length(freeEnv) > private$maxSize) {
         onDestroy(object) #, envir = freeEnv)
         rm(id, envir = freeEnv)
@@ -79,18 +100,20 @@ Pool <- R6Class("Pool",
     close = function() {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
       self$valid <- FALSE
       freeEnv <- private$freeObjects
-      takenEnv <- private$takenObjects
+      #takenEnv <- private$takenObjects
       ## destroy all objects
       eapply(freeEnv, onDestroy)
-      eapply(takenEnv, onDestroy)
+      #eapply(takenEnv, onDestroy)
       ## empty the objects' environments
       rm(list = ls(freeEnv), envir = freeEnv)
-      rm(list = ls(takenEnv), envir = takenEnv)
+      #rm(list = ls(takenEnv), envir = takenEnv)
+      ## TODO: deal with leaked connections, since there's no longer a takenEnv to check
     }
   ),
   private = list(
     freeObjects = NULL,
-    takenObjects = NULL,
+    #takenObjects = NULL,
+    leakedObjects = NULL,
     factory = NULL,
     minSize = NULL,
     maxSize = NULL,
@@ -99,20 +122,32 @@ Pool <- R6Class("Pool",
     createObject = function() {
       ## always create an object in the free envir
       ## to guarantee that ids are unique
-      envir <- private$freeObjects
-      id <- as.character(length(envir) + 1)
+      freeEnv <- private$freeObjects
+      id <- as.character(length(freeEnv) + 1)
       object <- private$factory()
       attr(object, "id") <- id
       attr(object, "pool") <- self
-      assign(id, object, envir = envir)
+      assign(id, object, envir = freeEnv)
+      self$freeObjCounter <- self$freeObjCounter + 1
       return(object)
     },
     ## change the objects's environment when a
     ## free object gets taken and vice versa
-    toggleObjectStatus = function(id, from, to) {
-      object <- from[[id]]
-      rm(list = id, envir = from)
-      assign(id, object, envir = to)
+    toggleObjectStatus = function(id, object, from, to) {
+      freeEnv <- private$freeObjects
+      if (from == "free") {
+        #object <- freeEnv[[id]]
+        rm(list = id, envir = freeEnv)
+        #assign(id, object, envir = to)
+        self$freeObjCounter <- self$freeObjCounter - 1
+        self$takenObjCounter <- self$takenObjCounter + 1
+      } else if (from == "taken") {
+        assign(id, object, envir = freeEnv)
+        self$freeObjCounter <- self$freeObjCounter + 1
+        self$takenObjCounter <- self$takenObjCounter - 1
+      } else {
+        stop("`from` must be wither 'free' or 'taken'")
+      }
     }
   )
 )
@@ -168,7 +203,7 @@ setGeneric("poolReturn", function(object) {
 setMethod("poolReturn", "ANY", function(object) {
   id <- attr(object, "id", exact = TRUE)
   pool <- attr(object, "pool", exact = TRUE)
-  pool$release(id)
+  pool$release(id, object)
 })
 
 ## documented manually, with the Pool object
@@ -186,7 +221,7 @@ setMethod("poolClose", "Pool", function(pool) {
 #' @param object A Pool object.
 #' @export
 setMethod("show", "Pool", function(object) {
-  pooledObj <- object$fetch()
+  pooledObj <- poolCheckout(object)
   on.exit(poolReturn(pooledObj))
   cat("<Pool>\n", "  pooled object class: ",
       is(pooledObj)[1], sep = "")

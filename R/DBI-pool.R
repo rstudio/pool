@@ -28,7 +28,7 @@ setMethod("onPassivate", "DBIConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onDestroy", "DBIConnection", function(object) {
-  invisible()
+
 })
 
 #' @export

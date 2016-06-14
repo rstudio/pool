@@ -16,7 +16,7 @@ NULL
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
-  connection <- con$fetch()
+  connection <- poolCheckout(con)
   on.exit(poolReturn(connection))
   DBI::sqlData(connection, value, row.names = NA, ...)
 })
@@ -26,7 +26,7 @@ setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
 #' @rdname DBI-connection-sql
 setMethod("sqlCreateTable", "Pool",
   function(con, table, fields, row.names = NA, temporary = FALSE, ...) {
-    connection <- con$fetch()
+    connection <- poolCheckout(con)
     on.exit(poolReturn(connection))
     DBI::sqlCreateTable(connection, table, fields,
                         row.names, temporary, ...)
@@ -38,7 +38,7 @@ setMethod("sqlCreateTable", "Pool",
 #' @rdname DBI-connection-sql
 setMethod("sqlAppendTable", "Pool",
   function(con, table, values, row.names = NA, ...) {
-    connection <- con$fetch()
+    connection <- poolCheckout(con)
     on.exit(poolReturn(connection))
     DBI::sqlAppendTable(connection, table, values, row.names, ...)
   }
