@@ -18,7 +18,7 @@ NULL
 #' @rdname DBI-connection-interpolate
 setMethod("sqlInterpolate", "Pool", function(`_con`, `_sql`, ...) {
   `_connection` <- `_con`$fetch()
-  on.exit(release(`_connection`))
+  on.exit(poolReturn(`_connection`))
   DBI::sqlInterpolate(`_connection`, `_sql`, ...)
 })
 
@@ -27,6 +27,6 @@ setMethod("sqlInterpolate", "Pool", function(`_con`, `_sql`, ...) {
 #' @rdname DBI-connection-interpolate
 setMethod("sqlParseVariables", "Pool", function(con, sql, ...) {
   connection <- con$fetch()
-  on.exit(release(connection))
+  on.exit(poolReturn(connection))
   DBI::sqlParseVariables(connection, sql, ...)
 })

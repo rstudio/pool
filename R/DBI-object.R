@@ -11,21 +11,12 @@ NULL
 #' @name DBI-object
 NULL
 
-#' Show method
-#' @param object A Pool object.
-#' @export
-setMethod("show", "Pool", function(object) {
-  connection <- object$fetch()
-  on.exit(release(connection))
-  DBI::show(connection)
-})
-
 #' @param dbObj,obj,... See \code{\link[DBI]{dbDataType}}.
 #' @export
 #' @rdname DBI-object
 setMethod("dbDataType", "Pool", function(dbObj, obj, ...) {
   connection <- dbObj$fetch()
-  on.exit(release(connection))
+  on.exit(poolReturn(connection))
   DBI::dbDataType(connection, obj, ...)
 })
 

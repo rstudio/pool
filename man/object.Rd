@@ -35,8 +35,8 @@ onValidate(object)
 }
 \description{
 For backend authors only. Authors should implement all of these,
-which are then called in the within the Pool class methods. These
-should not be called directly either by backend authors or by the
-end users.
+which are then called by the Pool class methods. These should
+not be called directly either by backend authors or by the end
+users.
 }
 

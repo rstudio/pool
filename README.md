@@ -77,8 +77,8 @@ library(pool)
 The pool package is at its most useful when you use it directly, rather than fetching an actual object from it. In the case of databases, this means that you use the Pool object directly to query the database, rather than first fetching a connection and then using that to query the database.
 
 ```r
-pool <- createPool(
-  drv = RMySQL::MySQL(), 
+pool <- poolCreate(
+  src = RMySQL::MySQL(), 
   dbname = "shinydemo",
   host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
   username = "guest",
@@ -99,11 +99,13 @@ dbGetQuery(pool, "SELECT * FROM City LIMIT 5;")
 You can also fetch an actual DBIConnection object from the pool. However, this approach should be used with care, since this puts the onus of releasing the connection on you (the user). While this means that you still enjoy the performance benefits associated with having a pool, you lose the benefits of automatic connection management, since you are now yourself responsible for releasing the connection (using `release(conn)`) at the appropriate time (otherwise, you get a leaked connection). This approach should really only be necessary when you want to perform a non-trivial SQL transaction. You cannot perfrom SQL transaction using a Pool object directly (because that would imply keeping a connection open and not knowing when to return it back to the pool). For simple transactions, consider using `withTransaction` instead, which is safer since it does not require you to fetch and release the connection yourself.
 
 ```r
-conn <- dbConnect(pool)
+conn <- poolCheckout(pool)
 rs <- dbSendQuery(conn, "SELECT * FROM City LIMIT 5;")
 if (dbGetInfo(rs, what = "rowCount") > 5) {
   warning("dubious result -- rolling back transaction")
   dbRollback(conn)
 }
-release(conn)  ## alternatively, use: dbDisconnect(conn)
+poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
+
+poolClose(pool)
 ```

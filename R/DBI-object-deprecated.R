@@ -19,7 +19,7 @@ NULL
 setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
   definition = function(dbObj, snames, keywords, unique, allow.keywords, ...) {
     connection <- dbObj$fetch()
-    on.exit(release(connection))
+    on.exit(poolReturn(connection))
     DBI::make.db.names(connection, snames, keywords, unique, allow.keywords, ...)
   }
 )
@@ -29,7 +29,7 @@ setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
 setMethod("isSQLKeyword", signature(dbObj="Pool", name="character"),
   definition = function(dbObj, name, keywords, case, ...) {
     connection <- dbObj$fetch()
-    on.exit(release(connection))
+    on.exit(poolReturn(connection))
     DBI::isSQLKeyword(connection, name, keywords, case, ...)
   }
 )
@@ -38,6 +38,6 @@ setMethod("isSQLKeyword", signature(dbObj="Pool", name="character"),
 #' @rdname DBI-object-deprecated
 setMethod("SQLKeywords", "Pool", function(dbObj, ...) {
   connection <- dbObj$fetch()
-  on.exit(release(connection))
+  on.exit(poolReturn(connection))
   DBI::SQLKeywords(connection, ...)
 })

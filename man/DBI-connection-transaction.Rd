@@ -25,13 +25,13 @@ knowing when to return it back to the pool).
 }
 \details{
 If you must use these methods, fetch an actual connection first
-with \code{conn <- pool$fetch()} -- then call the appropriate
+with \code{conn <- poolCheckout(pool)} -- then call the appropriate
 DBI method on \code{conn}. Since you're fetching a connection
-from the pool yourself, you must also remember to release it
-back to the pool when you're done: \code{release(conn)}
+from the pool yourself, you must also remember to return it
+back to the pool when you're done: \code{poolReturn(conn)}
 (otherwise, you have a leaked connection).
 
-For simple transactions, consider using \code{withTransaction}
+For simple transactions, consider using \code{dbWithTransaction}
 instead, which is safer since it does not require you to fetch
 and release the connection yourself.
 

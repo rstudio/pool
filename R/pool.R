@@ -122,19 +122,72 @@ Pool <- R6Class("Pool",
 #' @export
 setClass("Pool")
 
+## documented manually, with the Pool object
 #' @export
-setGeneric("createPool",
-  function(drv, minSize = 3, maxSize = Inf, ...) {
-    standardGeneric("createPool")
+setGeneric("poolCreate",
+  function(src, minSize = 3, maxSize = Inf, ...) {
+    standardGeneric("poolCreate")
   }
 )
 
+#' Checks out an object from the pool.
+#'
+#' Should be called by the end user if they need a persistent
+#' object, that is not returned to the pool automatically.
+#' When you don't longer need the object, be sure to return it
+#' to the pool using \code{poolReturn(object)}.
+#'
+#' @param pool The pool to get the object from.
+#'
+#' @aliases poolCheckout,Pool-method
 #' @export
-setGeneric("closePool", function(pool) {
-  standardGeneric("closePool")
+setGeneric("poolCheckout", function(pool) {
+  standardGeneric("poolCheckout")
 })
 
 #' @export
-setMethod("closePool", "Pool", function(pool) {
+setMethod("poolCheckout", "Pool", function(pool) {
+  pool$fetch()
+})
+
+#' Returns an object back to the pool.
+#'
+#' Should be called by the end user if they previously fetched
+#' an object directly using \code{object <- poolCheckout(pool)}
+#' and are now done with said object.
+#'
+#' @param object A pooled object.
+#'
+#' @aliases poolReturn,ANY-method
+#' @export
+setGeneric("poolReturn", function(object) {
+  standardGeneric("poolReturn")
+})
+
+#' @export
+setMethod("poolReturn", "ANY", function(object) {
+  id <- attr(object, "id", exact = TRUE)
+  pool <- attr(object, "pool", exact = TRUE)
+  pool$release(id)
+})
+
+## documented manually, with the Pool object
+#' @export
+setGeneric("poolClose", function(pool) {
+  standardGeneric("poolClose")
+})
+
+#' @export
+setMethod("poolClose", "Pool", function(pool) {
   pool$close()
+})
+
+#' Show method
+#' @param object A Pool object.
+#' @export
+setMethod("show", "Pool", function(object) {
+  pooledObj <- object$fetch()
+  on.exit(poolReturn(pooledObj))
+  cat("<Pool>\n", "  pooled object class: ",
+      is(pooledObj)[1], sep = "")
 })
