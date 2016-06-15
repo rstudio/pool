@@ -3,7 +3,7 @@ pool
 
 ##### *Object Pooling in R*
 
-[![Travis-CI Build Status](https://travis-ci.org/bborgesr/pool.svg?branch=master)](https://travis-ci.org/bborgesr/pool)
+[![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
 
 This package enables the creation of object pools for various types of objects in R, to make it less computationally expensive to fetch one. Currently the only supported pooled objects are DBI connections (see the [`DBI` package](https://github.com/rstats-db/DBI) for more info). However, the `Pool` class is general enough to allow for pooling of any R objects, provided that someone implements the backend appropriately (creating the object factory class and all the required methods). 
 
