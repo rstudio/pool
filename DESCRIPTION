@@ -19,7 +19,8 @@ Imports:
     R6
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 URL: https://github.com/bborgesr/pool
 BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE
