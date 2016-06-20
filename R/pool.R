@@ -22,7 +22,8 @@ Pool <- R6Class("Pool",
     valid = NULL,
     counters = NULL,
     ## initialize the pool with min number of objects
-    initialize = function(factory, minSize, maxSize, idleTimeout) {
+    initialize = function(factory, minSize, maxSize,
+                          idleTimeout, idleOut) {
       self$valid <- TRUE
 
       self$counters <- new.env(parent = emptyenv())
@@ -33,6 +34,7 @@ Pool <- R6Class("Pool",
       private$minSize <- minSize
       private$maxSize <- maxSize
       private$idleTimeout <- idleTimeout
+      private$idleOut <- idleOut
 
       private$freeObjects <- new.env(parent = emptyenv())
 
@@ -71,6 +73,13 @@ Pool <- R6Class("Pool",
             taskHandle()
           }
 
+          idleOutHandle <- attr(object, "idleOutHandle", exact = TRUE)
+          if (!is.null(idleOutHandle)) {
+            attr(object, "idleOutHandle") <- NULL
+            # Cancel the reap task.
+            idleOutHandle()
+          }
+
         } else {
           ## if we get here, there are no free objects
           ## and we must create a new one
@@ -80,6 +89,9 @@ Pool <- R6Class("Pool",
         ## activate object and return it
         private$changeObjectStatus(id, object, "free", "taken")
         onActivate(object)
+        if (!onValidate(object)) {
+          stop("Object activation was not successful")
+        }
 
         return(object)
       })
@@ -92,7 +104,6 @@ Pool <- R6Class("Pool",
         freeEnv <- private$freeObjects
         onPassivate(object)
 
-        # TODO: Take timeout param
         taskHandle <- scheduleTask(private$idleTimeout, function() {
           if (self$counters$free + self$counters$taken > private$minSize) {
             private$changeObjectStatus(id, object, "free", NULL)
@@ -100,6 +111,14 @@ Pool <- R6Class("Pool",
           }
         })
         attr(object, "reapTaskHandle") <- taskHandle
+
+        if (private$idleOut != Inf) {
+          idleOutHandle <- scheduleTask(private$idleOut, function() {
+            private$changeObjectStatus(id, object, "free", NULL)
+            private$destroyObject(object)
+          })
+          attr(object, "idleOutHandle") <- idleOutHandle
+        }
 
         private$changeObjectStatus(id, object, "taken", "free")
       })
@@ -121,6 +140,7 @@ Pool <- R6Class("Pool",
     minSize = NULL,
     maxSize = NULL,
     idleTimeout = NULL,
+    idleOut = NULL,
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
@@ -200,7 +220,8 @@ setClass("Pool")
 ## documented manually, with the Pool object
 #' @export
 setGeneric("poolCreate",
-  function(src, minSize = 3, maxSize = Inf, idleTimeout = 60000, ...) {
+  function(src, minSize = 1, maxSize = Inf,
+           idleTimeout = 60000, idleOut = 3600000, ...) {
     standardGeneric("poolCreate")
   }
 )

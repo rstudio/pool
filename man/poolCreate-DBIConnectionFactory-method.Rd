@@ -5,8 +5,8 @@
 \alias{poolCreate,DBIConnectionFactory-method}
 \title{Given a DBIConnectionFactory object, creates a pool}
 \usage{
-\S4method{poolCreate}{DBIConnectionFactory}(src, minSize = 3, maxSize = Inf,
-  idleTimeout = 60000, ...)
+\S4method{poolCreate}{DBIConnectionFactory}(src, minSize = 1, maxSize = Inf,
+  idleTimeout = 60000, idleOut = 3600000, ...)
 }
 \arguments{
 \item{src}{DBIConnectionFactory object.}

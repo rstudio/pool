@@ -39,11 +39,14 @@ setMethod("onPassivate", "DBIConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onDestroy", "DBIConnection", function(object) {
-  invisible()
+  dbDisconnect(object)
 })
 
 #' @export
 #' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
-  invisible()
+  check <- dbGetQuery(object, "SELECT 1")
+  df <- data.frame(1)
+  names(df) <- "1"
+  identical(check, df)
 })

@@ -60,5 +60,5 @@ setMethod("onDestroy", "ANY", function(object) {
 
 #' @export
 setMethod("onValidate", "ANY", function(object) {
-  invisible()
+  TRUE
 })
