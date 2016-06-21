@@ -6,7 +6,7 @@
 \title{Create a DBI Database Connection Pool.}
 \usage{
 \S4method{poolCreate}{DBIDriver}(src, minSize = 1, maxSize = Inf,
-  idleTimeout = 60000, idleOut = 3600000, ...)
+  idleTimeout = 60000, ...)
 }
 \arguments{
 \item{src}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},

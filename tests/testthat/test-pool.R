@@ -26,7 +26,7 @@ checkCounts <- function(pool, free, taken) {
 }
 
 describe("pool", {
-  pool <- Pool$new(MockPooledObj$new, 1, 3, 1000, 5000)
+  pool <- Pool$new(MockPooledObj$new, 1, 3, 1000)
 
   it("returns new objects on fetch", {
     fetched <- pool$fetch()
@@ -80,7 +80,7 @@ describe("pool scheduling", {
   })
 
   pool <- Pool$new(MockPooledObj$new, 2, 10,
-                   idleTimeout = 1000, idleOut = 5000)
+                   idleTimeout = 10000)
 
   it("basic scenarios work", {
     # protectDefaultScheduler is necessary here in order

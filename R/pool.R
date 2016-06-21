@@ -23,7 +23,7 @@ Pool <- R6Class("Pool",
     counters = NULL,
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
-                          idleTimeout, idleOut) {
+                          idleTimeout) {
       self$valid <- TRUE
 
       self$counters <- new.env(parent = emptyenv())
@@ -34,7 +34,6 @@ Pool <- R6Class("Pool",
       private$minSize <- minSize
       private$maxSize <- maxSize
       private$idleTimeout <- idleTimeout
-      private$idleOut <- idleOut
 
       private$freeObjects <- new.env(parent = emptyenv())
 
@@ -81,19 +80,9 @@ Pool <- R6Class("Pool",
         }
         ## activate object and return it
         private$changeObjectStatus(id, object, "free", "taken")
-
-
         onActivate(object)
         if (!onValidate(object)) {
           stop("Object activation was not successful")
-        }
-
-        idleOutHandle <- attr(object, "idleOutHandle", exact = TRUE)
-        if (!is.null(idleOutHandle)) {
-          attr(object, "idleOutHandle") <- NULL
-          # Cancel the reap task.
-          idleOutHandle()
-          print("reap task cancelled")
         }
 
         return(object)
@@ -109,35 +98,11 @@ Pool <- R6Class("Pool",
 
         taskHandle <- scheduleTask(private$idleTimeout, function() {
           if (self$counters$free + self$counters$taken > private$minSize) {
-            print(paste("this is supposed to take", private$idleTimeout/1000, "secs"))
             private$changeObjectStatus(id, object, "free", NULL)
             private$destroyObject(object)
           }
         })
         attr(object, "reapTaskHandle") <- taskHandle
-
-        if (private$idleOut != Inf) {
-          idleOutHandle <- scheduleTask(private$idleOut, function() {
-            ## check that object wasn't destroyed yet
-            canary <- attr(object, "canary", exact = TRUE)
-            if (!canary$closed) {
-              print(paste("this is supposed to take", private$idleOut/1000, "secs"))
-              status <- attr(object, "status", exact = TRUE)
-              private$changeObjectStatus(id, object, status, NULL)
-              private$destroyObject(object)
-            }
-          })
-          attr(object, "idleOutHandle") <- idleOutHandle
-        }
-
-        # if (private$idleOut != Inf) {
-        #   idleOutHandle <- scheduleTask(private$idleOut, function() {
-        #     private$changeObjectStatus(id, object, "free", NULL)
-        #     private$destroyObject(object)
-        #   })
-        #   attr(object, "idleOutHandle") <- idleOutHandle
-        # }
-
         private$changeObjectStatus(id, object, "taken", "free")
       })
     },
@@ -158,11 +123,9 @@ Pool <- R6Class("Pool",
     minSize = NULL,
     maxSize = NULL,
     idleTimeout = NULL,
-    idleOut = NULL,
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
-      protectDefaultScheduler({
       ## always create an object in the free envir
       ## to guarantee that ids are unique
       freeEnv <- private$freeObjects
@@ -188,18 +151,7 @@ Pool <- R6Class("Pool",
       })
 
       private$changeObjectStatus(id, object, NULL, "free")
-
-        if (private$idleOut != Inf) {
-          idleOutHandle <- scheduleTask(private$idleOut, function() {
-            print(paste("this is supposed to take", private$idleOut/1000, "secs"))
-            status <- attr(object, "status", exact = TRUE)
-            private$changeObjectStatus(id, object, status, NULL)
-            private$destroyObject(object)
-          })
-          attr(object, "idleOutHandle") <- idleOutHandle
-        }
       return(object)
-      })
     },
     destroyObject = function(object) {
       canary <- attr(object, "canary", exact = TRUE)
@@ -237,7 +189,6 @@ Pool <- R6Class("Pool",
           assign(id, object, envir = addTo)
         }
         self$counters[[to]] <- self$counters[[to]] + 1
-        attr(object, "status") <- to
       }
     }
   )
@@ -252,7 +203,7 @@ setClass("Pool")
 #' @export
 setGeneric("poolCreate",
   function(src, minSize = 1, maxSize = Inf,
-           idleTimeout = 60000, idleOut = 3600000, ...) {
+           idleTimeout = 60000, ...) {
     standardGeneric("poolCreate")
   }
 )

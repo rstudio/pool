@@ -65,9 +65,9 @@ setClass("DBIConnectionFactory")
 #' pool$close()
 #' }
 setMethod("poolCreate", "DBIDriver",
-  function(src, minSize, maxSize, idleTimeout, idleOut, ...) {
+  function(src, minSize, maxSize, idleTimeout, ...) {
     poolCreate(DBIConnectionFactory$new(src),
-               minSize, maxSize, idleTimeout, idleOut, ...)
+               minSize, maxSize, idleTimeout, ...)
   }
 )
 
@@ -86,7 +86,7 @@ setMethod("poolCreate", "DBIDriver",
 #' \code{host}, \code{port}, etc.  For details see the appropriate
 #' \code{DBIDriver}.
 setMethod("poolCreate", "DBIConnectionFactory",
-  function(src, minSize, maxSize, idleTimeout, idleOut, ...) {
-    Pool$new(src$generator(...), minSize, maxSize, idleTimeout, idleOut)
+  function(src, minSize, maxSize, idleTimeout, ...) {
+    Pool$new(src$generator(...), minSize, maxSize, idleTimeout)
   }
 )
