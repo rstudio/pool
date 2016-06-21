@@ -201,12 +201,13 @@ setClass("Pool")
 
 ## documented manually, with the Pool object
 #' @export
-setGeneric("poolCreate",
-  function(src, minSize = 1, maxSize = Inf,
-           idleTimeout = 60000, ...) {
-    standardGeneric("poolCreate")
-  }
-)
+poolCreate <- function(factory, ...,
+  minSize = 1, maxSize = Inf, idleTimeout = 60000) {
+  Pool$new(
+    function() {factory(...)},
+    minSize, maxSize, idleTimeout
+  )
+}
 
 #' Checks out an object from the pool.
 #'

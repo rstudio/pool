@@ -11,8 +11,6 @@ scheduleTask <- function(millis, callback) {
   scheduler(millis, callback)
 }
 
-
-
 scheduledTasks <- new.env(parent = emptyenv())
 
 naiveScheduleTask <- local({
@@ -54,7 +52,6 @@ protectDefaultScheduler <- function(expr) {
   force(expr)
 }
 
-
 RefCount <- R6Class("RefCount",
   public = list(
     initialize = function(callback) {
@@ -77,5 +74,4 @@ RefCount <- R6Class("RefCount",
   )
 )
 
-runTasks <- function() {}
 defaultSchedulerRefCount <- RefCount$new(executeTasks)
