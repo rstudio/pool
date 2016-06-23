@@ -21,6 +21,9 @@ Pool <- R6Class("Pool",
   public = list(
     valid = NULL,
     counters = NULL,
+    minSize = NULL,
+    maxSize = NULL,
+    idleTimeout = NULL,
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
                           idleTimeout) {
@@ -31,13 +34,13 @@ Pool <- R6Class("Pool",
       self$counters$taken <- 0
 
       private$factory <- factory
-      private$minSize <- minSize
-      private$maxSize <- maxSize
-      private$idleTimeout <- idleTimeout
+      self$minSize <- minSize
+      self$maxSize <- maxSize
+      self$idleTimeout <- idleTimeout
 
       private$freeObjects <- new.env(parent = emptyenv())
 
-      for (i in seq_len(private$minSize)) {
+      for (i in seq_len(self$minSize)) {
         private$createObject()
       }
       reg.finalizer(self,
@@ -54,7 +57,7 @@ Pool <- R6Class("Pool",
     ## calls activate and returns an object
     fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
       protectDefaultScheduler({
-        if (self$counters$free + self$counters$taken >= private$maxSize) {
+        if (self$counters$free + self$counters$taken >= self$maxSize) {
           stop("Maximum number of objects in pool has been reached")
         }
 
@@ -95,15 +98,15 @@ Pool <- R6Class("Pool",
       protectDefaultScheduler({
         freeEnv <- private$freeObjects
         onPassivate(object)
+        private$changeObjectStatus(id, object, "taken", "free")
 
-        taskHandle <- scheduleTask(private$idleTimeout, function() {
-          if (self$counters$free + self$counters$taken > private$minSize) {
+        taskHandle <- scheduleTask(self$idleTimeout, function() {
+          if (self$counters$free + self$counters$taken > self$minSize) {
             private$changeObjectStatus(id, object, "free", NULL)
             private$destroyObject(object)
           }
         })
         attr(object, "reapTaskHandle") <- taskHandle
-        private$changeObjectStatus(id, object, "taken", "free")
       })
     },
     ## cleaning up and closing the pool
@@ -120,9 +123,6 @@ Pool <- R6Class("Pool",
   private = list(
     freeObjects = NULL,
     factory = NULL,
-    minSize = NULL,
-    maxSize = NULL,
-    idleTimeout = NULL,
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
@@ -138,13 +138,24 @@ Pool <- R6Class("Pool",
       canary <- new.env(parent = emptyenv())
       canary$closed <- FALSE
       attr(object, "canary") <- canary
+      ## maybe calling gc() ins't necessary (see issue #3 in Github)
+      gc()
       reg.finalizer(canary, function(e) {
         protectDefaultScheduler({
           if (!canary$closed) {
-            warning("You have leaked pooled objects. Closing them.")
+            ## for dplyr use (as of right now), leaking is inevitable
+            ## and it will annoy the heck out of users to be getting
+            ## warnings when they're doing exactly as we tell them to
+            ## so commenting this out for now...
+            # warning("You have leaked pooled objects. Closing them.")
             scheduleTask(1, function() {
-              private$changeObjectStatus(id, object, "taken", NULL)
-              private$destroyObject(object)
+              ## changed because in issue #4 in Github, I really think
+              ## this makes more sense...
+              self$release(id, object)
+              #message("Connection finalizer ran")
+
+              # private$changeObjectStatus(id, object, "taken", NULL)
+              # private$destroyObject(object)
             })
           }
         })
@@ -203,10 +214,14 @@ setClass("Pool")
 #' @export
 poolCreate <- function(factory, ...,
   minSize = 1, maxSize = Inf, idleTimeout = 60000) {
-  Pool$new(
+  pool <- Pool$new(
     function() {factory(...)},
     minSize, maxSize, idleTimeout
   )
+  ## if a createPool is used with a DBIDriver, make a note
+  ## (to ease dplyr compatibility later on)
+  checkDriver(pool, ...)
+  pool
 }
 
 #' Checks out an object from the pool.

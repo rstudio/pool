@@ -20,7 +20,11 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    dplyr,
+    RMySQL,
+    RSQLite,
+    RPostgreSQL
 URL: https://github.com/bborgesr/pool
 BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE

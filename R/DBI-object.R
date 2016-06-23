@@ -26,12 +26,13 @@ setMethod("dbGetInfo", "Pool", function(dbObj, ...) {
   pooledObj <- poolCheckout(dbObj)
   on.exit(poolReturn(pooledObj))
   list(class = is(dbObj),
+       valid = dbObj$valid,
        minSize = dbObj$minSize,
        maxSize = dbObj$maxSize,
+       idleTimeout = dbObj$idleTimeout,
        pooledObjectClass = is(pooledObj)[1],
-       numberFreeObjects = dbObj$freeObjCounter,
-       numberTakenObjects = dbObj$takenObjCounter,
-       numberLeakedObjects = dbObj$leakedObjCounter)
+       numberFreeObjects = dbObj$counters$free,
+       numberTakenObjects = dbObj$counters$taken)
 })
 
 #' @export

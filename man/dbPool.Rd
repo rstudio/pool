@@ -4,18 +4,23 @@
 \alias{dbPool}
 \title{Create a DBI Database Connection Pool.}
 \usage{
-dbPool(...)
+dbPool(drv, ...)
 }
 \arguments{
+\item{drv}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},
+or a character string specifying the name of DBMS driver, e.g.,
+"SQLite", "MySQL", "PostgreSQL", or an existing
+\code{\link[DBI]{DBIConnection-class}} object (in order to clone an
+existing connection).}
+
 \item{...}{Arguments needed for both \code{\link[DBI]{dbConnect}}
-(mandatory) and \code{\link{poolCreate}} (optional): all arguments
-should be named:
+(mandatory if required by the \code{DBIDriver} you're using) and
+\code{\link{poolCreate}} (optional) - all arguments should be named:
 \enumerate{
-  \item The \code{\link[DBI]{DBIDriver-class} drv} object as well as
-  the authorization arguments needed by the DBMS instance; these
-  typically include \code{user}, \code{password}, \code{dbname},
-  \code{host}, \code{port}, etc. For details see the appropriate
-  \code{DBIDriver}.
+  \item The required authorization arguments needed by the DBMS
+  instance; these typically include \code{user}, \code{password},
+  \code{dbname}, \code{host}, \code{port}, etc. For details check
+  the appropriate \code{DBIDriver}'s documentayion.
   \item Optionally, override the \code{poolCreate} defaults:
   \code{minSize} (minimum number of connections that the pool should
   have at all times), \code{maxSize} (maximum number of connections
@@ -36,7 +41,7 @@ arguments (see the example below).
 \examples{
 \dontrun{
 pool <- dbPool(
-  drv = RMySQL::ySQL(),
+  drv = RMySQL::MySQL(),
   dbname = "shinydemo",
   host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
   username = "guest",
@@ -51,7 +56,7 @@ dbGetQuery(pool, "SELECT * from City LIMIT 5;")
 #> 4  4 Mazar-e-Sharif         AFG         Balkh     127800
 #> 5  5      Amsterdam         NLD Noord-Holland     731200
 
-pool$close()
+poolClose(pool)
 }
 }
 

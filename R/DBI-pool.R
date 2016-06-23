@@ -32,14 +32,16 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
   rs <- dbListResults(object)
-  lapply(rs, dbClearResult)
-  dbRollback(object)
+  try({
+    lapply(rs, dbClearResult)
+    dbRollback(object)
+  })
 })
 
 #' @export
 #' @rdname object
 setMethod("onDestroy", "DBIConnection", function(object) {
-  dbDisconnect(object)
+  DBI::dbDisconnect(object)
 })
 
 #' @export
@@ -48,5 +50,5 @@ setMethod("onValidate", "DBIConnection", function(object) {
   check <- dbGetQuery(object, "SELECT 1")
   df <- data.frame(1)
   names(df) <- "1"
-  identical(check, df)
+  (check == df)[1,]
 })
