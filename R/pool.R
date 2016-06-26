@@ -149,13 +149,14 @@ Pool <- R6Class("Pool",
             ## so commenting this out for now...
             # warning("You have leaked pooled objects. Closing them.")
             scheduleTask(1, function() {
-              ## changed because in issue #4 in Github, I really think
+              ## changed because of issue #4 in Github, I really think
               ## this makes more sense...
-              self$release(id, object)
+              #self$release(id, object)
               #message("Connection finalizer ran")
 
-              # private$changeObjectStatus(id, object, "taken", NULL)
-              # private$destroyObject(object)
+              ## changed back to this, pending discussion with @jcheng5
+              private$changeObjectStatus(id, object, "taken", NULL)
+              private$destroyObject(object)
             })
           }
         })
