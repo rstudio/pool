@@ -53,9 +53,14 @@ describe("pool", {
     ## see lines 146-156 of pool.R to justify both of these changes
     # expect_warning(gc())
     # checkCounts(pool, free = 0, taken = 0)
+    # print("Without this line, this doesn't work. Isn't it odd?")
+    # gc()
+    # checkCounts(pool, free = 1, taken = 0)
+
+    ## temporalily changed back tests, just like the code
     print("Without this line, this doesn't work. Isn't it odd?")
     gc()
-    checkCounts(pool, free = 1, taken = 0)
+    checkCounts(pool, free = 0, taken = 0)
   })
 
   it("enforces maxSize", {
