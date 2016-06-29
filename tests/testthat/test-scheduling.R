@@ -3,16 +3,19 @@ source("utils.R")
 context("Pool scheduling")
 
 describe("pool scheduling", {
+
+  scheduler <- Scheduler$new()
+
   it("schedules things in the right order", {
     results <- integer()
     protectDefaultScheduler({
-      scheduleTask(1000, function() {
+      scheduler$scheduleTask(1000, function() {
         results <<- c(results, 3L)
       })
-      scheduleTask(100, function() {
+      scheduler$scheduleTask(100, function() {
         results <<- c(results, 2L)
       })
-      scheduleTask(10, function() {
+      scheduler$scheduleTask(10, function() {
         results <<- c(results, 1L)
       })
     })
@@ -38,10 +41,10 @@ describe("pool scheduling", {
 
       checkCounts(pool, 1, 2)
 
-      scheduleTask(9000, function() {
+      scheduler$scheduleTask(9000, function() {
         checkCounts(pool, 1, 2)
       })
-      scheduleTask(11000, function() {
+      scheduler$scheduleTask(11000, function() {
         checkCounts(pool, 0, 2)
       })
     })

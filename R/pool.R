@@ -44,11 +44,8 @@ Pool <- R6Class("Pool",
 
       ## force garbage collection every 100ms in case there
       ## are leaked connections
-      protectDefaultScheduler({
-        private$scheduler$scheduleRecurringTask(10, function() {
-          gc()
-          #print("ran gc")
-        })
+      private$scheduler$scheduleRecurringTask(10, function() {
+        gc()
       })
 
       private$freeObjects <- new.env(parent = emptyenv())
@@ -117,11 +114,13 @@ Pool <- R6Class("Pool",
           freeEnv <- private$freeObjects
           onPassivate(object)
 
-          taskHandle <- private$scheduler$scheduleTask(self$idleTimeout, function() {
-            if (self$counters$free + self$counters$taken > self$minSize) {
-              private$changeObjectStatus(id, object, "free", NULL)
+          taskHandle <- private$scheduler$scheduleTask(
+            self$idleTimeout, function() {
+              if (self$counters$free + self$counters$taken > self$minSize) {
+                private$changeObjectStatus(id, object, "free", NULL)
+              }
             }
-          })
+          )
 
           attr(object, "reapTaskHandle") <- taskHandle
           private$changeObjectStatus(id, object, "taken", "free")
@@ -170,9 +169,9 @@ Pool <- R6Class("Pool",
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
-      # ## force garbage collection in case there
-      # ## are leaked connections
-      # gc()
+      ## force garbage collection in case there are leaked
+      ## connections and no recurring scheduler
+      gc()
 
       id <- as.character(private$idCounter)
       private$idCounter <- private$idCounter + 1
@@ -201,7 +200,6 @@ Pool <- R6Class("Pool",
               #message("Connection finalizer ran")
 
               ## changed back to this, pending discussion with @jcheng5
-              print("leaked")
               private$cancelReapTask(object)
               private$changeObjectStatus(id, object, "taken", NULL)
             })
@@ -226,7 +224,6 @@ Pool <- R6Class("Pool",
       }, error = function(e) {
         stop("Object destruction was not successful.")
       })
-      print("destroyed")
     },
 
     ## change the objects's environment when a free object gets taken

@@ -5,19 +5,12 @@ Scheduler <- R6Class("Scheduler",
       if (exists("setSchedulerOption")) {
         setSchedulerOption({
           scheduler <- getOption("pool.scheduler", NULL)
-          # print(scheduler)
+          private$allowRecurring = TRUE
         })
       } else {
-        print("didn't get here")
         scheduler <- naiveScheduleTask  ## eager task scheduling
+        private$allowRecurring = FALSE
       }
-
-      # scheduler <- getOption("pool.scheduler", NULL)
-      # print(scheduler)
-      # if (is.null(scheduler)) {
-      #   print("didn't get here")
-      #   scheduler <- naiveScheduleTask  ## eager task scheduling
-      # }
       private$scheduler <- scheduler
       private$continue <- TRUE
     },
@@ -31,9 +24,10 @@ Scheduler <- R6Class("Scheduler",
     },
 
     scheduleRecurringTask = function(millis, callback) {
-      self$scheduleTask(millis, callback)
-      ##print("ran recurring task")
-      private$reschedule(millis, callback, private$continue)
+      if (private$allowRecurring) {
+        self$scheduleTask(millis, callback)
+        private$reschedule(millis, callback, private$continue)
+      }
     },
 
     cancelRecurringTasks = function() {
@@ -44,6 +38,7 @@ Scheduler <- R6Class("Scheduler",
   private = list(
     scheduler = NULL,
     continue = NULL,
+    allowRecurring = NULL,
 
     reschedule = function(millis, callback, continue) {
       if (continue) {
@@ -58,11 +53,7 @@ Scheduler <- R6Class("Scheduler",
 
 
 
-
-
-
-
-
+## Make this into an R6 class??
 scheduledTasks <- new.env(parent = emptyenv())
 
 naiveScheduleTask <- local({
