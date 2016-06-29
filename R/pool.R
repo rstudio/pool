@@ -19,11 +19,13 @@ NULL
 #' @export
 Pool <- R6Class("Pool",
   public = list(
+
     valid = NULL,
     counters = NULL,
     minSize = NULL,
     maxSize = NULL,
     idleTimeout = NULL,
+
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
                           idleTimeout) {
@@ -32,11 +34,22 @@ Pool <- R6Class("Pool",
       self$counters <- new.env(parent = emptyenv())
       self$counters$free <- 0
       self$counters$taken <- 0
+      private$idCounter <- 1
 
       private$factory <- factory
       self$minSize <- minSize
       self$maxSize <- maxSize
       self$idleTimeout <- idleTimeout
+      private$scheduler <- Scheduler$new()
+
+      ## force garbage collection every 100ms in case there
+      ## are leaked connections
+      protectDefaultScheduler({
+        private$scheduler$scheduleRecurringTask(10, function() {
+          gc()
+          #print("ran gc")
+        })
+      })
 
       private$freeObjects <- new.env(parent = emptyenv())
 
@@ -53,93 +66,126 @@ Pool <- R6Class("Pool",
           })
         },
         onexit = TRUE)
+      checkCounters(self)
     },
+
     ## calls activate and returns an object
-    fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
-      protectDefaultScheduler({
-        if (self$counters$free + self$counters$taken >= self$maxSize) {
-          stop("Maximum number of objects in pool has been reached")
-        }
-
-        freeEnv <- private$freeObjects
-        ## see if there's any free objects
-        if (length(freeEnv) > 0) {
-          ## get first free object we find
-          id <- ls(freeEnv)[[1]]
-          object <- freeEnv[[id]]
-
-          taskHandle <- attr(object, "reapTaskHandle", exact = TRUE)
-          if (!is.null(taskHandle)) {
-            attr(object, "reapTaskHandle") <- NULL
-            # Cancel the reap task.
-            taskHandle()
+    fetch = function() {
+      if (self$valid) {
+        protectDefaultScheduler({
+          if (self$counters$free + self$counters$taken >= self$maxSize) {
+            stop("Maximum number of objects in pool has been reached")
           }
 
-        } else {
-          ## if we get here, there are no free objects
-          ## and we must create a new one
-          object <- private$createObject()
-          id <- attr(object, "id", exact = TRUE)
-        }
-        ## activate object and return it
-        private$changeObjectStatus(id, object, "free", "taken")
-        onActivate(object)
-        if (!onValidate(object)) {
-          stop("Object activation was not successful")
-        }
+          freeEnv <- private$freeObjects
+          ## see if there's any free objects
+          if (length(freeEnv) > 0) {
+            ## get first free object we find
+            id <- ls(freeEnv)[[1]]
+            object <- freeEnv[[id]]
+            private$cancelReapTask(object)  ## cancel reap task if it exists
 
-        return(object)
-      })
+          } else {
+            ## if we get here, there are no free objects
+            ## and we must create a new one
+            object <- private$createObject()
+            id <- attr(object, "id", exact = TRUE)
+          }
+          ## activate object and return it
+          private$changeObjectStatus(id, object, "free", "taken")
+          onActivate(object)
+          if (!onValidate(object)) {
+            stop("Object activation was not successful")
+          }
+
+          checkCounters(self)
+          return(object)
+        })
+      } else {
+        stop("This pool is no longer valid. ",
+          "Cannot fetch new objects.")
+      }
     },
+
     ## passivates the object and returns it back to
     ## the pool (possibly destroys the object if the
     ## number of total object exceeds the maximum)
-    release = function(id, object) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
-      protectDefaultScheduler({
-        freeEnv <- private$freeObjects
-        onPassivate(object)
-        private$changeObjectStatus(id, object, "taken", "free")
+    release = function(id, object) {
+      ## Somehow check this is a valid checked out object...?
+      if (self$valid) {
+        protectDefaultScheduler({
+          freeEnv <- private$freeObjects
+          onPassivate(object)
 
-        taskHandle <- scheduleTask(self$idleTimeout, function() {
-          if (self$counters$free + self$counters$taken > self$minSize) {
-            private$changeObjectStatus(id, object, "free", NULL)
-            private$destroyObject(object)
-          }
+          taskHandle <- private$scheduler$scheduleTask(self$idleTimeout, function() {
+            if (self$counters$free + self$counters$taken > self$minSize) {
+              private$changeObjectStatus(id, object, "free", NULL)
+            }
+          })
+
+          attr(object, "reapTaskHandle") <- taskHandle
+          private$changeObjectStatus(id, object, "taken", "free")
         })
-        attr(object, "reapTaskHandle") <- taskHandle
-      })
+        checkCounters(self)
+      } else {
+          stop("This pool is no longer valid. ",
+            "All objects have been destroyed.")
+      }
     },
+
     ## cleaning up and closing the pool
-    close = function() {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
+    close = function() {
       self$valid <- FALSE
       freeEnv <- private$freeObjects
+      freeObs <- ls(freeEnv)
+
       ## destroy all objects
-      eapply(freeEnv, private$destroyObject)
-      ## empty the objects' environments
-      rm(list = ls(freeEnv), envir = freeEnv)
-      ## TODO: deal with leaked connections, since there's no longer a takenEnv to check
+      for (id in freeObs) {
+        obj <- freeEnv[[id]]
+        private$cancelReapTask(obj)
+        private$changeObjectStatus(id, obj, "free", NULL)
+      }
+
+      ## stop forcing recurring garbage collection
+      private$scheduler$cancelRecurringTasks()
+
+      ## Deal with leaked connections, by forcing garbage collection
+      if (self$counters$taken > 0) gc()
+      if (self$counters$free + self$counters$taken != 0) {
+        stop("Pool closing was not successful. ",
+          "Not all objects were destroyed -- you're ",
+          "probably holding on to a reference of an ",
+          "object that was checked out from this pool. ",
+          "Remove all such references and try again.")
+      }
     }
   ),
   private = list(
+
     freeObjects = NULL,
     factory = NULL,
+    idCounter = NULL,
+    scheduler = NULL,
+
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
-      ## always create an object in the free envir
-      ## to guarantee that ids are unique
-      freeEnv <- private$freeObjects
-      id <- as.character(length(freeEnv) + 1)
+      # ## force garbage collection in case there
+      # ## are leaked connections
+      # gc()
+
+      id <- as.character(private$idCounter)
+      private$idCounter <- private$idCounter + 1
+
       object <- private$factory()
       attr(object, "id") <- id
       attr(object, "pool") <- self
 
-      # Leak detection logic
+      ## leak detection logic
       canary <- new.env(parent = emptyenv())
       canary$closed <- FALSE
       attr(object, "canary") <- canary
-      ## maybe calling gc() ins't necessary (see issue #3 in Github)
-      gc()
+
       reg.finalizer(canary, function(e) {
         protectDefaultScheduler({
           if (!canary$closed) {
@@ -148,35 +194,44 @@ Pool <- R6Class("Pool",
             ## warnings when they're doing exactly as we tell them to
             ## so commenting this out for now...
             # warning("You have leaked pooled objects. Closing them.")
-            scheduleTask(1, function() {
+            private$scheduler$scheduleTask(1, function() {
               ## changed because of issue #4 in Github, I really think
               ## this makes more sense...
               #self$release(id, object)
               #message("Connection finalizer ran")
 
               ## changed back to this, pending discussion with @jcheng5
+              print("leaked")
+              private$cancelReapTask(object)
               private$changeObjectStatus(id, object, "taken", NULL)
-              private$destroyObject(object)
             })
           }
         })
       })
 
       private$changeObjectStatus(id, object, NULL, "free")
+      checkCounters(self)
       return(object)
     },
+
     destroyObject = function(object) {
-      canary <- attr(object, "canary", exact = TRUE)
-      if (canary$closed) {
-        warning("Object was destroyed twice")
-      }
-      canary$closed <- TRUE
-      onDestroy(object)
+      tryCatch({
+        canary <- attr(object, "canary", exact = TRUE)
+        if (canary$closed) {
+          warning("Object was destroyed twice")
+        }
+        canary$closed <- TRUE
+        onDestroy(object)
+        checkCounters(self)
+      }, error = function(e) {
+        stop("Object destruction was not successful.")
+      })
+      print("destroyed")
     },
-    ## change the objects's environment when a
-    ## free object gets taken and vice versa.
-    ## Valid values for `from` and `to` are:
-    ## NULL, "free", "taken"
+
+    ## change the objects's environment when a free object gets taken
+    ## and vice versa. Valid values for `from` and `to` are: NULL,
+    ## "free", "taken"
     changeObjectStatus = function(id, object, from, to) {
       # Remove from environment if necessary, and
       # decrement counter
@@ -201,6 +256,19 @@ Pool <- R6Class("Pool",
           assign(id, object, envir = addTo)
         }
         self$counters[[to]] <- self$counters[[to]] + 1
+      } else {
+        ## if `to` == NULL, it means destroy the object
+        private$destroyObject(object)
+      }
+      checkCounters(self)
+    },
+
+    cancelReapTask = function(object) {
+      taskHandle <- attr(object, "reapTaskHandle", exact = TRUE)
+      if (!is.null(taskHandle)) {
+        attr(object, "reapTaskHandle") <- NULL
+        ## cancel the previous reap task
+        taskHandle()
       }
     }
   )

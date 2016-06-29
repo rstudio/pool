@@ -175,34 +175,3 @@ src_pool <- function(pool) {
   info <- dbGetInfo(conn)
   dplyr::src_sql(drv, conn, info = info, disco = NULL)
 }
-
-
-# #' @export
-# src_pool_mysql <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("mysql", conn, info = info, disco = NULL)
-# }
-#
-# #' @export
-# src_pool_sqlite <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("sqlite", conn, info = info)
-# }
-#
-# #' @export
-# src_pool_postgres <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("postgres", conn, info = info, disco = NULL)
-# }

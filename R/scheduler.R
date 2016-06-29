@@ -1,15 +1,67 @@
-# pool.scheduler option should be a function that attempts
-# to run the given callback at, preferably, the given number
-# of millis in the future. The return value should be a
-# function that cancels the task.
 
-scheduleTask <- function(millis, callback) {
-  scheduler <- getOption("pool.scheduler", NULL)
-  if (is.null(scheduler)) {
-    scheduler <- naiveScheduleTask
-  }
-  scheduler(millis, callback)
-}
+Scheduler <- R6Class("Scheduler",
+  public = list(
+    initialize = function() {
+      if (exists("setSchedulerOption")) {
+        setSchedulerOption({
+          scheduler <- getOption("pool.scheduler", NULL)
+          # print(scheduler)
+        })
+      } else {
+        print("didn't get here")
+        scheduler <- naiveScheduleTask  ## eager task scheduling
+      }
+
+      # scheduler <- getOption("pool.scheduler", NULL)
+      # print(scheduler)
+      # if (is.null(scheduler)) {
+      #   print("didn't get here")
+      #   scheduler <- naiveScheduleTask  ## eager task scheduling
+      # }
+      private$scheduler <- scheduler
+      private$continue <- TRUE
+    },
+
+    # pool.scheduler option should be a function that attempts
+    # to run the given callback at, preferably, the given number
+    # of millis in the future. The return value should be a
+    # function that cancels the task.
+    scheduleTask = function(millis, callback) {
+      private$scheduler(millis, callback)
+    },
+
+    scheduleRecurringTask = function(millis, callback) {
+      self$scheduleTask(millis, callback)
+      ##print("ran recurring task")
+      private$reschedule(millis, callback, private$continue)
+    },
+
+    cancelRecurringTasks = function() {
+      private$continue <- FALSE
+    }
+
+  ),
+  private = list(
+    scheduler = NULL,
+    continue = NULL,
+
+    reschedule = function(millis, callback, continue) {
+      if (continue) {
+        self$scheduleTask(millis, function() {
+          self$scheduleRecurringTask(millis, callback)
+        })
+      }
+    }
+  )
+)
+
+
+
+
+
+
+
+
 
 scheduledTasks <- new.env(parent = emptyenv())
 
