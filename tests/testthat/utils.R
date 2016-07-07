@@ -43,9 +43,16 @@ checkCounts <- function(pool, free, taken) {
   }
 }
 
+checkCounters <- function(pool) {
+  expect_gte(pool$counters$free, 0)
+  expect_gte(pool$counters$taken, 0)
+}
 
 checkShiny <- function() {
   if (!requireNamespace("shiny", quietly = TRUE)) {
     skip("Did not test integration with shiny package")
   }
 }
+
+foo <- function (x, ...) UseMethod("foo", x)
+foo.default <- function(x, ...) {}

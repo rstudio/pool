@@ -17,7 +17,6 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   poolReturn(conn)
 })
 
-
 ## Ideally this would also reset the connection more fully (ex: reset
 ## all user-defined variables set with `SET` back to their default values).
 ## Currently, there isn't a handy dbResetConnection() generic in DBI, so
@@ -32,9 +31,11 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
   rs <- dbListResults(object)
-  try({
-    lapply(rs, dbClearResult)
-    dbRollback(object)
+  lapply(rs, function(x) {
+    if (dbIsValid(x)) {
+      dbClearResult(x)
+      dbRollback(object)
+    }
   })
 })
 
@@ -50,5 +51,7 @@ setMethod("onValidate", "DBIConnection", function(object) {
   check <- dbGetQuery(object, "SELECT 1")
   df <- data.frame(1)
   names(df) <- "1"
-  (check == df)[1,]
+  if (!(check == df)[1,]) {
+    stop("Invalid connection (cannot query database).")
+  }
 })

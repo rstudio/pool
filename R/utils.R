@@ -6,9 +6,3 @@ checkDriver <- function(pool, ...) {
   else if (isDriver("MySQL")) attr(pool, "drv") <- "mysql"
   else if (isDriver("PostgreSQL")) attr(pool, "drv") <- "postgres"
 }
-
-checkCounters <- function(pool) {
-  if (pool$counters$free < 0 || pool$counters$taken < 0) {
-    stop("Negative number of objects")
-  }
-}
