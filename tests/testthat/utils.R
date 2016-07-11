@@ -42,7 +42,7 @@ setMethod("onDestroy", "MockPooledObj", function(object) {
   object$closed <- TRUE
 })
 
-setMethod("onValidate", "MockPooledObj", function(object) {
+setMethod("onValidate", "MockPooledObj", function(object, query) {
   if (failOnValidate) stop("Validation failed...")
   object$valid
 })

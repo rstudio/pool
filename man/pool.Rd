@@ -6,7 +6,9 @@
 \alias{poolClose,Pool-method}
 \title{Pool Class.}
 \usage{
-poolCreate(factory, ..., minSize = 1, maxSize = Inf, idleTimeout = 60000)
+poolCreate(factory, ..., minSize = 1, maxSize = Inf,
+  idleTimeout = 60000, validateTimeout = 1000,
+  validateQuery = NULL)
 
 poolClose(pool)
 }
@@ -33,6 +35,17 @@ object will be kept in the pool before it is destroyed (only
 applies if the number of objects is over the \code{minSize}).
 Use \code{Inf} if you want created objects never to be destroyed
 (there isn't a great reason for this usually).}
+
+\item{validateTimeout}{The minimum number of milliseconds that
+\code{pool} will wait before running a validation check on the
+next checked out object. By not necessarily validating every
+checked out object, there can be substantial perfomance gains
+(especially if the interval between checking out new objects is
+very small).}
+
+\item{validateQuery}{A simple query that can be used to verify
+that an object checked out from the \code{pool} functions as
+expected.}
 
 \item{pool}{A Pool object previsouly created with
 \code{poolCreate}.}
