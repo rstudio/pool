@@ -1,8 +1,9 @@
 source("utils.R")
 
-context("Pool leak deatection")
+context("Pool leak detection")
 
 describe("pool", {
+
   pool <- poolCreate(MockPooledObj$new,
     closed = FALSE, valid = TRUE,
     minSize = 1, maxSize = 3, idleTimeout = 1000)
@@ -10,18 +11,17 @@ describe("pool", {
   it("checks for leaks (anonymous)", {
     checkCounts(pool, free = 1, taken = 0)
     poolCheckout(pool)
-
-    ## Without some kind of S3 method call, this doesn't work. Isn't it odd?
-    #foo(0)
-    expect_warning(gc(), "You have leaked pooled objects. Closing them.")
+    expect_warning(gc(), "You have a leaked pooled object. Destroying it.")
     checkCounts(pool, free = 0, taken = 0)
   })
 
   it("checks for leaks (named)", {
-    fetched <- poolCheckout(pool)
+    obj <- poolCheckout(pool)
     checkCounts(pool, free = 0, taken = 1)
-    rm(fetched)
-    expect_warning(gc(), "You have leaked pooled objects. Closing them.")
+    rm(obj)
+    expect_warning(gc(), "You have a leaked pooled object. Destroying it.")
     checkCounts(pool, free = 0, taken = 0)
   })
+
+  poolClose(pool)
 })

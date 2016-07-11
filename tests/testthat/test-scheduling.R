@@ -2,10 +2,14 @@ source("utils.R")
 
 context("Pool scheduling")
 
-describe("pool scheduling", {
+describe("pool scheduler", {
 
   it("schedules things in the right order", {
     results <- integer()
+
+    # naiveScheduler$protect is necessary here in order
+    # to make sure all the scheduled tasks are executed
+    # at the end of the test, not immediately.
     naiveScheduler$protect({
       scheduleTask(1000, function() {
         results <<- c(results, 3L)
@@ -24,29 +28,33 @@ describe("pool scheduling", {
     closed = FALSE, valid = TRUE,
     minSize = 2, maxSize = 10, idleTimeout = 10000)
 
-  it("basic scenarios work", {
-    # naiveScheduler$protect is necessary here in order
-    # to make sure all the scheduled tasks are executed
-    # at the end of the test, not immediately.
+  it("works with pool", {
     naiveScheduler$protect({
-      checkCounts(pool, 2, 0)
+      checkCounts(pool, free = 2, taken = 0)
 
-      conn1 <- poolCheckout(pool)
-      conn2 <- poolCheckout(pool)
-      conn3 <- poolCheckout(pool)
+      a <- poolCheckout(pool)
+      b <- poolCheckout(pool)
+      c <- poolCheckout(pool)
 
-      checkCounts(pool, 0, 3)
+      checkCounts(pool, free = 0, taken = 3)
 
-      poolReturn(conn3)
+      ## under the hood, this sets a task for 10000 millis,
+      ## so `c` will be destroyed in between the two tasks
+      ## below
+      poolReturn(c)
 
-      checkCounts(pool, 1, 2)
+      checkCounts(pool, free = 1, taken = 2)
 
       scheduleTask(9000, function() {
-        checkCounts(pool, 1, 2)
+        checkCounts(pool, free = 1, taken = 2)
       })
       scheduleTask(11000, function() {
-        checkCounts(pool, 0, 2)
+        checkCounts(pool, free = 0, taken = 2)
       })
     })
+    poolReturn(a)
+    poolReturn(b)
   })
+
+  poolClose(pool)
 })

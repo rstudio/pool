@@ -20,8 +20,16 @@ describe("pool", {
       expect_false(pool$valid)
     })
 
-    it("destroys all objects when closed", {
-      checkCounts(pool, free = 0, taken = 0)
+    it("destroys all free objects when closed", {
+      checkCounts(pool, free = 0)
+    })
+
+    it("finalizer runs", {
+      pool <- poolCreate(MockPooledObj$new,
+        closed = FALSE, valid = TRUE,
+        minSize = 1, maxSize = 3, idleTimeout = 1000)
+      rm(pool)
+      expect_warning(gc(), "Closing leaked pool.")
     })
   })
 
@@ -31,21 +39,28 @@ describe("pool", {
       minSize = 1, maxSize = 3, idleTimeout = 1000)
 
     it("supports generic fetch/release", {
-      fetched <- poolCheckout(pool)
-      checkCounts(pool, free = 0, taken = 1)
-      expect_is(fetched, "MockPooledObj")
-
-      poolReturn(fetched)
       checkCounts(pool, free = 1, taken = 0)
-      expect_false(fetched$closed)
+
+      obj <- poolCheckout(pool)
+      checkCounts(pool, free = 0, taken = 1)
+      expect_is(obj, "MockPooledObj")
+
+      poolReturn(obj)
+      checkCounts(pool, free = 1, taken = 0)
+      expect_false(obj$closed)
     })
 
     it("enforces maxSize", {
       a <- poolCheckout(pool)
       b <- poolCheckout(pool)
       c <- poolCheckout(pool)
-      expect_error(poolCheckout(pool))
+      expect_error(poolCheckout(pool),
+        "Maximum number of objects in pool has been reached")
+      objs <- list(a, b, c)
+      lapply(objs, poolReturn)
     })
+
+    poolClose(pool)
   })
 })
 

@@ -37,7 +37,7 @@ setGeneric("onDestroy", function(object) {
 #' @aliases onValidate,ANY-method
 #' @export
 #' @rdname object
-setGeneric("onValidate", function(object) {
+setGeneric("onValidate", function(object, query) {
   standardGeneric("onValidate")
 })
 
@@ -59,6 +59,6 @@ setMethod("onDestroy", "ANY", function(object) {
 })
 
 #' @export
-setMethod("onValidate", "ANY", function(object) {
+setMethod("onValidate", "ANY", function(object, query) {
   invisible()
 })

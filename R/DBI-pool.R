@@ -47,11 +47,44 @@ setMethod("onDestroy", "DBIConnection", function(object) {
 
 #' @export
 #' @rdname object
-setMethod("onValidate", "DBIConnection", function(object) {
-  check <- dbGetQuery(object, "SELECT 1")
-  df <- data.frame(1)
-  names(df) <- "1"
-  if (!(check == df)[1,]) {
-    stop("Invalid connection (cannot query database).")
+setMethod("onValidate", "DBIConnection", function(object, query) {
+  errorMessage <- ""
+
+  if (!is.null(query)) {
+    tryCatch({
+      dbGetQuery(object, query)
+      return()
+    }, error = function(e) {
+      errorMessage <<- conditionMessage(e)
+    })
+  } else {
+    pool <- attr(object, "..metadata", exact = TRUE)$..pool
+
+    ## options mostly gathered from here:
+    ## http://stackoverflow.com/a/3670000/6174455
+    options <- c(
+      "SELECT 1",
+      "SELECT 1 FROM DUAL",
+      ## excluded because it would require another query to
+      ## check the existing tables (expensive)
+      ## "SELECT 1 FROM any_existing_table WHERE 1=0",
+      "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS",
+      "SELECT * FROM INFORMATION_SCHEMA.TABLES",
+      "VALUES 1",
+      "SELECT 1 FROM SYSIBM.SYSDUMMY1",
+      "select count(*) from systables"
+    )
+
+    for (opt in options) {
+      tryCatch({
+        dbGetQuery(object, opt)
+        pool$validateQuery <- opt
+        return()
+      }, error = function(e) {
+        errorMessage <<- conditionMessage(e)
+      })
+    }
   }
+  stop(paste("Validation not successful --", errorMessage),
+       call. = FALSE)
 })

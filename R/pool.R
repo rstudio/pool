@@ -25,9 +25,13 @@ Pool <- R6Class("Pool",
     minSize = NULL,
     maxSize = NULL,
     idleTimeout = NULL,
+    validateTimeout = NULL,
+    validateQuery = NULL,
 
     ## initialize the pool with min number of objects
-    initialize = function(factory, minSize, maxSize, idleTimeout) {
+    initialize = function(factory, minSize, maxSize,
+                          idleTimeout, validateTimeout,
+                          validateQuery) {
       self$valid <- TRUE
 
       self$counters <- new.env(parent = emptyenv())
@@ -39,6 +43,9 @@ Pool <- R6Class("Pool",
       self$minSize <- minSize
       self$maxSize <- maxSize
       self$idleTimeout <- idleTimeout
+      self$validateTimeout <- validateTimeout
+      self$validateQuery <- validateQuery
+      private$validateTimer <- Sys.time()
 
       private$freeObjects <- new.env(parent = emptyenv())
 
@@ -47,12 +54,10 @@ Pool <- R6Class("Pool",
       }
       reg.finalizer(self,
         function(self) {
-          naiveScheduler$protect({
-            freeEnv <- private$freeObjects
-            if (length(freeEnv) > 0) {
-              self$close()
-            }
-          })
+          if (self$valid) {
+            warning("Closing leaked pool.")
+            self$close()
+          }
         },
         onexit = TRUE)
     },
@@ -78,7 +83,7 @@ Pool <- R6Class("Pool",
           ## if we get here, there are no free objects
           ## and we must create a new one
           object <- private$createObject()
-          id <- attr(object, "metadata", exact = TRUE)$id
+          id <- attr(object, "..metadata", exact = TRUE)$..id
         }
 
         private$changeObjectStatus(id, object, "free", "taken")
@@ -86,24 +91,24 @@ Pool <- R6Class("Pool",
         ## activate and validate
         tryCatch({
           onActivate(object)
-          onValidate(object)
+          private$validate(object)
         }, error = function(e) {
 
           tryCatch({
             ## cleanup
-            state <- attr(object, "metadata", exact = TRUE)$state
+            state <- attr(object, "..metadata", exact = TRUE)$..state
             private$changeObjectStatus(id, object, state, NULL)
 
             ## try again
             object <- private$createObject()
-            id <- attr(object, "metadata", exact = TRUE)$id
+            id <- attr(object, "..metadata", exact = TRUE)$..id
             private$changeObjectStatus(id, object, "free", "taken")
             onActivate(object)
-            onValidate(object)
+            onValidate(object, self$validateQuery)  ## skip timeout here
           },
           error = function(e) {
             ## cleanup
-            state <- attr(object, "metadata", exact = TRUE)$state
+            state <- attr(object, "..metadata", exact = TRUE)$..state
             private$changeObjectStatus(id, object, state, NULL)
 
             stop("Object does not appear to be valid. ",
@@ -117,14 +122,14 @@ Pool <- R6Class("Pool",
 
     ## passivates the object and returns it back to the pool
     ## (sets up task to destroy the object if the number of
-    ## total objects exceeds the maximum)
+    ## total objects exceeds the minimum)
     release = function(id, object) {
-      metadata <- attr(object, "metadata", exact = TRUE)
-      if (metadata$state == "free") {
-        stop("This object was already returned to the pool")
+      ..metadata <- attr(object, "..metadata", exact = TRUE)
+      if (..metadata$..state == "free") {
+        stop("This object was already returned to the pool.")
       }
-      if (!metadata$valid) {
-        stop(show(object), " is not a valid object")
+      if (is.null(..metadata) || !..metadata$..valid) {
+        stop("Invalid object.")
       }
 
       naiveScheduler$protect({
@@ -142,12 +147,15 @@ Pool <- R6Class("Pool",
                 }
               }
             )
-            attr(object, "metadata")$reapTaskHandle <- taskHandle
+            attr(object, "..metadata")$..reapTaskHandle <- taskHandle
             private$changeObjectStatus(id, object, "taken", "free")
           }
         }, error = function(e) {
+          state <- attr(object, "..metadata", exact = TRUE)$..state
+          private$changeObjectStatus(id, object, state, NULL)
           warning("Object could not be returned back to the pool. ",
-                  "Error message: ", conditionMessage(e))
+                  "It was destroyed instead. Error message: ",
+                  conditionMessage(e))
         })
       })
     },
@@ -158,24 +166,29 @@ Pool <- R6Class("Pool",
     ## immediately destroy them). Objects can no longer be
     ## checked out from the pool.
     close = function() {
-      if (!self$valid) stop("The pool was already closed.")
+      naiveScheduler$protect({
+        if (!self$valid) stop("The pool was already closed.")
 
-      self$valid <- FALSE
-      freeEnv <- private$freeObjects
-      freeObs <- ls(freeEnv)
+        self$valid <- FALSE
+        freeEnv <- private$freeObjects
+        freeObs <- ls(freeEnv)
 
-      ## destroy all free objects
-      for (id in freeObs) {
-        obj <- freeEnv[[id]]
-        private$cancelReapTask(obj)
-        private$changeObjectStatus(id, obj, "free", NULL)
-      }
+        ## destroy all free objects
+        for (id in freeObs) {
+          obj <- freeEnv[[id]]
+          private$cancelReapTask(obj)
+          private$changeObjectStatus(id, obj, "free", NULL)
+        }
 
-      # check if there are taken objects
-      if (self$counters$taken > 0) {
-        warning("You still have checked out objects. Return ",
-                "them to the pool so they can de destroyed.")
-      }
+        # check if there are taken objects
+        if (self$counters$taken > 0) {
+          warning("You still have checked out objects. Return ",
+                  "them to the pool so they can de destroyed. ",
+                  "(If these are leaked objects - no reference ",
+                  "- they will be destroyed the next time the ",
+                  "garbage collector runs).")
+        }
+      })
     }
   ),
   private = list(
@@ -183,6 +196,16 @@ Pool <- R6Class("Pool",
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
+    validateTimer = NULL,
+
+    validate = function(object) {
+      now <- Sys.time()
+      interval <- (now - private$validateTimer) * 1000
+      if (interval >= self$validateTimeout) {
+        onValidate(object, self$validateQuery)
+        private$validateTimer <- now
+      }
+    },
 
     ## creates an object, assigns it to the
     ## free environment and returns it
@@ -195,23 +218,23 @@ Pool <- R6Class("Pool",
       }
 
       ## attach metadata about the object
-      metadata <- new.env(parent = emptyenv())
-      attr(object, "metadata") <- metadata
+      ..metadata <- new.env(parent = emptyenv())
+      attr(object, "..metadata") <- ..metadata
 
       id <- as.character(private$idCounter)
       private$idCounter <- private$idCounter + 1
-      metadata$id <- id
-      metadata$pool <- self
-      metadata$valid <- TRUE
-      metadata$state <- "free"
+      ..metadata$..id <- id
+      ..metadata$..pool <- self
+      ..metadata$..valid <- TRUE
+      ..metadata$..state <- "free"
 
       ## detect leaked connections
-      reg.finalizer(metadata, function(e) {
+      reg.finalizer(..metadata, function(e) {
         naiveScheduler$protect({
-          if (metadata$valid) {
-            warning("You have leaked pooled objects. Closing them.")
+          if (..metadata$..valid) {
+            warning("You have a leaked pooled object. Destroying it.")
             scheduleTask(1, function() {
-              state <- attr(object, "metadata", exact = TRUE)$state
+              state <- attr(object, "..metadata", exact = TRUE)$..state
               private$changeObjectStatus(id, object, state, NULL)
             })
           }
@@ -224,17 +247,18 @@ Pool <- R6Class("Pool",
 
     destroyObject = function(object) {
       tryCatch({
-        metadata <- attr(object, "metadata", exact = TRUE)
-        if (!metadata$valid) {
+        ..metadata <- attr(object, "..metadata", exact = TRUE)
+        if (!..metadata$..valid) {
           warning("Object was destroyed twice.")
           return()
         }
+        ..metadata$..valid <- FALSE
         onDestroy(object)
-        metadata$valid <- FALSE
       }, error = function(e) {
         warning("Object of class ", is(object)[1],
-                " could not be destroyed. Error message: ",
-                conditionMessage(e))
+                " could not be destroyed properly, ",
+                "but was successfully removed from pool. ",
+                "Error message: ", conditionMessage(e))
 
       })
     },
@@ -270,8 +294,8 @@ Pool <- R6Class("Pool",
           assign(id, object, envir = addTo)
         }
         self$counters[[to]] <- self$counters[[to]] + 1
-        metadata <- attr(object, "metadata", exact = TRUE)
-        metadata$state <- to
+        ..metadata <- attr(object, "..metadata", exact = TRUE)
+        ..metadata$..state <- to
       } else {
         ## if `to` == NULL, it means destroy the object
         private$destroyObject(object)
@@ -279,10 +303,10 @@ Pool <- R6Class("Pool",
     },
 
     cancelReapTask = function(object) {
-      metadata <- attr(object, "metadata", exact = TRUE)
-      taskHandle <- metadata$reapTaskHandle
+      ..metadata <- attr(object, "..metadata", exact = TRUE)
+      taskHandle <- ..metadata$..reapTaskHandle
       if (!is.null(taskHandle)) {
-        metadata$reapTaskHandle <- NULL
+        ..metadata$..reapTaskHandle <- NULL
         taskHandle()   ## cancel the previous reap task
       }
     }
@@ -297,10 +321,13 @@ setClass("Pool")
 ## documented manually, with the Pool object
 #' @export
 poolCreate <- function(factory, ...,
-  minSize = 1, maxSize = Inf, idleTimeout = 60000) {
+  minSize = 1, maxSize = Inf,
+  idleTimeout = 60000, validateTimeout = 1000,
+  validateQuery = NULL) {
   pool <- Pool$new(
     function() {factory(...)},
-    minSize, maxSize, idleTimeout
+    minSize, maxSize,
+    idleTimeout, validateTimeout, validateQuery
   )
   ## if a createPool is used with a DBIDriver, make a note
   ## (to ease dplyr compatibility later on)
@@ -344,9 +371,12 @@ setGeneric("poolReturn", function(object) {
 
 #' @export
 setMethod("poolReturn", "ANY", function(object) {
-  metadata <- attr(object, "metadata", exact = TRUE)
-  id <- metadata$id
-  pool <- metadata$pool
+  ..metadata <- attr(object, "..metadata", exact = TRUE)
+  if (is.null(..metadata) || !..metadata$..valid) {
+    stop("Invalid object.")
+  }
+  id <- ..metadata$..id
+  pool <- ..metadata$..pool
   pool$release(id, object)
 })
 
