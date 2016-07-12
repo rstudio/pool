@@ -54,7 +54,7 @@ NULL
 #'
 #' poolClose(pool)
 #' }
-dbPool <- function(drv, ...) {
+dbPool <- function(drv, ..., validateQuery = NULL) {
   if (is.character(drv)) {
     if (drv == "SQLite") {
       if (!requireNamespace("RSQLite", quietly = TRUE)) {
@@ -75,7 +75,9 @@ dbPool <- function(drv, ...) {
       drv = RPostgreSQL::PostgreSQL()
     }
   }
-  poolCreate(dbConnect, drv, ...)
+  stateEnv <- new.env(parent = emptyenv())
+  stateEnv$validateQuery <- validateQuery
+  poolCreate(dbConnect, drv, ..., stateEnv = stateEnv)
 }
 
 #' Wrap DBI Database Connection Pool for dplyr use.

@@ -47,27 +47,22 @@ setMethod("onDestroy", "DBIConnection", function(object) {
 
 #' @export
 #' @rdname object
-setMethod("onValidate", "DBIConnection", function(object, query) {
-  errorMessage <- ""
+setMethod("onValidate", "DBIConnection", function(object) {
+  pool <- attr(object, "..metadata", exact = TRUE)$..pool
+  query <- pool$stateEnv$validateQuery
 
   if (!is.null(query)) {
-    tryCatch({
+    error <- try({
       dbGetQuery(object, query)
       return()
-    }, error = function(e) {
-      errorMessage <<- conditionMessage(e)
-    })
+    }, silent = TRUE)
   } else {
-    pool <- attr(object, "..metadata", exact = TRUE)$..pool
 
     ## options mostly gathered from here:
     ## http://stackoverflow.com/a/3670000/6174455
     options <- c(
       "SELECT 1",
       "SELECT 1 FROM DUAL",
-      ## excluded because it would require another query to
-      ## check the existing tables (expensive)
-      ## "SELECT 1 FROM any_existing_table WHERE 1=0",
       "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS",
       "SELECT * FROM INFORMATION_SCHEMA.TABLES",
       "VALUES 1",
@@ -76,15 +71,15 @@ setMethod("onValidate", "DBIConnection", function(object, query) {
     )
 
     for (opt in options) {
-      tryCatch({
+      error <- try({
         dbGetQuery(object, opt)
-        pool$validateQuery <- opt
+        pool$state$validateQuery <- opt
         return()
-      }, error = function(e) {
-        errorMessage <<- conditionMessage(e)
-      })
+      }, silent = TRUE)
     }
   }
-  stop(paste("Validation not successful --", errorMessage),
-       call. = FALSE)
+  stop(simpleError(
+    paste("Validation not successful --", conditionMessage(error)),
+    conditionCall(error)
+  ))
 })

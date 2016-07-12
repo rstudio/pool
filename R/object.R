@@ -1,4 +1,4 @@
-#' @include pool.R
+#' @include pool-methods.R
 NULL
 
 #' Pooled object methods.

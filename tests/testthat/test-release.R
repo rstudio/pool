@@ -24,13 +24,13 @@ describe("release", {
 
   it("warns if onPassivate fails", {
     checkCounts(pool, free = 1, taken = 0)
-    failOnPassivate <<- TRUE
     obj <- poolCheckout(pool)
+    failOnPassivate <<- TRUE
     expect_warning(poolReturn(obj),
       "Object could not be returned back to the pool. ",
       "It was destroyed instead.")
-    checkCounts(pool, free = 0, taken = 0)
     failOnPassivate <<- FALSE
+    checkCounts(pool, free = 0, taken = 0)
   })
 
   it("is allowed after the pool is closed", {

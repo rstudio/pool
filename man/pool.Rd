@@ -8,7 +8,7 @@
 \usage{
 poolCreate(factory, ..., minSize = 1, maxSize = Inf,
   idleTimeout = 60000, validateTimeout = 1000,
-  validateQuery = NULL)
+  state = NULL)
 
 poolClose(pool)
 }
@@ -43,9 +43,8 @@ checked out object, there can be substantial perfomance gains
 (especially if the interval between checking out new objects is
 very small).}
 
-\item{validateQuery}{A simple query that can be used to verify
-that an object checked out from the \code{pool} functions as
-expected.}
+\item{state}{A \code{pool} public variable to be used by
+backend authors as necessary.}
 
 \item{pool}{A Pool object previsouly created with
 \code{poolCreate}.}

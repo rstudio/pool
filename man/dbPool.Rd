@@ -4,7 +4,7 @@
 \alias{dbPool}
 \title{Create a DBI Database Connection Pool.}
 \usage{
-dbPool(drv, ...)
+dbPool(drv, ..., validateQuery = NULL)
 }
 \arguments{
 \item{drv}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},

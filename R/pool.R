@@ -1,4 +1,3 @@
-#' @include utils.R
 #' @include scheduler.R
 NULL
 
@@ -26,12 +25,12 @@ Pool <- R6Class("Pool",
     maxSize = NULL,
     idleTimeout = NULL,
     validateTimeout = NULL,
-    validateQuery = NULL,
+    stateEnv = NULL,
 
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
                           idleTimeout, validateTimeout,
-                          validateQuery) {
+                          stateEnv) {
       self$valid <- TRUE
 
       self$counters <- new.env(parent = emptyenv())
@@ -44,8 +43,9 @@ Pool <- R6Class("Pool",
       self$maxSize <- maxSize
       self$idleTimeout <- idleTimeout
       self$validateTimeout <- validateTimeout
-      self$validateQuery <- validateQuery
-      private$validateTimer <- Sys.time()
+      self$stateEnv <- stateEnv
+
+      private$scheduler <- Scheduler$new()
 
       private$freeObjects <- new.env(parent = emptyenv())
 
@@ -67,7 +67,7 @@ Pool <- R6Class("Pool",
       if (!self$valid) {
         stop("This pool is no longer valid. Cannot fetch new objects.")
       }
-      naiveScheduler$protect({
+      private$scheduler$naiveScheduler$protect({
         if (self$counters$free + self$counters$taken >= self$maxSize) {
           stop("Maximum number of objects in pool has been reached")
         }
@@ -86,36 +86,24 @@ Pool <- R6Class("Pool",
           id <- attr(object, "..metadata", exact = TRUE)$..id
         }
 
-        private$changeObjectStatus(id, object, "free", "taken")
+        ..metadata <- attr(object, "..metadata", exact = TRUE)
 
-        ## activate and validate
-        tryCatch({
-          onActivate(object)
-          private$validate(object)
-        }, error = function(e) {
-
-          tryCatch({
-            ## cleanup
-            state <- attr(object, "..metadata", exact = TRUE)$..state
-            private$changeObjectStatus(id, object, state, NULL)
-
-            ## try again
-            object <- private$createObject()
-            id <- attr(object, "..metadata", exact = TRUE)$..id
-            private$changeObjectStatus(id, object, "free", "taken")
-            onActivate(object)
-            onValidate(object, self$validateQuery)  ## skip timeout here
-          },
-          error = function(e) {
-            ## cleanup
-            state <- attr(object, "..metadata", exact = TRUE)$..state
-            private$changeObjectStatus(id, object, state, NULL)
-
-            stop("Object does not appear to be valid. ",
-                 "Error message: ", conditionMessage(e),
-                 call. = FALSE)
-          })
+        private$scheduler$naiveScheduler$protect({
+          if (is.null(..metadata$..stopValHandle)) {
+            private$checkValid(object)
+            stopValHandle <- private$scheduler$scheduleRecurringTask(
+              self$validateTimeout, function() {
+                if (..metadata$..valid) {
+                  private$checkValid(object)
+                  message("validated")
+                }
+              }
+            )
+            ..metadata$..stopValHandle <- stopValHandle
+          }
         })
+
+        private$changeObjectStatus(id, object, "free", "taken")
         return(object)
       })
     },
@@ -132,7 +120,7 @@ Pool <- R6Class("Pool",
         stop("Invalid object.")
       }
 
-      naiveScheduler$protect({
+      private$scheduler$naiveScheduler$protect({
         tryCatch({
           onPassivate(object)
 
@@ -140,7 +128,7 @@ Pool <- R6Class("Pool",
           if (!self$valid) {
             private$changeObjectStatus(id, object, "taken", NULL)
           } else {
-            taskHandle <- scheduleTask(
+            taskHandle <- private$scheduler$scheduleTask(
               self$idleTimeout, function() {
                 if (self$counters$free + self$counters$taken > self$minSize) {
                   private$changeObjectStatus(id, object, "free", NULL)
@@ -166,7 +154,7 @@ Pool <- R6Class("Pool",
     ## immediately destroy them). Objects can no longer be
     ## checked out from the pool.
     close = function() {
-      naiveScheduler$protect({
+      private$scheduler$naiveScheduler$protect({
         if (!self$valid) stop("The pool was already closed.")
 
         self$valid <- FALSE
@@ -189,23 +177,21 @@ Pool <- R6Class("Pool",
                   "garbage collector runs).")
         }
       })
+    },
+
+    ## if you need to access the pool's scheduler (should
+    ## usually be reserved for testing and debugging)
+    getScheduler = function() {
+      private$scheduler
     }
   ),
+
   private = list(
 
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
-    validateTimer = NULL,
-
-    validate = function(object) {
-      now <- Sys.time()
-      interval <- (now - private$validateTimer) * 1000
-      if (interval >= self$validateTimeout) {
-        onValidate(object, self$validateQuery)
-        private$validateTimer <- now
-      }
-    },
+    scheduler = NULL,
 
     ## creates an object, assigns it to the
     ## free environment and returns it
@@ -227,13 +213,14 @@ Pool <- R6Class("Pool",
       ..metadata$..pool <- self
       ..metadata$..valid <- TRUE
       ..metadata$..state <- "free"
+      ..metadata$..lastValidated <- NULL
 
       ## detect leaked connections
       reg.finalizer(..metadata, function(e) {
-        naiveScheduler$protect({
+        private$scheduler$naiveScheduler$protect({
           if (..metadata$..valid) {
             warning("You have a leaked pooled object. Destroying it.")
-            scheduleTask(1, function() {
+            private$scheduler$scheduleTask(1, function() {
               state <- attr(object, "..metadata", exact = TRUE)$..state
               private$changeObjectStatus(id, object, state, NULL)
             })
@@ -253,6 +240,10 @@ Pool <- R6Class("Pool",
           return()
         }
         ..metadata$..valid <- FALSE
+        if (!is.null(..metadata$..stopValHandle)) {
+          ..metadata$..stopValHandle()
+          ..metadata$..stopValHandle <- NULL
+        }
         onDestroy(object)
       }, error = function(e) {
         warning("Object of class ", is(object)[1],
@@ -309,94 +300,57 @@ Pool <- R6Class("Pool",
         ..metadata$..reapTaskHandle <- NULL
         taskHandle()   ## cancel the previous reap task
       }
+    },
+
+    checkValidTemplate = function(object, errorFun) {
+      tryCatch({
+        onActivate(object)
+        private$validate(object)
+
+      }, error = function(e) {
+
+        ## cleanup
+        ..metadata <- attr(object, "..metadata", exact = TRUE)
+        id <- ..metadata$..id
+        state <- ..metadata$..state
+        private$changeObjectStatus(id, object, state, NULL)
+
+        errorFun(e)
+      })
+    },
+
+    checkValid = function(object) {
+      private$checkValidTemplate(object, function(e) {
+
+        warning("It wasn't possible to activate and/or validate ",
+                "the object. Trying again with a new object.")
+        object <- private$createObject()
+        id <- attr(object, "..metadata", exact = TRUE)$..id
+        private$changeObjectStatus(id, object, "free", "taken")
+
+        private$checkValidTemplate(object, function(e) {
+          stop("Object does not appear to be valid. ",
+               "Error message: ", conditionMessage(e),
+               call. = FALSE)
+        })
+      })
+      ## if we got here, the object was successfully
+      ## activated/validated; now needs to be passivated
+      onPassivate(object)
+    },
+
+    validate = function(object) {
+      ..metadata <- attr(object, "..metadata", exact = TRUE)
+      lastValidated <- ..metadata$..lastValidated
+      if (is.null(lastValidated)) {
+        lastValidated <- Sys.time() - self$validateTimeout - 1
+      }
+      interval <- (Sys.time() - lastValidated) * 1000
+
+      if (interval >= self$validateTimeout) {
+        onValidate(object)
+        ..metadata$..lastValidated <- Sys.time()
+      }
     }
   )
 )
-
-
-#' S4 class for compatibility with DBI methods
-#' @export
-setClass("Pool")
-
-## documented manually, with the Pool object
-#' @export
-poolCreate <- function(factory, ...,
-  minSize = 1, maxSize = Inf,
-  idleTimeout = 60000, validateTimeout = 1000,
-  validateQuery = NULL) {
-  pool <- Pool$new(
-    function() {factory(...)},
-    minSize, maxSize,
-    idleTimeout, validateTimeout, validateQuery
-  )
-  ## if a createPool is used with a DBIDriver, make a note
-  ## (to ease dplyr compatibility later on)
-  checkDriver(pool, ...)
-  pool
-}
-
-#' Checks out an object from the pool.
-#'
-#' Should be called by the end user if they need a persistent
-#' object, that is not returned to the pool automatically.
-#' When you don't longer need the object, be sure to return it
-#' to the pool using \code{poolReturn(object)}.
-#'
-#' @param pool The pool to get the object from.
-#'
-#' @aliases poolCheckout,Pool-method
-#' @export
-setGeneric("poolCheckout", function(pool) {
-  standardGeneric("poolCheckout")
-})
-
-#' @export
-setMethod("poolCheckout", "Pool", function(pool) {
-  pool$fetch()
-})
-
-#' Returns an object back to the pool.
-#'
-#' Should be called by the end user if they previously fetched
-#' an object directly using \code{object <- poolCheckout(pool)}
-#' and are now done with said object.
-#'
-#' @param object A pooled object.
-#'
-#' @aliases poolReturn,ANY-method
-#' @export
-setGeneric("poolReturn", function(object) {
-  standardGeneric("poolReturn")
-})
-
-#' @export
-setMethod("poolReturn", "ANY", function(object) {
-  ..metadata <- attr(object, "..metadata", exact = TRUE)
-  if (is.null(..metadata) || !..metadata$..valid) {
-    stop("Invalid object.")
-  }
-  id <- ..metadata$..id
-  pool <- ..metadata$..pool
-  pool$release(id, object)
-})
-
-## documented manually, with the Pool object
-#' @export
-setGeneric("poolClose", function(pool) {
-  standardGeneric("poolClose")
-})
-
-#' @export
-setMethod("poolClose", "Pool", function(pool) {
-  pool$close()
-})
-
-#' Show method
-#' @param object A Pool object.
-#' @export
-setMethod("show", "Pool", function(object) {
-  pooledObj <- poolCheckout(object)
-  on.exit(poolReturn(pooledObj))
-  cat("<Pool>\n", "  pooled object class: ",
-      is(pooledObj)[1], sep = "")
-})

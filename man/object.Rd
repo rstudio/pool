@@ -28,7 +28,7 @@ onValidate(object, query)
 
 \S4method{onDestroy}{DBIConnection}(object)
 
-\S4method{onValidate}{DBIConnection}(object, query)
+\S4method{onValidate}{DBIConnection}(object)
 }
 \arguments{
 \item{object}{A pooled object.}
