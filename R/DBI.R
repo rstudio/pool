@@ -171,7 +171,17 @@ src_pool <- function(pool) {
     stop("dplyr package required", call. = FALSE)
   }
   drv <- attr(pool, "drv", exact = TRUE)
-  conn <- poolCheckout(pool)
-  info <- dbGetInfo(conn)
-  dplyr::src_sql(drv, conn, info = info, disco = NULL)
+  info <- dbGetInfo(pool)
+
+  dplyr::src_sql(c("pool", drv), pool, info = info, disco = NULL)
+}
+
+#' @export
+con_acquire.src_pool <- function(src) {
+  poolCheckout(src$obj)
+}
+
+#' @export
+con_release.src_pool <- function(src, con) {
+  poolReturn(con)
 }
