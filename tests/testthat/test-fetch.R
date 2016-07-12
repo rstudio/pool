@@ -34,9 +34,7 @@ describe("fetch", {
   })
 
   it("only validates after validateTimeout", {
-    scheduler <- pool$getScheduler()
-
-    scheduler$naiveScheduler$protect({
+    naiveScheduler$protect({
       obj <- poolCheckout(pool)
       t0 <- Sys.time()
       ..metadata <- attr(obj, "..metadata", exact = TRUE)

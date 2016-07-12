@@ -75,54 +75,31 @@ RefCount <- R6Class("RefCount",
 )
 
 
-Scheduler <- R6Class("Scheduler",
-  public = list(
-    naiveScheduler = NULL,
+# "pool.scheduler" should be a function that attempts to
+# run the given callback at, preferably, the given number
+# of millis in the future. The return value should be a
+# function that cancels the task.
+scheduleTask = function(millis, callback) {
+  scheduler <- getOption("pool.scheduler", NULL)
+  if (is.null(scheduler)) {
+    scheduler <- naiveScheduler$schedule
+  }
+  scheduler(millis, callback)
+}
 
-    initialize = function() {
-      self$naiveScheduler <- NaiveScheduler$new()
-      private$allowRecurring <- FALSE
-    },
+scheduleTaskRecurring <- function(millis, callback) {
+  cancelled <- FALSE
+  callback2 <- function() {
+    callback()
+    if (!cancelled)
+      handle <<- scheduleTask(millis, callback2)
+  }
+  handle <- scheduleTask(millis, callback2)
 
-    scheduleTask = function(millis, callback) {
-      scheduler <- private$getScheduler()
-      scheduler(millis, callback)
-    },
+  function() {
+    cancelled <<- TRUE
+    handle()
+  }
+}
 
-    scheduleRecurringTask = function(millis, callback) {
-      ## to set private$allowRecurring
-      private$getScheduler()
-      if (private$allowRecurring) {
-        self$scheduleTask(millis, callback)
-        return(self$reschedule(millis, callback))
-      } else {
-        NULL
-      }
-    },
-
-    reschedule = function(millis, callback) {
-      self$scheduleTask(millis, function() {
-        return(self$scheduleRecurringTask(millis, callback))
-      })
-    }
-  ),
-  private = list(
-    allowRecurring = NULL,
-
-    # "pool.scheduler" should be a function that attempts to
-    # run the given callback at, preferably, the given number
-    # of millis in the future. The return value should be a
-    # function that cancels the task.
-    getScheduler = function() {
-      scheduler <- getOption("pool.scheduler", NULL)
-      if (is.null(scheduler)) {
-        scheduler <- self$naiveScheduler$schedule
-        private$allowRecurring <- FALSE
-      } else {
-        private$allowRecurring <- TRUE
-      }
-      scheduler
-    }
-  )
-)
-
+naiveScheduler <- NaiveScheduler$new()

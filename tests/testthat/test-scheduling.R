@@ -5,20 +5,19 @@ context("Pool scheduling")
 describe("pool scheduler", {
 
   it("schedules things in the right order", {
-    scheduler <- Scheduler$new()
     results <- integer()
 
     # naiveScheduler$protect is necessary here in order
     # to make sure all the scheduled tasks are executed
     # at the end of the test, not immediately.
-    scheduler$naiveScheduler$protect({
-      scheduler$scheduleTask(1000, function() {
+    naiveScheduler$protect({
+      scheduleTask(1000, function() {
         results <<- c(results, 3L)
       })
-      scheduler$scheduleTask(100, function() {
+      scheduleTask(100, function() {
         results <<- c(results, 2L)
       })
-      scheduler$scheduleTask(10, function() {
+      scheduleTask(10, function() {
         results <<- c(results, 1L)
       })
     })
@@ -29,10 +28,8 @@ describe("pool scheduler", {
     closed = FALSE, valid = TRUE,
     minSize = 2, maxSize = 10, idleTimeout = 10000)
 
-  scheduler <- pool$getScheduler()
-
   it("works with pool", {
-    scheduler$naiveScheduler$protect({
+    naiveScheduler$protect({
       checkCounts(pool, free = 2, taken = 0)
 
       a <- poolCheckout(pool)
@@ -48,10 +45,10 @@ describe("pool scheduler", {
 
       checkCounts(pool, free = 1, taken = 2)
 
-      scheduler$scheduleTask(9000, function() {
+      scheduleTask(9000, function() {
         checkCounts(pool, free = 1, taken = 2)
       })
-      scheduler$scheduleTask(11000, function() {
+      scheduleTask(11000, function() {
         checkCounts(pool, free = 0, taken = 2)
       })
     })

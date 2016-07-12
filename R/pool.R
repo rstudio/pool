@@ -45,8 +45,6 @@ Pool <- R6Class("Pool",
       self$validateTimeout <- validateTimeout
       self$stateEnv <- stateEnv
 
-      private$scheduler <- Scheduler$new()
-
       private$freeObjects <- new.env(parent = emptyenv())
 
       for (i in seq_len(self$minSize)) {
@@ -67,7 +65,7 @@ Pool <- R6Class("Pool",
       if (!self$valid) {
         stop("This pool is no longer valid. Cannot fetch new objects.")
       }
-      private$scheduler$naiveScheduler$protect({
+      naiveScheduler$protect({
         if (self$counters$free + self$counters$taken >= self$maxSize) {
           stop("Maximum number of objects in pool has been reached")
         }
@@ -88,18 +86,12 @@ Pool <- R6Class("Pool",
 
         ..metadata <- attr(object, "..metadata", exact = TRUE)
 
-        private$scheduler$naiveScheduler$protect({
-          if (is.null(..metadata$..stopValHandle)) {
-            private$checkValid(object)
-            ..metadata$..stopValHandle <- private$scheduler$scheduleRecurringTask(
-              self$validateTimeout, function() {
-                if (..metadata$..valid) {
-                  private$checkValid(object)
-                  message("validated")
-                }
-              }
-            )
+        naiveScheduler$protect({
+          ## stop recurring validation
+          if (!is.null(..metadata$..stopValHandle)) {
+            ..metadata$..stopValHandle()
           }
+          private$checkValid(object)
         })
 
         private$changeObjectStatus(id, object, "free", "taken")
@@ -118,25 +110,26 @@ Pool <- R6Class("Pool",
       if (is.null(..metadata) || !..metadata$..valid) {
         stop("Invalid object.")
       }
+      ## immediately destroy object if pool has already been closed
+      if (!self$valid) {
+        private$changeObjectStatus(id, object, "taken", NULL)
+        return()
+      }
 
-      private$scheduler$naiveScheduler$protect({
+      naiveScheduler$protect({
         tryCatch({
           onPassivate(object)
 
-          ## immediately destroy object if pool has already been closed
-          if (!self$valid) {
-            private$changeObjectStatus(id, object, "taken", NULL)
-          } else {
-            taskHandle <- private$scheduler$scheduleTask(
-              self$idleTimeout, function() {
-                if (self$counters$free + self$counters$taken > self$minSize) {
-                  private$changeObjectStatus(id, object, "free", NULL)
-                }
+          taskHandle <- scheduleTask(
+            self$idleTimeout, function() {
+              if (self$counters$free + self$counters$taken > self$minSize) {
+                private$changeObjectStatus(id, object, "free", NULL)
               }
-            )
-            attr(object, "..metadata")$..reapTaskHandle <- taskHandle
-            private$changeObjectStatus(id, object, "taken", "free")
-          }
+            }
+          )
+          attr(object, "..metadata")$..reapTaskHandle <- taskHandle
+          private$changeObjectStatus(id, object, "taken", "free")
+
         }, error = function(e) {
           state <- attr(object, "..metadata", exact = TRUE)$..state
           private$changeObjectStatus(id, object, state, NULL)
@@ -144,6 +137,16 @@ Pool <- R6Class("Pool",
                   "It was destroyed instead. Error message: ",
                   conditionMessage(e))
         })
+
+        ## only run this when we have a proper scheduler
+        if (!(is.null(getOption("pool.scheduler", NULL)))) {
+          ..metadata <- attr(object, "..metadata", exact = TRUE)
+          ..metadata$..stopValHandle <-
+            scheduleTaskRecurring(self$validateTimeout, function() {
+              private$checkValid(object)
+              message("validated")
+            })
+        }
       })
     },
 
@@ -153,7 +156,7 @@ Pool <- R6Class("Pool",
     ## immediately destroy them). Objects can no longer be
     ## checked out from the pool.
     close = function() {
-      private$scheduler$naiveScheduler$protect({
+      naiveScheduler$protect({
         if (!self$valid) stop("The pool was already closed.")
 
         self$valid <- FALSE
@@ -176,12 +179,6 @@ Pool <- R6Class("Pool",
                   "garbage collector runs).")
         }
       })
-    },
-
-    ## if you need to access the pool's scheduler (should
-    ## usually be reserved for testing and debugging)
-    getScheduler = function() {
-      private$scheduler
     }
   ),
 
@@ -190,7 +187,6 @@ Pool <- R6Class("Pool",
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
-    scheduler = NULL,
 
     ## creates an object, assigns it to the
     ## free environment and returns it
@@ -216,10 +212,10 @@ Pool <- R6Class("Pool",
 
       ## detect leaked connections
       reg.finalizer(..metadata, function(e) {
-        private$scheduler$naiveScheduler$protect({
+        naiveScheduler$protect({
           if (..metadata$..valid) {
             warning("You have a leaked pooled object. Destroying it.")
-            private$scheduler$scheduleTask(1, function() {
+            scheduleTask(1, function() {
               state <- attr(object, "..metadata", exact = TRUE)$..state
               private$changeObjectStatus(id, object, state, NULL)
               message("leaked")
@@ -242,7 +238,6 @@ Pool <- R6Class("Pool",
         ..metadata$..valid <- FALSE
         if (!is.null(..metadata$..stopValHandle)) {
           ..metadata$..stopValHandle()
-          ..metadata$..stopValHandle <- NULL
         }
         onDestroy(object)
       }, error = function(e) {
