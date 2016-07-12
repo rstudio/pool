@@ -28,10 +28,16 @@ NULL
 #'   \item Optionally, override the \code{poolCreate} defaults:
 #'   \code{minSize} (minimum number of connections that the pool should
 #'   have at all times), \code{maxSize} (maximum number of connections
-#'   that the pool may have at any time) and \code{idleTimeout} (number
+#'   that the pool may have at any time), \code{idleTimeout} (number
 #'   of milliseconds to wait before closing a connection, if the number
-#'   of connection is above \code{minSize}).
+#'   of connection is above \code{minSize}), and \code{validateTimeout}
+#'   (number of milliseconds to wait before validating the connection
+#'   again).
 #' }
+#' @param validateQuery The query to run to verify that the connection
+#' is valid (it should be as simple as possible). If this is not
+#' provided, \code{dbPool} will try a few possibilities, but these are
+#' not exhaustive.
 #'
 #' @export
 #' @examples

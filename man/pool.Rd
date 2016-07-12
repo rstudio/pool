@@ -7,8 +7,8 @@
 \title{Pool Class.}
 \usage{
 poolCreate(factory, ..., minSize = 1, maxSize = Inf,
-  idleTimeout = 60000, validateTimeout = 1000,
-  state = NULL)
+  idleTimeout = 60000, validateTimeout = 2000,
+  stateEnv = NULL)
 
 poolClose(pool)
 }
@@ -43,7 +43,7 @@ checked out object, there can be substantial perfomance gains
 (especially if the interval between checking out new objects is
 very small).}
 
-\item{state}{A \code{pool} public variable to be used by
+\item{stateEnv}{A \code{pool} public variable to be used by
 backend authors as necessary.}
 
 \item{pool}{A Pool object previsouly created with

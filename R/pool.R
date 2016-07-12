@@ -91,7 +91,7 @@ Pool <- R6Class("Pool",
         private$scheduler$naiveScheduler$protect({
           if (is.null(..metadata$..stopValHandle)) {
             private$checkValid(object)
-            stopValHandle <- private$scheduler$scheduleRecurringTask(
+            ..metadata$..stopValHandle <- private$scheduler$scheduleRecurringTask(
               self$validateTimeout, function() {
                 if (..metadata$..valid) {
                   private$checkValid(object)
@@ -99,7 +99,6 @@ Pool <- R6Class("Pool",
                 }
               }
             )
-            ..metadata$..stopValHandle <- stopValHandle
           }
         })
 
@@ -223,6 +222,7 @@ Pool <- R6Class("Pool",
             private$scheduler$scheduleTask(1, function() {
               state <- attr(object, "..metadata", exact = TRUE)$..state
               private$changeObjectStatus(id, object, state, NULL)
+              message("leaked")
             })
           }
         })

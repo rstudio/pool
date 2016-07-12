@@ -94,7 +94,7 @@ Scheduler <- R6Class("Scheduler",
       private$getScheduler()
       if (private$allowRecurring) {
         self$scheduleTask(millis, callback)
-        self$reschedule(millis, callback)
+        return(self$reschedule(millis, callback))
       } else {
         NULL
       }
@@ -102,7 +102,7 @@ Scheduler <- R6Class("Scheduler",
 
     reschedule = function(millis, callback) {
       self$scheduleTask(millis, function() {
-        self$scheduleRecurringTask(millis, callback)
+        return(self$scheduleRecurringTask(millis, callback))
       })
     }
   ),
