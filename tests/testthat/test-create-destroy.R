@@ -36,7 +36,7 @@ describe("destroyObject", {
     checkCounts(pool, free = 0, taken = 1)
     failOnDestroy <<- FALSE
 
-    ## cleanup: and return `a`
+    ## cleanup: return `a`
     poolReturn(a)
     checkCounts(pool, free = 1, taken = 0)
   })

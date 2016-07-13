@@ -41,6 +41,7 @@ Pool <- R6Class("Pool",
       private$factory <- factory
       self$minSize <- minSize
       self$maxSize <- maxSize
+
       self$idleTimeout <- idleTimeout
       self$validateTimeout <- validateTimeout
       self$stateEnv <- stateEnv
@@ -85,13 +86,12 @@ Pool <- R6Class("Pool",
         }
 
         ..metadata <- attr(object, "..metadata", exact = TRUE)
-
         naiveScheduler$protect({
           ## stop recurring validation
           if (!is.null(..metadata$..stopValHandle)) {
             ..metadata$..stopValHandle()
           }
-          private$checkValid(object)
+          private$checkValid(object) ## calls onActivate and onValidate
         })
 
         private$changeObjectStatus(id, object, "free", "taken")
@@ -117,34 +117,41 @@ Pool <- R6Class("Pool",
       }
 
       naiveScheduler$protect({
+        ## passivate object (or if that fails, destroy it and throw)
         tryCatch({
           onPassivate(object)
-
-          taskHandle <- scheduleTask(
-            self$idleTimeout, function() {
-              if (self$counters$free + self$counters$taken > self$minSize) {
-                private$changeObjectStatus(id, object, "free", NULL)
-              }
-            }
-          )
-          attr(object, "..metadata")$..reapTaskHandle <- taskHandle
-          private$changeObjectStatus(id, object, "taken", "free")
-
         }, error = function(e) {
           state <- attr(object, "..metadata", exact = TRUE)$..state
           private$changeObjectStatus(id, object, state, NULL)
-          warning("Object could not be returned back to the pool. ",
-                  "It was destroyed instead. Error message: ",
-                  conditionMessage(e))
+          stop("Object could not be returned back to the pool. ",
+               "It was destroyed instead. Error message: ",
+               conditionMessage(e))
         })
 
-        ## only run this when we have a proper scheduler
+        ## set up a task to destroy the object after `idleTimeout`
+        ## millis, if we're over the minimum number of objects
+        taskHandle <- scheduleTask(
+          self$idleTimeout, function() {
+            if (self$counters$free + self$counters$taken > self$minSize) {
+              private$changeObjectStatus(id, object, "free", NULL)
+            }
+          }
+        )
+        attr(object, "..metadata")$..reapTaskHandle <- taskHandle
+
+        private$changeObjectStatus(id, object, "taken", "free")
+
+        ## set up recurring validation every `validateTimeout` millis
+        ## so we can catch if an idle connection gets broken somehow
+        ## (but only if we have a proper scheduler)
         if (!(is.null(getOption("pool.scheduler", NULL)))) {
           ..metadata <- attr(object, "..metadata", exact = TRUE)
           ..metadata$..stopValHandle <-
             scheduleTaskRecurring(self$validateTimeout, function() {
               private$checkValid(object)
-              message("validated")
+              ## if we got here, the object was successfully
+              ## activated and validated; now needs to be passivated
+              onPassivate(object)
             })
         }
       })
@@ -176,7 +183,7 @@ Pool <- R6Class("Pool",
                   "them to the pool so they can de destroyed. ",
                   "(If these are leaked objects - no reference ",
                   "- they will be destroyed the next time the ",
-                  "garbage collector runs).")
+                  "garbage collector runs).", call. = FALSE)
         }
       })
     }
@@ -210,7 +217,7 @@ Pool <- R6Class("Pool",
       ..metadata$..state <- "free"
       ..metadata$..lastValidated <- NULL
 
-      ## detect leaked connections
+      ## detect leaked connections and destroy them
       reg.finalizer(..metadata, function(e) {
         naiveScheduler$protect({
           if (..metadata$..valid) {
@@ -218,7 +225,6 @@ Pool <- R6Class("Pool",
             scheduleTask(1, function() {
               state <- attr(object, "..metadata", exact = TRUE)$..state
               private$changeObjectStatus(id, object, state, NULL)
-              message("leaked")
             })
           }
         })
@@ -228,6 +234,7 @@ Pool <- R6Class("Pool",
       return(object)
     },
 
+    ## tries to run onDestroy
     destroyObject = function(object) {
       tryCatch({
         ..metadata <- attr(object, "..metadata", exact = TRUE)
@@ -236,6 +243,7 @@ Pool <- R6Class("Pool",
           return()
         }
         ..metadata$..valid <- FALSE
+        ## stop recurring validation if it was going on
         if (!is.null(..metadata$..stopValHandle)) {
           ..metadata$..stopValHandle()
         }
@@ -288,6 +296,8 @@ Pool <- R6Class("Pool",
       }
     },
 
+    ## this is called if the object is fetched before the
+    ## `idleTimeout` has passed and the reap task executed
     cancelReapTask = function(object) {
       ..metadata <- attr(object, "..metadata", exact = TRUE)
       taskHandle <- ..metadata$..reapTaskHandle
@@ -297,14 +307,15 @@ Pool <- R6Class("Pool",
       }
     },
 
+    ## try to validate + activate an object; if that fails,
+    ## destroy the object and run whatever more cleanup is
+    ## necessary (provided through `errorFun`)
     checkValidTemplate = function(object, errorFun) {
       tryCatch({
         onActivate(object)
         private$validate(object)
 
       }, error = function(e) {
-
-        ## cleanup
         ..metadata <- attr(object, "..metadata", exact = TRUE)
         id <- ..metadata$..id
         state <- ..metadata$..state
@@ -314,11 +325,15 @@ Pool <- R6Class("Pool",
       })
     },
 
+    ## tries to validate + activate the object; if that fails,
+    ## the first time around, warn, destroy that object and try
+    ## again with a new object; if it still fails, throw
     checkValid = function(object) {
       private$checkValidTemplate(object, function(e) {
 
         warning("It wasn't possible to activate and/or validate ",
-                "the object. Trying again with a new object.")
+                "the object. Trying again with a new object.",
+                call. = FALSE)
         object <- private$createObject()
         id <- attr(object, "..metadata", exact = TRUE)$..id
         private$changeObjectStatus(id, object, "free", "taken")
@@ -329,19 +344,20 @@ Pool <- R6Class("Pool",
                call. = FALSE)
         })
       })
-      ## if we got here, the object was successfully
-      ## activated/validated; now needs to be passivated
-      onPassivate(object)
     },
 
+    ## run onValidate on the object only if over `validateTimeout`
+    ## millis have passed since the last validation (this allows
+    ## us some performance gains)
     validate = function(object) {
       ..metadata <- attr(object, "..metadata", exact = TRUE)
       lastValidated <- ..metadata$..lastValidated
+      ## if the object has never been validated, set `lastValidated`
+      ## to guarantee that it will be validated now
       if (is.null(lastValidated)) {
         lastValidated <- Sys.time() - self$validateTimeout - 1
       }
       interval <- (Sys.time() - lastValidated) * 1000
-
       if (interval >= self$validateTimeout) {
         onValidate(object)
         ..metadata$..lastValidated <- Sys.time()

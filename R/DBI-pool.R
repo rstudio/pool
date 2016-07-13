@@ -73,13 +73,14 @@ setMethod("onValidate", "DBIConnection", function(object) {
     for (opt in options) {
       error <- try({
         dbGetQuery(object, opt)
-        pool$state$validateQuery <- opt
+        pool$stateEnv$validateQuery <- opt
         return()
       }, silent = TRUE)
     }
   }
+  cond <- attr(error, "condition", exact = TRUE)
   stop(simpleError(
-    paste("Validation not successful --", conditionMessage(error)),
-    conditionCall(error)
+    paste("Validation not successful --", conditionMessage(cond)),
+    conditionCall(cond)
   ))
 })
