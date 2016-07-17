@@ -25,7 +25,6 @@ describe("pool scheduler", {
   })
 
   pool <- poolCreate(MockPooledObj$new,
-    closed = FALSE, valid = TRUE,
     minSize = 2, maxSize = 10, idleTimeout = 10000)
 
   it("works with pool", {

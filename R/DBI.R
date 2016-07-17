@@ -30,7 +30,7 @@ NULL
 #'   have at all times), \code{maxSize} (maximum number of connections
 #'   that the pool may have at any time), \code{idleTimeout} (number
 #'   of milliseconds to wait before closing a connection, if the number
-#'   of connection is above \code{minSize}), and \code{validateTimeout}
+#'   of connection is above \code{minSize}), and \code{validationInterval}
 #'   (number of milliseconds to wait before validating the connection
 #'   again).
 #' }
@@ -81,9 +81,19 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
       drv = RPostgreSQL::PostgreSQL()
     }
   }
-  stateEnv <- new.env(parent = emptyenv())
-  stateEnv$validateQuery <- validateQuery
-  poolCreate(dbConnect, drv, ..., stateEnv = stateEnv)
+
+  state <- new.env(parent = emptyenv())
+  state$validateQuery <- validateQuery
+
+  ## make a note of DBI driver
+  ## (to ease dplyr compatibility later on)
+  isDriver <- function(arg) length(grep(arg, list(drv))) == 1
+  if (isDriver("SQLite")) state$drv <- "sqlite"
+  else if (isDriver("MySQL")) state$drv <- "mysql"
+  else if (isDriver("PostgreSQL")) state$drv <- "postgres"
+
+  factory <- function() dbConnect(drv, ...)
+  poolCreate(factory, state = state)
 }
 
 #' Wrap DBI Database Connection Pool for dplyr use.

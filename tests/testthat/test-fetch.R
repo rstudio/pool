@@ -5,7 +5,6 @@ context("Pool's fetch method")
 describe("fetch", {
 
   pool <- poolCreate(MockPooledObj$new,
-    closed = FALSE, valid = TRUE,
     minSize = 1, maxSize = 3)
 
   it("throws if onActivate fails", {
@@ -33,22 +32,22 @@ describe("fetch", {
     failOnValidate <<- FALSE
   })
 
-  it("only validates after validateTimeout", {
+  it("only validates after validationInterval", {
     naiveScheduler$protect({
       obj <- poolCheckout(pool)
       t0 <- Sys.time()
-      ..metadata <- attr(obj, "..metadata", exact = TRUE)
-      lastValidated_t0 <- ..metadata$..lastValidated
+      pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+      lastValidated_t0 <- pool_metadata$lastValidated
 
       poolReturn(obj)
 
       obj <- poolCheckout(pool)
       t1 <- Sys.time()
-      ..metadata <- attr(obj, "..metadata", exact = TRUE)
-      lastValidated_t1 <- ..metadata$..lastValidated
+      pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+      lastValidated_t1 <- pool_metadata$lastValidated
 
-      if ((t1 - t0)*1000 < pool$validateTimeout) {
-        ## because validateTimeout hasn't passed yet
+      if ((t1 - t0)*1000 < pool$validationInterval) {
+        ## because validationInterval hasn't passed yet
         expect_identical(lastValidated_t0, lastValidated_t1)
       }
 
@@ -58,11 +57,11 @@ describe("fetch", {
 
       obj <- poolCheckout(pool)
       t2 <- Sys.time()
-      ..metadata <- attr(obj, "..metadata", exact = TRUE)
-      lastValidated_t2 <- ..metadata$..lastValidated
+      pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+      lastValidated_t2 <- pool_metadata$lastValidated
 
-      if ((t2 - t0)*1000 < pool$validateTimeout) {
-        ## because validateTimeout hasn't passed yet
+      if ((t2 - t0)*1000 < pool$validationInterval) {
+        ## because validationInterval hasn't passed yet
         expect_identical(lastValidated_t0, lastValidated_t2)
       }
 
@@ -70,15 +69,15 @@ describe("fetch", {
       poolReturn(obj)
       checkCounts(pool, free = 1, taken = 0)
 
-      Sys.sleep((pool$validateTimeout + 100)/1000)
+      Sys.sleep((pool$validationInterval + 100)/1000)
 
       obj <- poolCheckout(pool)
       t3 <- Sys.time()
-      ..metadata <- attr(obj, "..metadata", exact = TRUE)
-      lastValidated_t3 <- ..metadata$..lastValidated
+      pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+      lastValidated_t3 <- pool_metadata$lastValidated
 
-      if ((t3 - t0)*1000 > pool$validateTimeout) {
-        ## because validateTimeout HAS passed at this point
+      if ((t3 - t0)*1000 > pool$validationInterval) {
+        ## because validationInterval HAS passed at this point
         expect_false(identical(lastValidated_t0, lastValidated_t3))
       }
 
@@ -88,11 +87,11 @@ describe("fetch", {
 
       obj <- poolCheckout(pool)
       t4 <- Sys.time()
-      ..metadata <- attr(obj, "..metadata", exact = TRUE)
-      lastValidated_t4 <- ..metadata$..lastValidated
+      pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+      lastValidated_t4 <- pool_metadata$lastValidated
 
-      if ((t4 - t3)*1000 < pool$validateTimeout) {
-        ## because validateTimeout hasn't passed yet
+      if ((t4 - t3)*1000 < pool$validationInterval) {
+        ## because validationInterval hasn't passed yet
         expect_identical(lastValidated_t3, lastValidated_t4)
       }
 

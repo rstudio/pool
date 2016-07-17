@@ -48,8 +48,8 @@ setMethod("onDestroy", "DBIConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
-  pool <- attr(object, "..metadata", exact = TRUE)$..pool
-  query <- pool$stateEnv$validateQuery
+  pool <- attr(object, "..metadata", exact = TRUE)$pool
+  query <- pool$state$validateQuery
 
   if (!is.null(query)) {
     error <- try({
@@ -70,10 +70,15 @@ setMethod("onValidate", "DBIConnection", function(object) {
       "select count(*) from systables"
     )
 
+    ## Iterates through the possible validation queries:
+    ## the first one that succeeds get stored in the `state`
+    ## of pool (a public variable) and we return.
+    ## If none succeed, validation is not possible and we
+    ## throw an error.
     for (opt in options) {
       error <- try({
         dbGetQuery(object, opt)
-        pool$stateEnv$validateQuery <- opt
+        pool$state$validateQuery <- opt
         return()
       }, silent = TRUE)
     }

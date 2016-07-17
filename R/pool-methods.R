@@ -7,19 +7,12 @@ setClass("Pool")
 
 ## documented manually, with the Pool object
 #' @export
-poolCreate <- function(factory, ...,
-                       minSize = 1, maxSize = Inf,
-                       idleTimeout = 60000, validateTimeout = 2000,
-                       stateEnv = NULL) {
-  pool <- Pool$new(
-    function() {factory(...)},
-    minSize, maxSize,
-    idleTimeout, validateTimeout, stateEnv
+poolCreate <- function(factory, minSize = 1, maxSize = Inf,
+                       idleTimeout = 60000, validationInterval = 2000,
+                       state = NULL) {
+  Pool$new(factory, minSize, maxSize,
+    idleTimeout, validationInterval, state
   )
-  ## if a createPool is used with a DBIDriver, make a note
-  ## (to ease dplyr compatibility later on)
-  checkDriver(pool, ...)
-  pool
 }
 
 #' Checks out an object from the pool.
@@ -58,12 +51,12 @@ setGeneric("poolReturn", function(object) {
 
 #' @export
 setMethod("poolReturn", "ANY", function(object) {
-  ..metadata <- attr(object, "..metadata", exact = TRUE)
-  if (is.null(..metadata) || !..metadata$..valid) {
+  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+  if (is.null(pool_metadata) || !pool_metadata$valid) {
     stop("Invalid object.")
   }
-  id <- ..metadata$..id
-  pool <- ..metadata$..pool
+  id <- pool_metadata$id
+  pool <- pool_metadata$pool
   pool$release(id, object)
 })
 

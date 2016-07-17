@@ -6,7 +6,7 @@ describe("createObject", {
 
   it("throws if `factory` throws or returns NULL", {
     expect_error(poolCreate(MockPooledObj),
-      "could not find function \"factory\"")
+      "attempt to apply non-function")
     expect_error(poolCreate(function(x) NULL),
       "Object creation was not successful.")
   })
@@ -15,7 +15,6 @@ describe("createObject", {
 describe("destroyObject", {
 
   pool <- poolCreate(MockPooledObj$new,
-    closed = FALSE, valid = TRUE,
     minSize = 1, maxSize = 3, idleTimeout = 1000)
 
   it("throws if onDestroy fails", {

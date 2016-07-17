@@ -26,7 +26,7 @@ existing connection).}
   have at all times), \code{maxSize} (maximum number of connections
   that the pool may have at any time), \code{idleTimeout} (number
   of milliseconds to wait before closing a connection, if the number
-  of connection is above \code{minSize}), and \code{validateTimeout}
+  of connection is above \code{minSize}), and \code{validationInterval}
   (number of milliseconds to wait before validating the connection
   again).
 }}

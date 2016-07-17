@@ -6,7 +6,6 @@ describe("pool", {
 
   describe("basic mechanics", {
     pool <- poolCreate(MockPooledObj$new,
-      closed = FALSE, valid = TRUE,
       minSize = 1, maxSize = 3, idleTimeout = 1000)
 
     it("can be created", {
@@ -26,16 +25,13 @@ describe("pool", {
 
     it("finalizer runs", {
       pool <- poolCreate(MockPooledObj$new,
-        closed = FALSE, valid = TRUE,
         minSize = 1, maxSize = 3, idleTimeout = 1000)
       rm(pool)
-      expect_warning(gc(), "Closing leaked pool.")
     })
   })
 
   describe("object operations", {
     pool <- poolCreate(MockPooledObj$new,
-      closed = FALSE, valid = TRUE,
       minSize = 1, maxSize = 3, idleTimeout = 1000)
 
     it("supports generic fetch/release", {

@@ -5,7 +5,6 @@ context("Pool's release method")
 describe("release", {
 
   pool <- poolCreate(MockPooledObj$new,
-    closed = FALSE, valid = TRUE,
     minSize = 1, maxSize = 3, idleTimeout = 1000)
 
   it("throws if object was already released", {
