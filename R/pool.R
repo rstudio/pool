@@ -61,36 +61,34 @@ Pool <- R6Class("Pool",
       if (!self$valid) {
         stop("This pool is no longer valid. Cannot fetch new objects.")
       }
+      if (self$counters$free + self$counters$taken >= self$maxSize) {
+        stop("Maximum number of objects in pool has been reached")
+      }
+
+      ## see if there's any free objects
+      freeEnv <- private$freeObjects
+      if (length(freeEnv) > 0) {
+        id <- ls(freeEnv)[[1]]  ## get first free object we find
+        object <- freeEnv[[id]]
+        ## cancel reap task if it exists
+        private$cancelScheduledTask(object, "destroyHandle")
+
+      } else {
+        ## if we get here, there are no free objects
+        ## and we must create a new one
+        object <- private$createObject()
+        id <- attr(object, "pool_metadata", exact = TRUE)$id
+      }
+
+      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
       naiveScheduler$protect({
-        if (self$counters$free + self$counters$taken >= self$maxSize) {
-          stop("Maximum number of objects in pool has been reached")
-        }
-
-        ## see if there's any free objects
-        freeEnv <- private$freeObjects
-        if (length(freeEnv) > 0) {
-          id <- ls(freeEnv)[[1]]  ## get first free object we find
-          object <- freeEnv[[id]]
-          ## cancel reap task if it exists
-          private$cancelScheduledTask(object, "destroyHandle")
-
-        } else {
-          ## if we get here, there are no free objects
-          ## and we must create a new one
-          object <- private$createObject()
-          id <- attr(object, "pool_metadata", exact = TRUE)$id
-        }
-
-        pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
-        naiveScheduler$protect({
-          private$cancelScheduledTask(object, "validateHandle")
-          ## call onActivate, onValidate and change object status
-          object <- private$checkValid(object)
-          private$changeObjectStatus(id, object, "free", "taken")
-        })
-
-        return(object)
+        private$cancelScheduledTask(object, "validateHandle")
+        ## call onActivate, onValidate and change object status
+        object <- private$checkValid(object)
+        private$changeObjectStatus(id, object, "free", "taken")
       })
+
+      return(object)
     },
 
     ## passivates the object and returns it back to the pool
