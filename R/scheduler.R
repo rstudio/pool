@@ -22,6 +22,11 @@ NaiveScheduler <- R6Class("NaiveScheduler",
     },
 
     schedule = function(millis, callback) {
+      if (private$refCount$getCount() == 0) {
+        warning("Scheduling a task while executeTasks() ",
+                "is still executing")
+      }
+
       ## create a unique id for each task, such that tasks for
       ## further into the future are given ids that place them
       ## after tasks set for earlier (when `sort(ls(scheduledTasks))`
@@ -73,8 +78,7 @@ NaiveScheduler <- R6Class("NaiveScheduler",
         rm(list = tasks[[1]], envir = private$scheduledTasks)
         task()
       }
-    }
-  )
+    })
 )
 
 ## A helper class to NaiveScheduler that implements a simple
@@ -107,6 +111,10 @@ RefCount <- R6Class("RefCount",
       if (private$count == 0) {
         private$callback()
       }
+    },
+
+    getCount = function() {
+      private$count
     }
   ),
   private = list(

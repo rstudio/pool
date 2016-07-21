@@ -55,9 +55,8 @@ setMethod("poolReturn", "ANY", function(object) {
   if (is.null(pool_metadata) || !pool_metadata$valid) {
     stop("Invalid object.")
   }
-  id <- pool_metadata$id
   pool <- pool_metadata$pool
-  pool$release(id, object)
+  pool$release(object)
 })
 
 ## documented manually, with the Pool object
