@@ -76,7 +76,9 @@ NaiveScheduler <- R6Class("NaiveScheduler",
         if (length(tasks) == 0) break
         task <- private$scheduledTasks[[tasks[[1]]]]
         rm(list = tasks[[1]], envir = private$scheduledTasks)
-        task()
+        self$protect({
+          task()
+        })
       }
     })
 )

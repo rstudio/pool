@@ -60,7 +60,6 @@ Pool <- R6Class("Pool",
 
     ## calls activate and returns an object
     fetch = function() {
-      object <- NULL
       naiveScheduler$protect({
         if (!self$valid) {
           stop("This pool is no longer valid. Cannot fetch new objects.")
