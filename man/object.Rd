@@ -22,7 +22,7 @@ onPassivate(object)
 
 onDestroy(object)
 
-onValidate(object)
+onValidate(object, query)
 
 \S4method{onPassivate}{DBIConnection}(object)
 
@@ -32,6 +32,9 @@ onValidate(object)
 }
 \arguments{
 \item{object}{A pooled object.}
+
+\item{query}{A simple query that can be used to verify that
+the \code{object} functions as expected.}
 }
 \description{
 For backend authors only. Authors should implement all of these,

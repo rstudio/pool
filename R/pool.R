@@ -1,4 +1,3 @@
-#' @include utils.R
 #' @include scheduler.R
 NULL
 
@@ -19,165 +18,238 @@ NULL
 #' @export
 Pool <- R6Class("Pool",
   public = list(
+
     valid = NULL,
     counters = NULL,
     minSize = NULL,
     maxSize = NULL,
     idleTimeout = NULL,
+    validationInterval = NULL,
+    state = NULL,
+
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
-                          idleTimeout) {
-      self$valid <- TRUE
+                          idleTimeout, validationInterval,
+                          state) {
+      naiveScheduler$protect({
+        self$valid <- TRUE
 
-      self$counters <- new.env(parent = emptyenv())
-      self$counters$free <- 0
-      self$counters$taken <- 0
+        self$counters <- new.env(parent = emptyenv())
+        self$counters$free <- 0
+        self$counters$taken <- 0
+        private$idCounter <- 1
 
-      private$factory <- factory
-      self$minSize <- minSize
-      self$maxSize <- maxSize
-      self$idleTimeout <- idleTimeout
+        private$factory <- factory
+        self$minSize <- minSize
+        self$maxSize <- maxSize
 
-      private$freeObjects <- new.env(parent = emptyenv())
+        self$idleTimeout <- idleTimeout
+        self$validationInterval <- validationInterval
+        self$state <- state
 
-      for (i in seq_len(self$minSize)) {
-        private$createObject()
-      }
-      reg.finalizer(self,
-        function(self) {
-          protectDefaultScheduler({
-            freeEnv <- private$freeObjects
-            if (length(freeEnv) > 0) {
-              self$close()
-            }
-          })
-        },
-        onexit = TRUE)
+        private$freeObjects <- new.env(parent = emptyenv())
+
+        for (i in seq_len(self$minSize)) {
+          private$createObject()
+        }
+        reg.finalizer(self,
+          function(self) {if (self$valid) self$close()},
+          onexit = TRUE)
+      })
     },
+
     ## calls activate and returns an object
-    fetch = function() {                       #### WHAT TO DO IF THIS THROWS AN ERROR???
-      protectDefaultScheduler({
+    fetch = function() {
+      naiveScheduler$protect({
+        if (!self$valid) {
+          stop("This pool is no longer valid. Cannot fetch new objects.")
+        }
         if (self$counters$free + self$counters$taken >= self$maxSize) {
           stop("Maximum number of objects in pool has been reached")
         }
 
-        freeEnv <- private$freeObjects
         ## see if there's any free objects
+        freeEnv <- private$freeObjects
         if (length(freeEnv) > 0) {
-          ## get first free object we find
-          id <- ls(freeEnv)[[1]]
+          id <- ls(freeEnv)[[1]]  ## get first free object we find
           object <- freeEnv[[id]]
-
-          taskHandle <- attr(object, "reapTaskHandle", exact = TRUE)
-          if (!is.null(taskHandle)) {
-            attr(object, "reapTaskHandle") <- NULL
-            # Cancel the reap task.
-            taskHandle()
-          }
+          ## cancel reap task if it exists
+          private$cancelScheduledTask(object, "destroyHandle")
 
         } else {
           ## if we get here, there are no free objects
           ## and we must create a new one
           object <- private$createObject()
-          id <- attr(object, "id", exact = TRUE)
-        }
-        ## activate object and return it
-        private$changeObjectStatus(id, object, "free", "taken")
-        onActivate(object)
-        if (!onValidate(object)) {
-          stop("Object activation was not successful")
         }
 
-        return(object)
+        private$cancelScheduledTask(object, "validateHandle")
+        ## call onActivate, onValidate and change object status
+        object <- private$checkValid(object)
+        private$changeObjectStatus(object, "taken")
+
       })
+      return(object)
     },
-    ## passivates the object and returns it back to
-    ## the pool (possibly destroys the object if the
-    ## number of total object exceeds the maximum)
-    release = function(id, object) {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
-      protectDefaultScheduler({
-        freeEnv <- private$freeObjects
-        onPassivate(object)
-        private$changeObjectStatus(id, object, "taken", "free")
 
-        taskHandle <- scheduleTask(self$idleTimeout, function() {
-          if (self$counters$free + self$counters$taken > self$minSize) {
-            private$changeObjectStatus(id, object, "free", NULL)
-            private$destroyObject(object)
-          }
+    ## passivates the object and returns it back to the pool
+    ## (sets up task to destroy the object if the number of
+    ## total objects exceeds the minimum)
+    release = function(object) {
+      naiveScheduler$protect({
+        pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+        if (pool_metadata$state == "free") {
+          stop("This object was already returned to the pool.")
+        }
+        if (is.null(pool_metadata) || !pool_metadata$valid) {
+          stop("Invalid object.")
+        }
+        ## immediately destroy object if pool has already been closed
+        if (!self$valid) {
+          private$changeObjectStatus(object, NULL)
+          return()
+        }
+
+        ## passivate object (or if that fails, destroy it and throw)
+        tryCatch({
+          onPassivate(object)
+        }, error = function(e) {
+          private$changeObjectStatus(object, NULL)
+          stop("Object could not be returned back to the pool. ",
+               "It was destroyed instead. Error message: ",
+               conditionMessage(e))
         })
-        attr(object, "reapTaskHandle") <- taskHandle
+
+        ## set up a task to destroy the object after `idleTimeout`
+        ## millis, if we're over the minimum number of objects
+        taskHandle <- scheduleTask(
+          self$idleTimeout, function() {
+            if (self$counters$free + self$counters$taken > self$minSize) {
+              private$changeObjectStatus(object, NULL)
+            }
+          }
+        )
+        pool_metadata$destroyHandle <- taskHandle
+        private$changeObjectStatus(object, "free")
+
+        ## set up recurring validation every `validationInterval` millis
+        ## so we can catch if an idle connection gets broken somehow
+        ## (but only if we have a proper scheduler)
+        if (!(is.null(getOption("pool.scheduler", NULL)))) {
+          pool_metadata$validateHandle <-
+            scheduleTaskRecurring(self$validationInterval, function() {
+              object <- private$checkValid(object)
+              ## if we got here, the object was successfully
+              ## activated and validated; now needs to be passivated
+              onPassivate(object)
+            })
+        }
       })
     },
-    ## cleaning up and closing the pool
-    close = function() {                      #### WHAT TO DO IF THIS THROWS AN ERROR???
-      self$valid <- FALSE
-      freeEnv <- private$freeObjects
-      ## destroy all objects
-      eapply(freeEnv, private$destroyObject)
-      ## empty the objects' environments
-      rm(list = ls(freeEnv), envir = freeEnv)
-      ## TODO: deal with leaked connections, since there's no longer a takenEnv to check
+
+    ## cleaning up and closing the pool -- after the pool
+    ## is closed, objects that were previously checked out
+    ## can still be returned to the pool (which will
+    ## immediately destroy them). Objects can no longer be
+    ## checked out from the pool.
+    close = function() {
+      naiveScheduler$protect({
+        if (!self$valid) stop("The pool was already closed.")
+
+        self$valid <- FALSE
+        freeEnv <- private$freeObjects
+        freeObs <- ls(freeEnv)
+
+        ## destroy all free objects
+        for (id in freeObs) {
+          private$changeObjectStatus(freeEnv[[id]], NULL)
+        }
+
+        # check if there are taken objects
+        if (self$counters$taken > 0) {
+          warning("You still have checked out objects. Return ",
+                  "them to the pool so they can be destroyed. ",
+                  "(If these are leaked objects - no reference ",
+                  "- they will be destroyed the next time the ",
+                  "garbage collector runs).", call. = FALSE)
+        }
+      })
     }
   ),
+
   private = list(
+
     freeObjects = NULL,
     factory = NULL,
+    idCounter = NULL,
+
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
-      ## always create an object in the free envir
-      ## to guarantee that ids are unique
-      freeEnv <- private$freeObjects
-      id <- as.character(length(freeEnv) + 1)
       object <- private$factory()
-      attr(object, "id") <- id
-      attr(object, "pool") <- self
+      if (is.null(object)) {
+        stop("Object creation was not successful. The `factory` ",
+             "argument must be a function that creates and ",
+             "returns the object to be pooled.")
+      }
 
-      # Leak detection logic
-      canary <- new.env(parent = emptyenv())
-      canary$closed <- FALSE
-      attr(object, "canary") <- canary
-      ## maybe calling gc() ins't necessary (see issue #3 in Github)
-      gc()
-      reg.finalizer(canary, function(e) {
-        protectDefaultScheduler({
-          if (!canary$closed) {
-            ## for dplyr use (as of right now), leaking is inevitable
-            ## and it will annoy the heck out of users to be getting
-            ## warnings when they're doing exactly as we tell them to
-            ## so commenting this out for now...
-            # warning("You have leaked pooled objects. Closing them.")
+      ## attach metadata about the object
+      pool_metadata <- new.env(parent = emptyenv())
+      attr(object, "pool_metadata") <- pool_metadata
+
+      id <- as.character(private$idCounter)
+      private$idCounter <- private$idCounter + 1
+      pool_metadata$id <- id
+      pool_metadata$pool <- self
+      pool_metadata$valid <- TRUE
+      pool_metadata$state <- NULL
+      pool_metadata$lastValidated <- NULL
+
+      ## detect leaked connections and destroy them
+      reg.finalizer(pool_metadata, function(e) {
+        naiveScheduler$protect({
+          if (pool_metadata$valid) {
+            warning("You have a leaked pooled object. Destroying it.")
             scheduleTask(1, function() {
-              ## changed because of issue #4 in Github, I really think
-              ## this makes more sense...
-              #self$release(id, object)
-              #message("Connection finalizer ran")
-
-              ## changed back to this, pending discussion with @jcheng5
-              private$changeObjectStatus(id, object, "taken", NULL)
-              private$destroyObject(object)
+              private$changeObjectStatus(object, NULL)
             })
           }
         })
-      })
+      },
+      onexit = TRUE)
 
-      private$changeObjectStatus(id, object, NULL, "free")
+      private$changeObjectStatus(object, "free")
       return(object)
     },
+
+    ## tries to run onDestroy
     destroyObject = function(object) {
-      canary <- attr(object, "canary", exact = TRUE)
-      if (canary$closed) {
-        warning("Object was destroyed twice")
-      }
-      canary$closed <- TRUE
-      onDestroy(object)
+      tryCatch({
+        pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+        if (!pool_metadata$valid) {
+          warning("Object was destroyed twice.")
+          return()
+        }
+        pool_metadata$valid <- FALSE
+        private$cancelScheduledTask(object, "validateHandle")
+        private$cancelScheduledTask(object, "destroyHandle")
+        onDestroy(object)
+      }, error = function(e) {
+        warning("Object of class ", is(object)[1],
+                " could not be destroyed properly, ",
+                "but was successfully removed from pool. ",
+                "Error message: ", conditionMessage(e))
+
+      })
     },
-    ## change the objects's environment when a
-    ## free object gets taken and vice versa.
-    ## Valid values for `from` and `to` are:
-    ## NULL, "free", "taken"
-    changeObjectStatus = function(id, object, from, to) {
+
+    ## change the objects's environment when a free object
+    ## gets taken and vice versa. Valid values for `from`
+    ## and `to` are: NULL, "free", "taken"
+    changeObjectStatus = function(object, to) {
+      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      id <- pool_metadata$id
+      from <- pool_metadata$state
+
       # Remove from environment if necessary, and
       # decrement counter
       if (!is.null(from)) {
@@ -186,7 +258,11 @@ Pool <- R6Class("Pool",
           NULL
         )
         if (!is.null(removeFrom)) {
-          rm(list = id, envir = removeFrom)
+          if (exists(id, envir = removeFrom)) {
+            rm(list = id, envir = removeFrom)
+          } else {
+            stop("The object could not be found.")
+          }
         }
         self$counters[[from]] <- self$counters[[from]] - 1
       }
@@ -201,88 +277,74 @@ Pool <- R6Class("Pool",
           assign(id, object, envir = addTo)
         }
         self$counters[[to]] <- self$counters[[to]] + 1
+        pool_metadata$state <- to
+      } else {
+        ## if `to` == NULL, it means destroy the object
+        private$destroyObject(object)
+      }
+    },
+
+    cancelScheduledTask = function(object, task) {
+      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      taskHandle <- pool_metadata[[task]]
+      if (!is.null(taskHandle)) {
+        pool_metadata[[task]] <- NULL
+        taskHandle()   ## cancel the previous task
+      }
+    },
+
+    ## try to validate + activate an object; if that fails,
+    ## destroy the object and run whatever more cleanup is
+    ## necessary (provided through `errorFun`)
+    checkValidTemplate = function(object, errorFun) {
+      tryCatch({
+        onActivate(object)
+        private$validate(object)
+        return(object)
+
+      }, error = function(e) {
+        private$changeObjectStatus(object, NULL)
+        errorFun(e)
+      })
+    },
+
+    ## tries to validate + activate the object; if that fails,
+    ## the first time around, warn, destroy that object and try
+    ## again with a new object; **returns** the object
+    ## if both tries fail, throw an error
+    checkValid = function(object) {
+      object <- private$checkValidTemplate(object,
+        function(e) {
+          warning("It wasn't possible to activate and/or validate ",
+                  "the object. Trying again with a new object.",
+                  call. = FALSE)
+
+          private$checkValidTemplate(private$createObject(),
+            function(e) {
+              stop("Object does not appear to be valid. ",
+                   "Error message: ", conditionMessage(e),
+                   call. = FALSE)
+          })
+      })
+      return(object)
+    },
+
+    ## run onValidate on the object only if over `validationInterval`
+    ## millis have passed since the last validation (this allows
+    ## us some performance gains)
+    validate = function(object) {
+      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      lastValidated <- pool_metadata$lastValidated
+      ## if the object has never been validated, set `lastValidated`
+      ## to guarantee that it will be validated now
+      if (is.null(lastValidated)) {
+        lastValidated <- Sys.time() - self$validationInterval - 1
+      }
+      interval <- (Sys.time() - lastValidated) * 1000
+      if (interval >= self$validationInterval) {
+        onValidate(object)
+        pool_metadata$lastValidated <- Sys.time()
       }
     }
   )
 )
-
-
-#' S4 class for compatibility with DBI methods
-#' @export
-setClass("Pool")
-
-## documented manually, with the Pool object
-#' @export
-poolCreate <- function(factory, ...,
-  minSize = 1, maxSize = Inf, idleTimeout = 60000) {
-  pool <- Pool$new(
-    function() {factory(...)},
-    minSize, maxSize, idleTimeout
-  )
-  ## if a createPool is used with a DBIDriver, make a note
-  ## (to ease dplyr compatibility later on)
-  checkDriver(pool, ...)
-  pool
-}
-
-#' Checks out an object from the pool.
-#'
-#' Should be called by the end user if they need a persistent
-#' object, that is not returned to the pool automatically.
-#' When you don't longer need the object, be sure to return it
-#' to the pool using \code{poolReturn(object)}.
-#'
-#' @param pool The pool to get the object from.
-#'
-#' @aliases poolCheckout,Pool-method
-#' @export
-setGeneric("poolCheckout", function(pool) {
-  standardGeneric("poolCheckout")
-})
-
-#' @export
-setMethod("poolCheckout", "Pool", function(pool) {
-  pool$fetch()
-})
-
-#' Returns an object back to the pool.
-#'
-#' Should be called by the end user if they previously fetched
-#' an object directly using \code{object <- poolCheckout(pool)}
-#' and are now done with said object.
-#'
-#' @param object A pooled object.
-#'
-#' @aliases poolReturn,ANY-method
-#' @export
-setGeneric("poolReturn", function(object) {
-  standardGeneric("poolReturn")
-})
-
-#' @export
-setMethod("poolReturn", "ANY", function(object) {
-  id <- attr(object, "id", exact = TRUE)
-  pool <- attr(object, "pool", exact = TRUE)
-  pool$release(id, object)
-})
-
-## documented manually, with the Pool object
-#' @export
-setGeneric("poolClose", function(pool) {
-  standardGeneric("poolClose")
-})
-
-#' @export
-setMethod("poolClose", "Pool", function(pool) {
-  pool$close()
-})
-
-#' Show method
-#' @param object A Pool object.
-#' @export
-setMethod("show", "Pool", function(object) {
-  pooledObj <- poolCheckout(object)
-  on.exit(poolReturn(pooledObj))
-  cat("<Pool>\n", "  pooled object class: ",
-      is(pooledObj)[1], sep = "")
-})

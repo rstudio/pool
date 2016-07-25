@@ -17,7 +17,6 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   poolReturn(conn)
 })
 
-
 ## Ideally this would also reset the connection more fully (ex: reset
 ## all user-defined variables set with `SET` back to their default values).
 ## Currently, there isn't a handy dbResetConnection() generic in DBI, so
@@ -32,9 +31,11 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
   rs <- dbListResults(object)
-  try({
-    lapply(rs, dbClearResult)
-    dbRollback(object)
+  lapply(rs, function(x) {
+    if (dbIsValid(x)) {
+      dbClearResult(x)
+      dbRollback(object)
+    }
   })
 })
 
@@ -47,8 +48,44 @@ setMethod("onDestroy", "DBIConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
-  check <- dbGetQuery(object, "SELECT 1")
-  df <- data.frame(1)
-  names(df) <- "1"
-  (check == df)[1,]
+  pool <- attr(object, "..metadata", exact = TRUE)$pool
+  query <- pool$state$validateQuery
+
+  if (!is.null(query)) {
+    error <- try({
+      dbGetQuery(object, query)
+      return()
+    }, silent = TRUE)
+  } else {
+
+    ## options mostly gathered from here:
+    ## http://stackoverflow.com/a/3670000/6174455
+    options <- c(
+      "SELECT 1",
+      "SELECT 1 FROM DUAL",
+      "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS",
+      "SELECT * FROM INFORMATION_SCHEMA.TABLES",
+      "VALUES 1",
+      "SELECT 1 FROM SYSIBM.SYSDUMMY1",
+      "select count(*) from systables"
+    )
+
+    ## Iterates through the possible validation queries:
+    ## the first one that succeeds get stored in the `state`
+    ## of pool (a public variable) and we return.
+    ## If none succeed, validation is not possible and we
+    ## throw an error.
+    for (opt in options) {
+      error <- try({
+        dbGetQuery(object, opt)
+        pool$state$validateQuery <- opt
+        return()
+      }, silent = TRUE)
+    }
+  }
+  cond <- attr(error, "condition", exact = TRUE)
+  stop(simpleError(
+    paste("Validation not successful --", conditionMessage(cond)),
+    conditionCall(cond)
+  ))
 })

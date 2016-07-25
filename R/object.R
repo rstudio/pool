@@ -1,4 +1,4 @@
-#' @include pool.R
+#' @include pool-methods.R
 NULL
 
 #' Pooled object methods.
@@ -35,9 +35,11 @@ setGeneric("onDestroy", function(object) {
 })
 
 #' @aliases onValidate,ANY-method
+#' @param query A simple query that can be used to verify that
+#' the \code{object} functions as expected.
 #' @export
 #' @rdname object
-setGeneric("onValidate", function(object) {
+setGeneric("onValidate", function(object, query) {
   standardGeneric("onValidate")
 })
 
@@ -59,6 +61,6 @@ setMethod("onDestroy", "ANY", function(object) {
 })
 
 #' @export
-setMethod("onValidate", "ANY", function(object) {
-  TRUE
+setMethod("onValidate", "ANY", function(object, query) {
+  invisible()
 })

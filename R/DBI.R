@@ -28,10 +28,16 @@ NULL
 #'   \item Optionally, override the \code{poolCreate} defaults:
 #'   \code{minSize} (minimum number of connections that the pool should
 #'   have at all times), \code{maxSize} (maximum number of connections
-#'   that the pool may have at any time) and \code{idleTimeout} (number
+#'   that the pool may have at any time), \code{idleTimeout} (number
 #'   of milliseconds to wait before closing a connection, if the number
-#'   of connection is above \code{minSize}).
+#'   of connection is above \code{minSize}), and \code{validationInterval}
+#'   (number of milliseconds to wait before validating the connection
+#'   again).
 #' }
+#' @param validateQuery The query to run to verify that the connection
+#' is valid (it should be as simple as possible). If this is not
+#' provided, \code{dbPool} will try a few possibilities, but these are
+#' not exhaustive.
 #'
 #' @export
 #' @examples
@@ -54,7 +60,7 @@ NULL
 #'
 #' poolClose(pool)
 #' }
-dbPool <- function(drv, ...) {
+dbPool <- function(drv, ..., validateQuery = NULL) {
   if (is.character(drv)) {
     if (drv == "SQLite") {
       if (!requireNamespace("RSQLite", quietly = TRUE)) {
@@ -75,7 +81,19 @@ dbPool <- function(drv, ...) {
       drv = RPostgreSQL::PostgreSQL()
     }
   }
-  poolCreate(dbConnect, drv, ...)
+
+  state <- new.env(parent = emptyenv())
+  state$validateQuery <- validateQuery
+
+  ## make a note of DBI driver
+  ## (to ease dplyr compatibility later on)
+  isDriver <- function(arg) length(grep(arg, list(drv))) == 1
+  if (isDriver("SQLite")) state$drv <- "sqlite"
+  else if (isDriver("MySQL")) state$drv <- "mysql"
+  else if (isDriver("PostgreSQL")) state$drv <- "postgres"
+
+  factory <- function() dbConnect(drv, ...)
+  poolCreate(factory, state = state)
 }
 
 #' Wrap DBI Database Connection Pool for dplyr use.
@@ -175,34 +193,3 @@ src_pool <- function(pool) {
   info <- dbGetInfo(conn)
   dplyr::src_sql(drv, conn, info = info, disco = NULL)
 }
-
-
-# #' @export
-# src_pool_mysql <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("mysql", conn, info = info, disco = NULL)
-# }
-#
-# #' @export
-# src_pool_sqlite <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("sqlite", conn, info = info)
-# }
-#
-# #' @export
-# src_pool_postgres <- function(pool) {
-#   if (!requireNamespace("dplyr", quietly = TRUE)) {
-#     stop("dplyr package required", call. = FALSE)
-#   }
-#   conn <- poolCheckout(pool)
-#   info <- dbGetInfo(conn)
-#   dplyr::src_sql("postgres", conn, info = info, disco = NULL)
-# }
