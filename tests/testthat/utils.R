@@ -44,7 +44,9 @@ setMethod("onDestroy", "MockPooledObj", function(object) {
 
 setMethod("onValidate", "MockPooledObj", function(object, query) {
   if (failOnValidate) stop("Validation failed...")
-  object$valid
+  if (isTRUE(attr(object, "bad", exact = TRUE))) {
+    stop("Bad object")
+  }
 })
 
 

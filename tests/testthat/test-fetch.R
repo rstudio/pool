@@ -4,8 +4,7 @@ context("Pool's fetch method")
 
 describe("fetch", {
 
-  pool <- poolCreate(MockPooledObj$new,
-    minSize = 1, maxSize = 3)
+  pool <- poolCreate(MockPooledObj$new, minSize = 1, maxSize = 3)
 
   it("throws if onActivate fails", {
     checkCounts(pool, free = 1, taken = 0)
@@ -25,8 +24,8 @@ describe("fetch", {
     failOnValidate <<- TRUE
     expect_error(
       expect_warning(poolCheckout(pool),
-                     paste("It wasn't possible to activate and/or validate",
-                           "the object. Trying again with a new object.")),
+        paste("It wasn't possible to activate and/or validate",
+              "the object. Trying again with a new object.")),
       "Object does not appear to be valid.")
     checkCounts(pool, free = 0, taken = 0)
     failOnValidate <<- FALSE
@@ -101,7 +100,55 @@ describe("fetch", {
     })
   })
 
+  it("warns if validation fails once, creates new object and tries again", {
+    checkCounts(pool, free = 1, taken = 0)
+
+    ## create function to get to an R6 object's private methods
+    ## (gets private environment from an R6 object)
+    get_private <- function(x) {
+      x[['.__enclos_env__']]$private
+    }
+
+    ## cannot validate bad object, so creates new one and tries again
+    ## new object's activation and validation succeeds
+    badObject <- poolCheckout(pool)
+    checkCounts(pool, free = 0, taken = 1)
+
+    Sys.sleep((pool$validationInterval + 100)/1000)
+    attr(badObject, "bad") <- TRUE
+    expect_warning(obj <- get_private(pool)$checkValid(badObject),
+      paste("It wasn't possible to activate and/or validate",
+            "the object. Trying again with a new object."))
+
+    Sys.sleep((pool$validationInterval + 100)/1000)
+    ## check that the new object is valid
+    expect_identical(obj, get_private(pool)$checkValid(obj))
+
+    ## back to having one free, valid object
+    checkCounts(pool, free = 1, taken = 0)
+
+    Sys.sleep((pool$validationInterval + 100)/1000)
+    ## cannot validate bad object, so creates new one and tries again
+    ## new object's activation and validation also fails: throw
+    failOnValidate <<- TRUE
+    expect_error(
+      expect_warning(get_private(pool)$checkValid(obj),
+        paste("It wasn't possible to activate and/or validate",
+              "the object. Trying again with a new object.")),
+      "Object does not appear to be valid.")
+    failOnValidate <<- FALSE
+
+    ## since we couldn't validate the object the first or the second
+    ## time around, it was destroyed, and there are now no objects
+    ## in the pool
+    checkCounts(pool, free = 0, taken = 0)
+  })
+
   it("throws if the pool was closed", {
+    checkCounts(pool, free = 0, taken = 0)
+    obj <- poolCheckout(pool)
+    poolReturn(obj)
+
     checkCounts(pool, free = 1, taken = 0)
     poolClose(pool)
     checkCounts(pool, free = 0, taken = 0)
@@ -109,6 +156,3 @@ describe("fetch", {
       "This pool is no longer valid. Cannot fetch new objects.")
   })
 })
-
-
-
