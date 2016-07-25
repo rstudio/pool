@@ -23,8 +23,7 @@ NaiveScheduler <- R6Class("NaiveScheduler",
 
     schedule = function(millis, callback) {
       if (private$refCount$getCount() == 0) {
-        warning("Scheduling a task while executeTasks() ",
-                "is still executing")
+        warning("Scheduling a task without protect()")
       }
 
       ## create a unique id for each task, such that tasks for
