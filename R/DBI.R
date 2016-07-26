@@ -188,7 +188,7 @@ src_pool <- function(pool) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("dplyr package required", call. = FALSE)
   }
-  drv <- attr(pool, "drv", exact = TRUE)
+  drv <- pool$state$drv
   conn <- poolCheckout(pool)
   info <- dbGetInfo(conn)
   dplyr::src_sql(drv, conn, info = info, disco = NULL)
