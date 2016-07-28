@@ -24,8 +24,7 @@ Suggests:
     dplyr,
     RMySQL,
     RSQLite,
-    RPostgreSQL,
-    RPostgres
+    RPostgreSQL
 URL: https://github.com/bborgesr/pool
 BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE
