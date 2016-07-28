@@ -80,6 +80,12 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
       }
       drv = RPostgreSQL::PostgreSQL()
     }
+    else if (drv == "Postgres") {
+      if (!requireNamespace("RPostgres", quietly = TRUE)) {
+        stop("RPostgres package required", call. = FALSE)
+      }
+      drv = RPostgres::Postgres()
+    }
   }
 
   state <- new.env(parent = emptyenv())
@@ -88,9 +94,11 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
   ## make a note of DBI driver
   ## (to ease dplyr compatibility later on)
   isDriver <- function(arg) length(grep(arg, list(drv))) == 1
-  if (isDriver("SQLite")) state$drv <- "sqlite"
-  else if (isDriver("MySQL")) state$drv <- "mysql"
-  else if (isDriver("PostgreSQL")) state$drv <- "postgres"
+  if (isDriver("SQLiteDriver")) state$drv <- "sqlite"
+  else if (isDriver("MySQLDriver")) state$drv <- "mysql"
+  else if (isDriver("PostgreSQLDriver") || isDriver("PqDriver")) {
+    state$drv <- "postgres"
+  }
 
   factory <- function() dbConnect(drv, ...)
   poolCreate(factory, state = state)
