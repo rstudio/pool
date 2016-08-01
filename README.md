@@ -5,10 +5,6 @@ pool
 
 [![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
 
-[![Stories in Ready](https://badge.waffle.io/rstudio/pool.svg?label=ready&title=Ready)](http://waffle.io/rstudio/pool)
-
-[![Throughput Graph](https://graphs.waffle.io/rstudio/pool/throughput.svg)](https://waffle.io/rstudio/pool/metrics/throughput)
-
 This package enables the creation of object pools for various types of objects in R, to make it less computationally expensive to fetch one. Currently the only supported pooled objects are `DBI` connections (see the [`DBI` package](https://github.com/rstats-db/DBI) for more info), which can be used to query a database either directly through `DBI` or through `dplyr`.
 However, the `Pool` class is general enough to allow for pooling of any R objects, provided that someone implements the backend appropriately (creating the object factory class and all the required methods) -- a vignette with instructions on how to do so will be coming soon.
 
@@ -124,3 +120,13 @@ if (dbGetInfo(rs, what = "rowCount") > 5) {
 }
 poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
 ```
+
+=========
+### Issue and PR tracking
+
+[![Stories in Backlog](https://badge.waffle.io/rstudio/pool.svg?label=Backlog&title=Backlog)](http://waffle.io/rstudio/pool)
+[![Stories in Ready](https://badge.waffle.io/rstudio/pool.svg?label=Ready&title=Ready)](http://waffle.io/rstudio/pool)
+[![Stories in In Progress](https://badge.waffle.io/rstudio/pool.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/rstudio/pool)
+[![Stories in Done](https://badge.waffle.io/rstudio/pool.svg?label=Done&title=Done)](http://waffle.io/rstudio/pool)
+
+[![Throughput Graph](https://graphs.waffle.io/rstudio/pool/throughput.svg)](https://waffle.io/rstudio/pool/metrics/throughput)
