@@ -1,10 +1,8 @@
-library(R6)
-
 
 #********************************************************************#
 #********** Create Mock Pooled object for testing purposes **********#
 #********************************************************************#
-MockPooledObj <- R6Class("MockPooledObj",
+MockPooledObj <- R6::R6Class("MockPooledObj",
   public = list(
 
     closed = NULL,
