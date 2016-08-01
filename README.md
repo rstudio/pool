@@ -122,6 +122,7 @@ poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
 ```
 
 =========
+
 ### Issue and PR tracking (via [waffle.io](https://waffle.io/))
 
 [![Stories in Backlog](https://badge.waffle.io/rstudio/pool.svg?label=Backlog&title=Backlog)](http://waffle.io/rstudio/pool)
