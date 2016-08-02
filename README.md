@@ -121,3 +121,14 @@ if (dbGetInfo(rs, what = "rowCount") > 5) {
 }
 poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
 ```
+
+=========
+
+### Issue and PR tracking (via [waffle.io](https://waffle.io/))
+
+[![Stories in Backlog](https://badge.waffle.io/rstudio/pool.svg?label=Backlog&title=Backlog)](http://waffle.io/rstudio/pool)
+[![Stories in Ready](https://badge.waffle.io/rstudio/pool.svg?label=Ready&title=Ready)](http://waffle.io/rstudio/pool)
+[![Stories in In Progress](https://badge.waffle.io/rstudio/pool.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/rstudio/pool)
+[![Stories in Done](https://badge.waffle.io/rstudio/pool.svg?label=Done&title=Done)](http://waffle.io/rstudio/pool)
+
+[![Throughput Graph](https://graphs.waffle.io/rstudio/pool/throughput.svg)](https://waffle.io/rstudio/pool/metrics/throughput)
