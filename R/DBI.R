@@ -196,6 +196,7 @@ src_pool <- function(pool) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("dplyr package required", call. = FALSE)
   }
+  gc()
   drv <- pool$state$drv
   conn <- poolCheckout(pool)
   info <- dbGetInfo(conn)
