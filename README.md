@@ -121,3 +121,9 @@ if (dbGetInfo(rs, what = "rowCount") > 5) {
 }
 poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
 ```
+
+=========
+
+### Issue and PR tracking (via [waffle.io](https://waffle.io/))
+
+[![Throughput Graph](https://graphs.waffle.io/rstudio/pool/throughput.svg)](https://waffle.io/rstudio/pool/metrics/throughput)
