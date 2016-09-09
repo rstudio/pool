@@ -100,8 +100,13 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
     state$drv <- "postgres"
   }
 
-  factory <- function() dbConnect(drv, ...)
-  poolCreate(factory, state = state)
+  dots <- list(...)
+  poolCreate_argnames <- setdiff(names(formals(poolCreate)), c("factory", "state"))
+  poolCreate_args <- dots[intersect(names(dots), poolCreate_argnames)]
+  dbConnect_args <- dots[setdiff(names(dots), poolCreate_argnames)]
+
+  factory <- function()  do.call(dbConnect, c(list(drv), dbConnect_args))
+  do.call(poolCreate, c(list(factory, state = state), poolCreate_args))
 }
 
 #' Wrap DBI Database Connection Pool for dplyr use.
