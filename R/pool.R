@@ -209,7 +209,7 @@ Pool <- R6Class("Pool",
         naiveScheduler$protect({
           if (pool_metadata$valid) {
             warning("You have a leaked pooled object. Destroying it.")
-            scheduleTask(1, function() {
+            naiveScheduler$schedule(1, function() {
               private$changeObjectStatus(object, NULL)
             })
           }
