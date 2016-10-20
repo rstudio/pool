@@ -17,6 +17,10 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   poolReturn(conn)
 })
 
+
+setMethod("onPassivate", "JDBCConnection", function(object) {
+  ""
+})
 ## Ideally this would also reset the connection more fully (ex: reset
 ## all user-defined variables set with `SET` back to their default values).
 ## Currently, there isn't a handy dbResetConnection() generic in DBI, so
