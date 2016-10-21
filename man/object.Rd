@@ -11,7 +11,6 @@
 \alias{onPassivate}
 \alias{onPassivate,ANY-method}
 \alias{onPassivate,DBIConnection-method}
-\alias{onPassivate,JDBCConnection-method}
 \alias{onValidate}
 \alias{onValidate,ANY-method}
 \alias{onValidate,DBIConnection-method}
@@ -24,8 +23,6 @@ onPassivate(object)
 onDestroy(object)
 
 onValidate(object, query)
-
-\S4method{onPassivate}{JDBCConnection}(object)
 
 \S4method{onPassivate}{DBIConnection}(object)
 
@@ -44,7 +41,5 @@ For backend authors only. Authors should implement all of these,
 which are then called by the Pool class methods. These should
 not be called directly either by backend authors or by the end
 users.
-
-export
 }
 

@@ -17,13 +17,6 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   poolReturn(conn)
 })
 
-#'
-#' @export
-#' @rdname object
-setMethod("onPassivate", "JDBCConnection", function(object) {
-  NULL
-})
-
 ## Ideally this would also reset the connection more fully (ex: reset
 ## all user-defined variables set with `SET` back to their default values).
 ## Currently, there isn't a handy dbResetConnection() generic in DBI, so
@@ -37,6 +30,9 @@ setMethod("onPassivate", "JDBCConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
+  if (inherits(object, "JDBCConnection")){
+    return(NULL)
+  }
   rs <- dbListResults(object)
   lapply(rs, function(x) {
     if (dbIsValid(x)) {
