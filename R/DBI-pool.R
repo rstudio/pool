@@ -30,6 +30,9 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
 #' @export
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
+  if (inherits(object, "JDBCConnection") | inherits(object, "SQLServerConnection")){
+    return(NULL)
+  }
   rs <- dbListResults(object)
   lapply(rs, function(x) {
     if (dbIsValid(x)) {
