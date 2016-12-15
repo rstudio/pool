@@ -3,6 +3,7 @@
 \docType{methods}
 \name{DBI-connection}
 \alias{DBI-connection}
+\alias{dbExecute,Pool,ANY-method}
 \alias{dbExistsTable,Pool-method}
 \alias{dbGetQuery,Pool,ANY-method}
 \alias{dbListFields,Pool-method}
@@ -17,6 +18,8 @@
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
 
 \S4method{dbGetQuery}{Pool,ANY}(conn, statement, ...)
+
+\S4method{dbExecute}{Pool,ANY}(conn, statement, ...)
 
 \S4method{dbListResults}{Pool}(conn, ...)
 
