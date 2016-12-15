@@ -6,6 +6,7 @@
 \alias{dbBegin,Pool-method}
 \alias{dbCommit,Pool-method}
 \alias{dbRollback,Pool-method}
+\alias{dbWithTransaction,Pool-method}
 \title{DBIConnection transaction methods are not supported for
 Pool objects.}
 \usage{
@@ -14,9 +15,11 @@ Pool objects.}
 \S4method{dbCommit}{Pool}(conn, ...)
 
 \S4method{dbRollback}{Pool}(conn, ...)
+
+\S4method{dbWithTransaction}{Pool}(conn, code)
 }
 \arguments{
-\item{conn, ...}{See \code{\link[DBI]{transactions}}.}
+\item{conn, ..., code}{See \code{\link[DBI]{transactions}}.}
 }
 \description{
 You cannot perfrom SQL transaction using a Pool object directly
@@ -31,9 +34,10 @@ from the pool yourself, you must also remember to return it
 back to the pool when you're done: \code{poolReturn(conn)}
 (otherwise, you have a leaked connection).
 
-For simple transactions, consider using \code{dbWithTransaction}
-instead, which is safer since it does not require you to fetch
-and release the connection yourself.
+For simple transactions, consider using
+\code{\link[DBI]{dbWithTransaction}} instead, which is safer
+since it does not require you to fetch and release the
+connection yourself.
 
 See \code{\link[DBI]{transactions}} for the original
 documentation.

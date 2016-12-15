@@ -123,6 +123,7 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
 #' examples below).
 #'
 #' @param pool A pool object
+#' @param src,con Internals: should not be used directly
 #'
 #' @section Comparison to \code{dplyr} code:
 #' First, let's show how you'd connect and query a MySQL database
@@ -201,9 +202,19 @@ src_pool <- function(pool) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("dplyr package required", call. = FALSE)
   }
-  gc()
   drv <- pool$state$drv
-  conn <- poolCheckout(pool)
-  info <- dbGetInfo(conn)
-  dplyr::src_sql(drv, conn, info = info, disco = NULL)
+  info <- dbGetInfo(pool)
+  dplyr::src_sql(c("pool", drv), pool, info = info, disco = NULL)
+}
+
+#' @rdname src_pool
+#' @export
+con_acquire.src_pool <- function(src) {
+  poolCheckout(src$obj)
+}
+
+#' @rdname src_pool
+#' @export
+con_release.src_pool <- function(src, con) {
+  poolReturn(con)
 }
