@@ -41,6 +41,15 @@ setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
   DBI::dbGetQuery(connection, statement, ...)
 })
 
+## Analogous to dbGetQuery(), but for non-SELECT statements
+#' @export
+#' @rdname DBI-connection
+setMethod("dbExecute", "Pool", function(conn, statement, ...) {
+  connection <- poolCheckout(conn)
+  on.exit(poolReturn(connection))
+  DBI::dbExecute(connection, statement, ...)
+})
+
 #' @export
 #' @rdname DBI-connection
 setMethod("dbListResults", "Pool", function(conn, ...) {

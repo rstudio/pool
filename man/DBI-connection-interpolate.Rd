@@ -7,12 +7,12 @@
 \alias{sqlParseVariables,Pool-method}
 \title{Safely interpolate values into an SQL string and parse them back.}
 \usage{
-\S4method{sqlInterpolate}{Pool}(`_con`, `_sql`, ...)
+\S4method{sqlInterpolate}{Pool}(conn, sql, ..., .dots = list())
 
-\S4method{sqlParseVariables}{Pool}(con, sql, ...)
+\S4method{sqlParseVariables}{Pool}(conn, sql, ...)
 }
 \arguments{
-\item{_con, `_sql`, ...}{See \code{\link[DBI]{sqlInterpolate}}.}
+\item{conn, sql, ..., .dots}{See \code{\link[DBI]{sqlInterpolate}}.}
 
 \item{con, sql}{See \code{\link[DBI]{sqlParseVariables}}.}
 }
