@@ -16,9 +16,9 @@ NULL
 #' (otherwise, you have a leaked connection).
 #'
 #' For simple transactions, consider using
-#' \code{\link[DBI]{dbWithTransaction}} instead, which is safer
-#' since it does not require you to fetch and release the
-#' connection yourself.
+#' \code{\link{dbWithTransaction}} instead,
+#' which is safer since it does not require you to fetch and
+#' release the connection yourself.
 #'
 #' See \code{\link[DBI]{transactions}} for the original
 #' documentation.
@@ -55,11 +55,22 @@ setMethod("dbRollback", "Pool", function(conn, ...) {
        "for simple transactions.")
 })
 
+
+#' Hello
+#'
+#' @param conn param
+#' @param code param
+#'
+#' @aliases dbWithTransaction
 #' @export
-#' @rdname DBI-connection-transaction
 setMethod("dbWithTransaction", "Pool", function(conn, code) {
-  stop("Must use `conn <- poolCheckout(pool); dbRollback(conn, ...)` ",
-       "instead. Remember to `poolReturn(conn)` when `conn` is ",
-       "no longer necessary. Consider using `dbWithTransaction(...)` ",
-       "for simple transactions.")
+  conn <- poolCheckout(pool)
+  on.exit(poolReturn(conn))
+  DBI::dbWithTransaction(conn, code(conn))
 })
+
+
+#' @export
+#' @aliases dbWithTransaction
+dbBreak <- DBI::dbBreak
+
