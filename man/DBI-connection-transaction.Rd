@@ -6,6 +6,7 @@
 \alias{dbBegin,Pool-method}
 \alias{dbCommit,Pool-method}
 \alias{dbRollback,Pool-method}
+\alias{dbWithTransaction,Pool-method}
 \title{DBIConnection transaction methods are not supported for
 Pool objects.}
 \usage{
@@ -14,6 +15,8 @@ Pool objects.}
 \S4method{dbCommit}{Pool}(conn, ...)
 
 \S4method{dbRollback}{Pool}(conn, ...)
+
+\S4method{dbWithTransaction}{Pool}(conn, code)
 }
 \arguments{
 \item{conn, ..., code}{See \code{\link[DBI]{transactions}}.}
@@ -32,7 +35,7 @@ back to the pool when you're done: \code{poolReturn(conn)}
 (otherwise, you have a leaked connection).
 
 For simple transactions, consider using
-\code{\link{dbWithTransaction}} instead,
+\code{\link{poolWithTransaction}} instead,
 which is safer since it does not require you to fetch and
 release the connection yourself.
 
