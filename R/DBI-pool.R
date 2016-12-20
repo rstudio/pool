@@ -17,26 +17,18 @@ setMethod("dbDisconnect", "DBIConnection", function(conn, ...) {
   poolReturn(conn)
 })
 
-## Ideally this would also reset the connection more fully (ex: reset
-## all user-defined variables set with `SET` back to their default values).
-## Currently, there isn't a handy dbResetConnection() generic in DBI, so
-## this functionality is not yet here. Until then, our reccomendation is
-## that, if you absolutely need to set variables, or somehow modify the
-## connection's defaults, you might not want to use the pool package. It
-## won't stop you, but it does mean that the next time you fetch a connection,
-## you'll never be sure if this is a brand new connection with the default
-## settings OR a connection that you have previsouly returned to pool
-## AFTER you changed the defaults...
+## This method used to attempt to clean up for you if it
+## detected open results sets. However, different database
+## drivers implement different DBI methods and this quickly
+## became unwieldy. From now on, pool will not reset a
+## connection's state back to a clean slate (which is not
+## something to worry about unless users are explictly
+## checking out connections -- only necessary for complicated
+## transactions).
 #' @export
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
-  rs <- dbListResults(object)
-  lapply(rs, function(x) {
-    if (dbIsValid(x)) {
-      dbClearResult(x)
-      dbRollback(object)
-    }
-  })
+  invisible()
 })
 
 #' @export
