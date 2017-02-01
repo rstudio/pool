@@ -9,7 +9,7 @@
 \alias{dbListFields,Pool-method}
 \alias{dbListResults,Pool-method}
 \alias{dbListTables,Pool-method}
-\alias{dbReadTable,Pool-method}
+\alias{dbReadTable,Pool,ANY-method}
 \alias{dbRemoveTable,Pool-method}
 \alias{dbSendQuery,Pool-method}
 \alias{dbWriteTable,Pool-method}
@@ -27,7 +27,7 @@
 
 \S4method{dbListTables}{Pool}(conn, ...)
 
-\S4method{dbReadTable}{Pool}(conn, name, ...)
+\S4method{dbReadTable}{Pool,ANY}(conn, name, ...)
 
 \S4method{dbWriteTable}{Pool}(conn, name, value, ...)
 

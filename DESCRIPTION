@@ -26,7 +26,9 @@ Suggests:
     RSQLite,
     RPostgreSQL,
     RPostgres
-Remotes: rstats-db/RPostgres
+Remotes:
+    rstats-db/DBI,
+    rstats-db/RPostgres
 URL: https://github.com/bborgesr/pool
 BugReports: https://github.com/bborgesr/pool/issues
 LazyData: TRUE

@@ -13,20 +13,19 @@ NULL
 #' @name DBI-connection-interpolate
 NULL
 
-#' @param _con,`_sql`,... See \code{\link[DBI]{sqlInterpolate}}.
+#' @param conn,sql,...,.dots See \code{\link[DBI]{sqlInterpolate}}.
 #' @export
 #' @rdname DBI-connection-interpolate
-setMethod("sqlInterpolate", "Pool", function(`_con`, `_sql`, ...) {
-  `_connection` <- poolCheckout(`_con`)
-  on.exit(poolReturn(`_connection`))
-  DBI::sqlInterpolate(`_connection`, `_sql`, ...)
+setMethod("sqlInterpolate", "Pool", function(conn, sql, ..., .dots = list()) {
+  connection <- poolCheckout(conn)
+  on.exit(poolReturn(connection))
+  DBI::sqlInterpolate(connection, sql, ..., .dots)
 })
 
-#' @param con,sql See \code{\link[DBI]{sqlParseVariables}}.
 #' @export
 #' @rdname DBI-connection-interpolate
-setMethod("sqlParseVariables", "Pool", function(con, sql, ...) {
-  connection <- poolCheckout(con)
+setMethod("sqlParseVariables", "Pool", function(conn, sql, ...) {
+  connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::sqlParseVariables(connection, sql, ...)
 })
