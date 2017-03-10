@@ -19,7 +19,11 @@ NULL
 setMethod("sqlInterpolate", "Pool", function(conn, sql, ..., .dots = list()) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
-  DBI::sqlInterpolate(connection, sql, ..., .dots)
+  if (identical(list(), .dots)) {
+    DBI::sqlInterpolate(connection, sql, ...)
+  } else {
+    DBI::sqlInterpolate(connection, sql, .dots = .dots)
+  }
 })
 
 #' @export
