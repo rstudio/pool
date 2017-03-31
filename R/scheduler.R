@@ -72,11 +72,14 @@ NaiveScheduler <- R6Class("NaiveScheduler",
     executeTasks = function() {
       while (TRUE) {
         tasks <- sort(ls(private$scheduledTasks))
+        cat("tasks: ", paste(tasks, collapse = ","), "\n",file=stderr())
         if (length(tasks) == 0) break
         task <- private$scheduledTasks[[tasks[[1]]]]
+        cat("task: ", format(task), "\n", file = stderr())
         rm(list = tasks[[1]], envir = private$scheduledTasks)
+        cat("ls: ", ls(private$scheduledTasks), "\n",file=stderr())
         self$protect({
-          if (!is.null(task)) task()
+          if (is.function(task)) task() else cat("task is NULL", "\n", file=stderr())
         })
       }
     })
