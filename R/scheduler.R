@@ -79,7 +79,8 @@ NaiveScheduler <- R6Class("NaiveScheduler",
         rm(list = tasks[[1]], envir = private$scheduledTasks)
         cat("ls: ", ls(private$scheduledTasks), "\n",file=stderr())
         self$protect({
-          if (is.function(task)) task() else cat("task is NULL", "\n", file=stderr())
+          cat(format(task), "\n", file=stderr())
+          task()
         })
       }
     })
