@@ -26,8 +26,8 @@ describe("release", {
     obj <- poolCheckout(pool)
     failOnPassivate <<- TRUE
     expect_error(poolReturn(obj),
-      "Object could not be returned back to the pool. ",
-      "It was destroyed instead.")
+      paste("Object could not be returned back to the pool.",
+            "It was destroyed instead."))
     failOnPassivate <<- FALSE
     checkCounts(pool, free = 0, taken = 0)
   })
