@@ -2,6 +2,9 @@ pool
 ======
 ##### *Object Pooling in R*
 
+We're currently working to bring pool up to speed with the newly released version of `dplyr` (0.7.0) and the brand new `dbplyr`. Until then, all code examples in `pool` that use `dplyr` assume that you are using `dplyr` < 0.7.0. We apologize for the inconvenience!
+------
+
 *Travis:* [![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
 
 *AppVeyor:* [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstudio/pool?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/pool)
