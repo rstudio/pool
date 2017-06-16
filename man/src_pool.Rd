@@ -75,6 +75,7 @@ or you'll risk runnign out of connections. See
 \href{http://rstudio.com}{this article} to learn more about
 using \code{dplyr} together with \code{pool} in a Shiny app.)
 }
+
 \examples{
 \dontrun{
 pool <- dbPool(
@@ -97,4 +98,3 @@ src_pool(pool) \%>\% tbl("City") \%>\% head(5)
 poolClose(pool)
 }
 }
-

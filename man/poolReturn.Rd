@@ -15,4 +15,3 @@ Should be called by the end user if they previously fetched
 an object directly using \code{object <- poolCheckout(pool)}
 and are now done with said object.
 }
-

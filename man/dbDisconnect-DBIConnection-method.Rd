@@ -19,4 +19,3 @@ not close the connection and free the associated resources. Rather,
 it simply returns the connection back to pool, which then decides
 whether to keep it around or actually destroy it.
 }
-

@@ -16,4 +16,3 @@ object, that is not returned to the pool automatically.
 When you don't longer need the object, be sure to return it
 to the pool using \code{poolReturn(object)}.
 }
-

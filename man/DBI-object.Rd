@@ -23,4 +23,3 @@ Pool object wrappers around DBIObject methods. See
 and \code{\link[DBI]{dbIsValid}} for the original
 documentation.
 }
-

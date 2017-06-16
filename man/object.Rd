@@ -5,14 +5,14 @@
 \alias{object}
 \alias{onActivate}
 \alias{onActivate,ANY-method}
-\alias{onDestroy}
-\alias{onDestroy,ANY-method}
-\alias{onDestroy,DBIConnection-method}
 \alias{onPassivate}
 \alias{onPassivate,ANY-method}
-\alias{onPassivate,DBIConnection-method}
+\alias{onDestroy}
+\alias{onDestroy,ANY-method}
 \alias{onValidate}
 \alias{onValidate,ANY-method}
+\alias{onPassivate,DBIConnection-method}
+\alias{onDestroy,DBIConnection-method}
 \alias{onValidate,DBIConnection-method}
 \title{Pooled object methods.}
 \usage{
@@ -42,4 +42,3 @@ which are then called by the Pool class methods. These should
 not be called directly either by backend authors or by the end
 users.
 }
-

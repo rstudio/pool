@@ -22,4 +22,3 @@ the reverse -- parsing interpolated variables from SQL. See
 \code{\link[DBI]{sqlParseVariables}} for the original
 documentation.
 }
-

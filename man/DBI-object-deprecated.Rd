@@ -3,9 +3,9 @@
 \docType{methods}
 \name{DBI-object-deprecated}
 \alias{DBI-object-deprecated}
-\alias{SQLKeywords,Pool-method}
-\alias{isSQLKeyword,Pool,character-method}
 \alias{make.db.names,Pool,character-method}
+\alias{isSQLKeyword,Pool,character-method}
+\alias{SQLKeywords,Pool-method}
 \title{Make R identifiers into legal SQL identifiers.}
 \usage{
 \S4method{make.db.names}{Pool,character}(dbObj, snames,
@@ -26,4 +26,3 @@ Note that these methods are DEPRECATED. Please use
 \code{dbQuoteIdentifier} (or possibly \code{dbQuoteString})
 instead, as documented in \code{\link{DBI-connection-quote}}.
 }
-

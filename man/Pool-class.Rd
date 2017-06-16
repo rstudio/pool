@@ -7,4 +7,3 @@
 \description{
 S4 class for compatibility with DBI methods
 }
-

@@ -23,4 +23,3 @@ are now yourself responsible for releasing the connection
 (using \code{poolReturn(conn)} or \code{dbDisconnect(conn)})
 at the appropriate time.
 }
-

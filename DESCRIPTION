@@ -47,4 +47,4 @@ Collate:
     'DBI-object-deprecated.R'
     'DBI-object.R'
     'DBI-pool.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

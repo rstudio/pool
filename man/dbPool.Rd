@@ -66,4 +66,3 @@ dbGetQuery(pool, "SELECT * from City LIMIT 5;")
 poolClose(pool)
 }
 }
-

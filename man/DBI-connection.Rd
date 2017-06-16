@@ -3,16 +3,16 @@
 \docType{methods}
 \name{DBI-connection}
 \alias{DBI-connection}
-\alias{dbExecute,Pool,ANY-method}
-\alias{dbExistsTable,Pool-method}
+\alias{dbSendQuery,Pool-method}
 \alias{dbGetQuery,Pool,ANY-method}
-\alias{dbListFields,Pool-method}
+\alias{dbExecute,Pool,ANY-method}
 \alias{dbListResults,Pool-method}
+\alias{dbListFields,Pool-method}
 \alias{dbListTables,Pool-method}
 \alias{dbReadTable,Pool,ANY-method}
-\alias{dbRemoveTable,Pool-method}
-\alias{dbSendQuery,Pool-method}
 \alias{dbWriteTable,Pool-method}
+\alias{dbExistsTable,Pool-method}
+\alias{dbRemoveTable,Pool-method}
 \title{DBIConnection methods.}
 \usage{
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
@@ -55,4 +55,3 @@ documentation, see:
  \item \code{\link[DBI]{dbRemoveTable}}
 }
 }
-

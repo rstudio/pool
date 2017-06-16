@@ -42,4 +42,3 @@ release the connection yourself.
 See \code{\link[DBI]{transactions}} for the original
 documentation.
 }
-

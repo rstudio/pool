@@ -3,9 +3,9 @@
 \docType{methods}
 \name{DBI-connection-sql}
 \alias{DBI-connection-sql}
-\alias{sqlAppendTable,Pool-method}
-\alias{sqlCreateTable,Pool-method}
 \alias{sqlData,Pool-method}
+\alias{sqlCreateTable,Pool-method}
+\alias{sqlAppendTable,Pool-method}
 \title{Creating and manipulating SQL tables.}
 \usage{
 \S4method{sqlData}{Pool}(con, value, row.names = NA, ...)
@@ -29,4 +29,3 @@ with the creation and manipulation of SQL tables. See
 and \code{\link[DBI]{sqlAppendTable}} for the original
 documentation.
 }
-

@@ -3,11 +3,11 @@
 \docType{methods}
 \name{DBI-connection-quote}
 \alias{DBI-connection-quote}
+\alias{dbQuoteIdentifier,Pool,character-method}
 \alias{dbQuoteIdentifier,Pool,SQL-method}
 \alias{dbQuoteIdentifier,Pool,Table-method}
-\alias{dbQuoteIdentifier,Pool,character-method}
-\alias{dbQuoteString,Pool,SQL-method}
 \alias{dbQuoteString,Pool,character-method}
+\alias{dbQuoteString,Pool,SQL-method}
 \title{SQL quoting.}
 \usage{
 \S4method{dbQuoteIdentifier}{Pool,character}(conn, x, ...)
@@ -28,4 +28,3 @@ Pool object wrappers around DBIConnection methods that deal
 with SQL escaping needs. See \code{\link[DBI]{SQL}} for the
 original documentation.
 }
-
