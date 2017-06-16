@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 inst/doc
+Dockerfile
+.DS_Store
