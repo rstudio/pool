@@ -9,25 +9,23 @@ temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE`",
   "`con <- poolCheckout(pool)`, and then release the connection ",
   "back to the pool when you're finished (`poolReturn(con)`).")
 
-# #' @export
-# copy_to.Pool <-  {
-#   db_con <- poolCheckout(con)
-#   on.exit(poolReturn(db_con))
-#   db_analyze(db_con, table = table, ... = ...)
-# }
-#
-#
-# #' @export
-# tbl.Pool <- function(con, table, ...) {
-#   db_con <- poolCheckout(con)
-#   on.exit(poolReturn(db_con))
-#   db_analyze(db_con, table = table, ... = ...)
-# }
+# --- These generics are set in dplyr (not database-specific)
+#' @export
+copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
+  overwrite = FALSE, ...) {
+    db_con <- poolCheckout(dest)
+    on.exit(poolReturn(db_con))
+    copy_to(db_con, df = df, name = name, overwrite = overwrite, ... = ...)
+}
 
+#' @export
+tbl.Pool <- function(src, from, ...) {
+  db_con <- poolCheckout(src)
+  on.exit(poolReturn(db_con))
+  tbl(db_con, from = from, ... = ...)
+}
 
-#-----
-
-
+# --- These generics are set in dplyr (database-specific)
 #' @export
 db_analyze.Pool <- function(con, table, ...) {
   db_con <- poolCheckout(con)
@@ -40,14 +38,6 @@ db_begin.Pool <- function(con, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_begin(db_con, ... = ...)
-}
-
-#' @export
-db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  db_collect(db_con, sql = sql, n = n,
-    warn_incomplete = warn_incomplete, ... = ...)
 }
 
 #' @export
@@ -66,19 +56,6 @@ db_compute.Pool <- function(con, table, sql, temporary = TRUE,
     db_compute(db_con, table = table, sql = sql,
       temporary = temporary, unique_indexes = unique_indexes,
       indexes = indexes, ... = ...)
-}
-
-#' @export
-db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
-  types = NULL, temporary = TRUE, unique_indexes = NULL,
-  indexes = NULL, analyze = TRUE, ...) {
-    if (temporary) stop(temporaryErrorMessage)
-    db_con <- poolCheckout(con)
-    on.exit(poolReturn(db_con))
-    db_copy_to(db_con, table = table, values = values,
-      overwrite = overwrite, types = types, temporary = temporary,
-      unique_indexes = unique_indexes, indexes = indexes,
-      analyze = analyze, ... = ...)
 }
 
 #' @export
@@ -188,13 +165,6 @@ db_save_query.Pool <- function(con, sql, name, temporary = TRUE, ...) {
 }
 
 #' @export
-db_sql_render.Pool <- function(con, sql, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  db_sql_render(db_con, sql = sql, ... = ...)
-}
-
-#' @export
 db_write_table.Pool <- function(con, table, types, values,
   temporary = FALSE, ...) {
     if (temporary) stop(temporaryErrorMessage)
@@ -209,13 +179,6 @@ sql_escape_ident.Pool <- function(con, x) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   sql_escape_ident(db_con, x = x)
-}
-
-#' @export
-sql_escape_logical.Pool <- function(con, x) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  sql_escape_logical(db_con, x = x)
 }
 
 #' @export
@@ -269,4 +232,51 @@ sql_translate_env.Pool <- function(con) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   sql_translate_env(db_con)
+}
+
+# --- These generics are set in dbplyr (database-specific)
+#' @export
+db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  db_collect(db_con, sql = sql, n = n,
+    warn_incomplete = warn_incomplete, ... = ...)
+}
+
+#' @export
+db_compute.Pool <- function(con, table, sql, temporary = TRUE,
+  unique_indexes = list(), indexes = list(), ...) {
+  if (temporary) stop(temporaryErrorMessage)
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  db_compute(db_con, table = table, sql = sql,
+    temporary = temporary, unique_indexes = unique_indexes,
+    indexes = indexes, ... = ...)
+}
+
+#' @export
+db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
+  types = NULL, temporary = TRUE, unique_indexes = NULL,
+  indexes = NULL, analyze = TRUE, ...) {
+  if (temporary) stop(temporaryErrorMessage)
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  db_copy_to(db_con, table = table, values = values,
+    overwrite = overwrite, types = types, temporary = temporary,
+    unique_indexes = unique_indexes, indexes = indexes,
+    analyze = analyze, ... = ...)
+}
+
+#' @export
+db_sql_render.Pool <- function(con, sql, ...) {
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  db_sql_render(db_con, sql = sql, ... = ...)
+}
+
+#' @export
+sql_escape_logical.Pool <- function(con, x) {
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  sql_escape_logical(db_con, x = x)
 }
