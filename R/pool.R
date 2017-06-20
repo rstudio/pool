@@ -9,7 +9,7 @@ NULL
 #'
 #' @name pool
 #' @docType package
-#' @import DBI R6
+#' @import DBI R6 dplyr dbplyr
 NULL
 
 #' @import methods
