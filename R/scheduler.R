@@ -12,7 +12,7 @@ NULL
 ## executed as soon as possible (either immediately if
 ## `schedule` is called in an unprotected scope, or right
 ## after the execution of the `protect` function finishes).
-NaiveScheduler <- R6Class("NaiveScheduler",
+NaiveScheduler <- R6::R6Class("NaiveScheduler",
   public = list(
 
     initialize = function() {
@@ -95,7 +95,7 @@ NaiveScheduler <- R6Class("NaiveScheduler",
 ## any call to `NaiveScheduler$protect`). This ensures that
 ## `NaiveScheduler$protect` functions as desired (see the
 ## comments in NaiveScheduler for more on that).
-RefCount <- R6Class("RefCount",
+RefCount <- R6::R6Class("RefCount",
   public = list(
 
     initialize = function(callback) {
