@@ -17,12 +17,12 @@ Depends:
 Imports:
     DBI,
     R6,
+    dplyr,
     dbplyr
 Suggests:
     knitr,
     rmarkdown,
     testthat,
-    dplyr,
     RMySQL,
     RSQLite,
     RPostgreSQL,
