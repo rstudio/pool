@@ -1,13 +1,16 @@
 #' @include DBI.R
 NULL
 
-temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE`",
-  "when using a Pool object, since temporary tables are local to a ",
-  "connection, and there's no guarantee you'll get the same ",
-  "connection back next time. You must either create a permanent ",
-  "table, or checkout a connection from `pool` directly with ",
-  "`con <- poolCheckout(pool)`, and then release the connection ",
-  "back to the pool when you're finished (`poolReturn(con)`).")
+stopIfTemporary <- function(temporary) {
+  temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE`",
+    "when using a Pool object, since temporary tables are local to a ",
+    "connection, and there's no guarantee you'll get the same ",
+    "connection back next time. You must either create a permanent ",
+    "table, or checkout a connection from `pool` directly with ",
+    "`con <- poolCheckout(pool)`, and then release the connection ",
+    "back to the pool when you're finished (`poolReturn(con)`).")
+  if (temporary) stop(temporaryErrorMessage)
+}
 
 # --- These generics are set in dplyr (not database-specific)
 #' @export
@@ -50,7 +53,7 @@ db_commit.Pool <- function(con, ...) {
 #' @export
 db_compute.Pool <- function(con, table, sql, temporary = TRUE,
   unique_indexes = list(), indexes = list(), ...) {
-    if (temporary) stop(temporaryErrorMessage)
+    stopIfTemporary(temporary)
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
     db_compute(db_con, table = table, sql = sql,
@@ -78,7 +81,7 @@ db_create_indexes.Pool <- function(con, table, indexes = NULL,
 
 #' @export
 db_create_table.Pool <- function(con, table, types, temporary = FALSE, ...) {
-  if (temporary) stop(temporaryErrorMessage)
+  stopIfTemporary(temporary)
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_create_table(db_con, table = table, types = types,
@@ -157,7 +160,7 @@ db_rollback.Pool <- function(con, ...) {
 
 #' @export
 db_save_query.Pool <- function(con, sql, name, temporary = TRUE, ...) {
-  if (temporary) stop(temporaryErrorMessage)
+  stopIfTemporary(temporary)
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_save_query(db_con, sql = sql, name = name,
@@ -167,7 +170,7 @@ db_save_query.Pool <- function(con, sql, name, temporary = TRUE, ...) {
 #' @export
 db_write_table.Pool <- function(con, table, types, values,
   temporary = FALSE, ...) {
-    if (temporary) stop(temporaryErrorMessage)
+    stopIfTemporary(temporary)
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
     db_write_table(db_con, table = table, types = types,
@@ -246,25 +249,25 @@ db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
 #' @export
 db_compute.Pool <- function(con, table, sql, temporary = TRUE,
   unique_indexes = list(), indexes = list(), ...) {
-  if (temporary) stop(temporaryErrorMessage)
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  db_compute(db_con, table = table, sql = sql,
-    temporary = temporary, unique_indexes = unique_indexes,
-    indexes = indexes, ... = ...)
+    stopIfTemporary(temporary)
+    db_con <- poolCheckout(con)
+    on.exit(poolReturn(db_con))
+    db_compute(db_con, table = table, sql = sql,
+      temporary = temporary, unique_indexes = unique_indexes,
+      indexes = indexes, ... = ...)
 }
 
 #' @export
 db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
   types = NULL, temporary = TRUE, unique_indexes = NULL,
   indexes = NULL, analyze = TRUE, ...) {
-  if (temporary) stop(temporaryErrorMessage)
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  db_copy_to(db_con, table = table, values = values,
-    overwrite = overwrite, types = types, temporary = temporary,
-    unique_indexes = unique_indexes, indexes = indexes,
-    analyze = analyze, ... = ...)
+    stopIfTemporary(temporary)
+    db_con <- poolCheckout(con)
+    on.exit(poolReturn(db_con))
+    db_copy_to(db_con, table = table, values = values,
+      overwrite = overwrite, types = types, temporary = temporary,
+      unique_indexes = unique_indexes, indexes = indexes,
+      analyze = analyze, ... = ...)
 }
 
 #' @export
