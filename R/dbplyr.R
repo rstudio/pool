@@ -51,17 +51,6 @@ db_commit.Pool <- function(con, ...) {
 }
 
 #' @export
-db_compute.Pool <- function(con, table, sql, temporary = TRUE,
-  unique_indexes = list(), indexes = list(), ...) {
-    stopIfTemporary(temporary)
-    db_con <- poolCheckout(con)
-    on.exit(poolReturn(db_con))
-    db_compute(db_con, table = table, sql = sql,
-      temporary = temporary, unique_indexes = unique_indexes,
-      indexes = indexes, ... = ...)
-}
-
-#' @export
 db_create_index.Pool <- function(con, table, columns, name = NULL,
   unique = FALSE, ...) {
     db_con <- poolCheckout(con)
