@@ -2,9 +2,6 @@ pool
 ======
 ##### *Object Pooling in R*
 
-We're currently working to bring pool up to speed with the newly released version of `dplyr` (0.7.0) and the brand new `dbplyr`. Until then, all code examples in `pool` that use `dplyr` assume that you are using `dplyr` < 0.7.0. We apologize for the inconvenience!
-------
-
 *Travis:* [![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
 
 *AppVeyor:* [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstudio/pool?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/pool)
@@ -67,12 +64,12 @@ The timed code only takes about 110ms to run. This makes it clear that getting a
 
 ### Installation and Loading
 
-To install the most up-to-date development versions of `DBI`, `pool` and `shiny`, use:
+To install the most stable versions of `DBI`, `shiny` and `pool` (not yet on CRAN), use:
 
 ```r
-devtools::install_github("rstats-db/DBI")
+install.packages("DBI")
+install.packages("shiny")
 devtools::install_github("rstudio/pool")
-devtools::install_github("rstudio/shiny")
 ```
 
 Then, at the start of your R session or your Shiny app, make sure to load the packages:
