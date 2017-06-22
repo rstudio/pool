@@ -1,22 +1,8 @@
 #' @include scheduler.R
 NULL
 
-#' Object Pooling in R.
-#'
-#' Creates objects pools for various types of objects in R to
-#' make it less computationally expensive to get a fetch and
-#' release them.
-#'
-#' @name pool
-#' @docType package
-#' @import DBI R6
-NULL
-
-#' @import methods
-NULL
-
 #' @export
-Pool <- R6Class("Pool",
+Pool <- R6::R6Class("Pool",
   public = list(
 
     valid = NULL,

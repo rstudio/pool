@@ -1,7 +1,7 @@
 Package: pool
 Type: Package
 Title: Object Pooling in R
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(
     person("Barbara", "Borges", email = "barbara@rstudio.com",
       role = c("aut", "cre")),
@@ -16,12 +16,14 @@ Depends:
     methods
 Imports:
     DBI,
-    R6
+    R6,
+    dplyr,
+    dbplyr
 Suggests:
     knitr,
     rmarkdown,
     testthat,
-    dplyr,
+    tibble,
     RMySQL,
     RSQLite,
     RPostgreSQL,
@@ -47,4 +49,5 @@ Collate:
     'DBI-object-deprecated.R'
     'DBI-object.R'
     'DBI-pool.R'
+    'dbplyr.R'
 RoxygenNote: 6.0.1

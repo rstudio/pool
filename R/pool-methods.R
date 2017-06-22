@@ -11,8 +11,7 @@ poolCreate <- function(factory, minSize = 1, maxSize = Inf,
                        idleTimeout = 60000, validationInterval = 2000,
                        state = NULL) {
   Pool$new(factory, minSize, maxSize,
-    idleTimeout, validationInterval, state
-  )
+    idleTimeout, validationInterval, state)
 }
 
 #' Checks out an object from the pool.
