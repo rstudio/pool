@@ -12,10 +12,8 @@ NULL
 #' arguments (see the example below).
 #'
 #' @param drv An object that inherits from \code{\link[DBI]{DBIDriver-class}},
-#' or a character string specifying the name of DBMS driver, e.g.,
-#' "SQLite", "MySQL", "PostgreSQL", or an existing
-#' \code{\link[DBI]{DBIConnection-class}} object (in order to clone an
-#' existing connection).
+#'   or an existing \code{\link[DBI]{DBIConnection-class}} object (in order to
+#'   clone an existing connection).
 #'
 #' @param ... Arguments needed for both \code{\link[DBI]{dbConnect}}
 #' (mandatory if required by the \code{DBIDriver} you're using) and
@@ -61,44 +59,8 @@ NULL
 #' poolClose(pool)
 #' }
 dbPool <- function(drv, ..., validateQuery = NULL) {
-  if (is.character(drv)) {
-    if (drv == "SQLite") {
-      if (!requireNamespace("RSQLite", quietly = TRUE)) {
-        stop("RSQLite package required", call. = FALSE)
-      }
-      drv = RSQLite::SQLite()
-    }
-    else if (drv == "MySQL") {
-      if (!requireNamespace("RMySQL", quietly = TRUE)) {
-        stop("RMySQL package required", call. = FALSE)
-      }
-      drv = RMySQL::MySQL()
-    }
-    else if (drv == "PostgreSQL") {
-      if (!requireNamespace("RPostgreSQL", quietly = TRUE)) {
-        stop("RPostgreSQL package required", call. = FALSE)
-      }
-      drv = RPostgreSQL::PostgreSQL()
-    }
-    else if (drv == "Postgres") {
-      if (!requireNamespace("RPostgres", quietly = TRUE)) {
-        stop("RPostgres package required", call. = FALSE)
-      }
-      drv = RPostgres::Postgres()
-    }
-  }
-
   state <- new.env(parent = emptyenv())
   state$validateQuery <- validateQuery
-
-  ## make a note of DBI driver
-  ## (to ease dplyr compatibility later on)
-  isDriver <- function(arg) length(grep(arg, list(drv))) == 1
-  if (isDriver("SQLiteDriver")) state$drv <- "sqlite"
-  else if (isDriver("MySQLDriver")) state$drv <- "mysql"
-  else if (isDriver("PostgreSQLDriver") || isDriver("PqDriver")) {
-    state$drv <- "postgres"
-  }
 
   dots <- list(...)
   poolCreate_argnames <- setdiff(names(formals(poolCreate)), c("factory", "state"))

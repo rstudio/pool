@@ -8,10 +8,8 @@ dbPool(drv, ..., validateQuery = NULL)
 }
 \arguments{
 \item{drv}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},
-or a character string specifying the name of DBMS driver, e.g.,
-"SQLite", "MySQL", "PostgreSQL", or an existing
-\code{\link[DBI]{DBIConnection-class}} object (in order to clone an
-existing connection).}
+or an existing \code{\link[DBI]{DBIConnection-class}} object (in order to
+clone an existing connection).}
 
 \item{...}{Arguments needed for both \code{\link[DBI]{dbConnect}}
 (mandatory if required by the \code{DBIDriver} you're using) and
