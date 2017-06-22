@@ -23,6 +23,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat,
+    tibble,
     RMySQL,
     RSQLite,
     RPostgreSQL,

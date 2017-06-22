@@ -2,7 +2,7 @@
 NULL
 
 stopIfTemporary <- function(temporary) {
-  temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE`",
+  temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE` ",
     "when using a Pool object, since temporary tables are local to a ",
     "connection, and there's no guarantee you'll get the same ",
     "connection back next time. You must either create a permanent ",
@@ -15,7 +15,8 @@ stopIfTemporary <- function(temporary) {
 # --- These generics are set in dplyr (not database-specific)
 #' @export
 copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
-  overwrite = FALSE, ...) {
+  overwrite = FALSE, temporary = TRUE, ...) {
+    stopIfTemporary(temporary)
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
     copy_to(db_con, df = df, name = name, overwrite = overwrite, ... = ...)
