@@ -101,7 +101,7 @@ Pool <- R6::R6Class("Pool",
       })
 
       ## set up a task to destroy the object after `idleTimeout`
-      ## millis, if we're over the minimum number of objects
+      ## secs, if we're over the minimum number of objects
       taskHandle <- scheduleTask(
         function() {
           if (self$counters$free + self$counters$taken > self$minSize) {
