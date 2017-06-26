@@ -5,6 +5,8 @@ NULL
 scheduleTask <- function(func, delay) {
   force(func)
   later::later(function() {
+    op <- options(warn=1)
+    on.exit(options(op))
     if (!is.null(func))
       func()
   }, delay)
