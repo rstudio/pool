@@ -8,7 +8,7 @@ setClass("Pool")
 ## documented manually, with the Pool object
 #' @export
 poolCreate <- function(factory, minSize = 1, maxSize = Inf,
-                       idleTimeout = 60000, validationInterval = 2000,
+                       idleTimeout = 60, validationInterval = 600,
                        state = NULL) {
   Pool$new(factory, minSize, maxSize,
     idleTimeout, validationInterval, state)

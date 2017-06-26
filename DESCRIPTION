@@ -18,7 +18,8 @@ Imports:
     DBI,
     R6,
     dplyr,
-    dbplyr
+    dbplyr,
+    later
 Suggests:
     knitr,
     rmarkdown,
