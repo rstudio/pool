@@ -6,7 +6,7 @@ describe("pool", {
 
   describe("basic mechanics", {
     pool <- poolCreate(MockPooledObj$new,
-      minSize = 1, maxSize = 3, idleTimeout = 1000)
+      minSize = 1, maxSize = 3, idleTimeout = 1)
 
     it("can be created", {
       expect_is(pool, "Pool")
@@ -23,16 +23,16 @@ describe("pool", {
       checkCounts(pool, free = 0)
     })
 
-    it("finalizer runs", {
-      pool <- poolCreate(MockPooledObj$new,
-        minSize = 1, maxSize = 3, idleTimeout = 1000)
-      rm(pool)
-    })
+    # it("finalizer runs", {
+    #   pool <- poolCreate(MockPooledObj$new,
+    #     minSize = 1, maxSize = 3, idleTimeout = 1)
+    #   rm(pool)
+    # })
   })
 
   describe("object operations", {
     pool <- poolCreate(MockPooledObj$new,
-      minSize = 1, maxSize = 3, idleTimeout = 1000)
+      minSize = 1, maxSize = 3, idleTimeout = 1)
 
     it("supports generic fetch/release", {
       checkCounts(pool, free = 1, taken = 0)

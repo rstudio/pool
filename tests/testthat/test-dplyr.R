@@ -13,7 +13,7 @@ describe("pool package", {
       valid = TRUE,
       minSize = 1,
       maxSize = Inf,
-      idleTimeout = 60000,
+      idleTimeout = 60,
       pooledObjectClass = "SQLiteConnection",
       numberFreeObjects = 0,
       numberTakenObjects = 1

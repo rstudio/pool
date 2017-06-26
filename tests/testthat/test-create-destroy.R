@@ -15,7 +15,7 @@ describe("createObject", {
 describe("destroyObject", {
 
   pool <- poolCreate(MockPooledObj$new,
-    minSize = 1, maxSize = 3, idleTimeout = 1000)
+    minSize = 1, maxSize = 3, idleTimeout = 1)
 
   it("throws if onDestroy fails", {
     checkCounts(pool, free = 1, taken = 0)
@@ -26,18 +26,19 @@ describe("destroyObject", {
     checkCounts(pool, free = 0, taken = 2)
 
     ## since we're over the minSize, once we return `b` to
-    ## the pool, it will be destroyed immediately (since
-    ## we're using the default eager scheduler)
-    expect_warning(poolReturn(b),
-      "Object of class MockPooledObj could not be ",
-      "destroyed properly, but was successfully removed ",
-      "from pool.")
-    checkCounts(pool, free = 0, taken = 1)
-    failOnDestroy <<- FALSE
+    ## the pool, it will be destroyed after 1 second (since
+    ## that's what we set for `idleTimeout`)
+    later::later(function() {
+      expect_warning(poolReturn(b),
+        "Object of class MockPooledObj could not be ",
+        "destroyed properly, but was successfully removed ",
+        "from pool.")
+      checkCounts(pool, free = 0, taken = 1)
+      failOnDestroy <<- FALSE
+    }, 1.5)
 
     ## cleanup: return `a`
     poolReturn(a)
-    checkCounts(pool, free = 1, taken = 0)
   })
 
   poolClose(pool)
