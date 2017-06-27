@@ -23,10 +23,9 @@ clone an existing connection).}
   \code{minSize} (minimum number of connections that the pool should
   have at all times), \code{maxSize} (maximum number of connections
   that the pool may have at any time), \code{idleTimeout} (number
-  of milliseconds to wait before closing a connection, if the number
+  of seconds to wait before closing a connection, if the number
   of connection is above \code{minSize}), and \code{validationInterval}
-  (number of milliseconds to wait before validating the connection
-  again).
+  (number of seconds to wait before validating the connection again).
 }}
 
 \item{validateQuery}{The query to run to verify that the connection

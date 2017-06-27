@@ -18,6 +18,9 @@ NULL
 #' @importFrom R6 R6Class
 NULL
 
+#' @importFrom later later
+NULL
+
 #' @importFrom dplyr db_analyze
 #' @importFrom dplyr db_begin
 #' @importFrom dplyr db_commit
