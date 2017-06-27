@@ -307,9 +307,9 @@ Pool <- R6::R6Class("Pool",
       ## if the object has never been validated, set `lastValidated`
       ## to guarantee that it will be validated now
       if (is.null(lastValidated)) {
-        lastValidated <- Sys.time() - self$validationInterval - 1
+        lastValidated <- Sys.time() - self$validationInterval
       }
-      interval <- (Sys.time() - lastValidated) * 1000
+      interval <- Sys.time() - lastValidated
       if (interval >= self$validationInterval) {
         onValidate(object)
         pool_metadata$lastValidated <- Sys.time()
