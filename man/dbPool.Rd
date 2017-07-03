@@ -8,10 +8,8 @@ dbPool(drv, ..., validateQuery = NULL)
 }
 \arguments{
 \item{drv}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},
-or a character string specifying the name of DBMS driver, e.g.,
-"SQLite", "MySQL", "PostgreSQL", or an existing
-\code{\link[DBI]{DBIConnection-class}} object (in order to clone an
-existing connection).}
+or an existing \code{\link[DBI]{DBIConnection-class}} object (in order to
+clone an existing connection).}
 
 \item{...}{Arguments needed for both \code{\link[DBI]{dbConnect}}
 (mandatory if required by the \code{DBIDriver} you're using) and
@@ -25,10 +23,9 @@ existing connection).}
   \code{minSize} (minimum number of connections that the pool should
   have at all times), \code{maxSize} (maximum number of connections
   that the pool may have at any time), \code{idleTimeout} (number
-  of milliseconds to wait before closing a connection, if the number
+  of seconds to wait before closing a connection, if the number
   of connection is above \code{minSize}), and \code{validationInterval}
-  (number of milliseconds to wait before validating the connection
-  again).
+  (number of seconds to wait before validating the connection again).
 }}
 
 \item{validateQuery}{The query to run to verify that the connection

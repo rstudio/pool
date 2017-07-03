@@ -119,7 +119,7 @@ if (dbGetInfo(rs, what = "rowCount") > 5) {
   warning("dubious result -- rolling back transaction")
   dbRollback(conn)
 }
-poolReturn(conn)  ## alternatively, use: dbDisconnect(conn)
+poolReturn(conn)
 ```
 
 =========

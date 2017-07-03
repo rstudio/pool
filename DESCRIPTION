@@ -18,19 +18,16 @@ Imports:
     DBI,
     R6,
     dplyr,
-    dbplyr
+    dbplyr,
+    later
 Suggests:
     knitr,
     rmarkdown,
     testthat,
     tibble,
-    RMySQL,
-    RSQLite,
-    RPostgreSQL,
-    RPostgres
-Remotes: rstats-db/RPostgres
-URL: https://github.com/bborgesr/pool
-BugReports: https://github.com/bborgesr/pool/issues
+    RSQLite
+URL: https://github.com/rstudio/pool
+BugReports: https://github.com/bborgesr/rstudio/issues
 LazyData: TRUE
 VignetteBuilder: knitr
 Collate:
