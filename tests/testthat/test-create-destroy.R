@@ -1,4 +1,7 @@
 
+# MANUAL TEST REQUIRED
+# see examples/test-create-destroy-manual.R
+
 # Unfortunately this test is not possible right now, because the warnings
 # that are expected come after a `later::later()` call. There is a shortcoming
 # with `later` that causes this to behave differently than we'd expect:
