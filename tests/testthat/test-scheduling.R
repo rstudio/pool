@@ -1,3 +1,6 @@
+# Not sure how to test the scheduler using the new later implementation.
+# Need to figure this out.
+
 # source("utils.R")
 #
 # context("Pool scheduling")
