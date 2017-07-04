@@ -52,7 +52,7 @@ function called \code{dbBreak()} that allows for an early, silent exit
 with rollback. It can be called only from inside \code{poolWithTransaction}.
 }
 \examples{
-pool <- dbPool(RSQLite::SQLite(), ":memory:")
+pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
 
 dbWriteTable(pool, "cars", head(cars, 3))
 dbReadTable(pool, "cars")   # there are 3 rows
@@ -84,5 +84,7 @@ poolWithTransaction(pool, function(conn) {
   dbExecute(conn, "INSERT INTO cars (speed, dist) VALUES (3, 3);")
 })
 dbReadTable(pool, "cars")   # still 6 rows
+
+poolClose(pool)
 
 }

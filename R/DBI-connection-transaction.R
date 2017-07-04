@@ -106,7 +106,7 @@ setMethod("dbWithTransaction", "Pool", function(conn, code) {
 #' @return \code{func}'s return value.
 #'
 #' @examples
-#' pool <- dbPool(RSQLite::SQLite(), ":memory:")
+#' pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
 #'
 #' dbWriteTable(pool, "cars", head(cars, 3))
 #' dbReadTable(pool, "cars")   # there are 3 rows
@@ -138,6 +138,8 @@ setMethod("dbWithTransaction", "Pool", function(conn, code) {
 #'   dbExecute(conn, "INSERT INTO cars (speed, dist) VALUES (3, 3);")
 #' })
 #' dbReadTable(pool, "cars")   # still 6 rows
+#' 
+#' poolClose(pool)
 #'
 #' @export
 poolWithTransaction <- function(pool, func) {

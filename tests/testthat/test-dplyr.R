@@ -4,7 +4,7 @@ context("dplyr compatibility")
 
 describe("pool package", {
 
-  pool <- dbPool(RSQLite::SQLite(), path = ":memory:")
+  pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
 
   it("can create local SQLite pool", {
     expect_equal(class(pool), c("Pool", "R6"))

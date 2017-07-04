@@ -62,6 +62,11 @@ dbPool <- function(drv, ..., validateQuery = NULL) {
   state$validateQuery <- validateQuery
 
   dots <- list(...)
+
+  if (length(names(dots)) != length(dots)) {
+    stop("All arguments to `dbPool` must be named")
+  }
+
   poolCreate_argnames <- setdiff(names(formals(poolCreate)), c("factory", "state"))
   poolCreate_args <- dots[intersect(names(dots), poolCreate_argnames)]
   dbConnect_args <- dots[setdiff(names(dots), poolCreate_argnames)]
