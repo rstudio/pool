@@ -302,20 +302,17 @@ Pool <- R6::R6Class("Pool",
     ## secs have passed since the last validation (this allows
     ## us some performance gains)
     validate = function(object) {
-      message("Checking whether to validate object")
       pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
       lastValidated <- pool_metadata$lastValidated
       ## if the object has never been validated, set `lastValidated`
       ## to guarantee that it will be validated now
       if (is.null(lastValidated)) {
-        message("Never validated")
         lastValidated <- Sys.time() - self$validationInterval
       }
 
       interval <- difftime(Sys.time(), lastValidated, units = "secs") # ensure the interval is returned in seconds
 
       if (interval >= self$validationInterval) {
-        message("Validating object")
         onValidate(object)
         pool_metadata$lastValidated <- Sys.time()
       }
