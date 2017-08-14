@@ -309,7 +309,7 @@ Pool <- R6::R6Class("Pool",
       if (is.null(lastValidated)) {
         lastValidated <- Sys.time() - self$validationInterval
       }
-      interval <- Sys.time() - lastValidated
+      interval <- difftime(Sys.time(), lastValidated, "secs") # ensure the interval is returned in seconds
       if (interval >= self$validationInterval) {
         onValidate(object)
         pool_metadata$lastValidated <- Sys.time()
