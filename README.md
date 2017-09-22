@@ -1,90 +1,22 @@
 pool
 ======
-##### *Object Pooling in R*
+##### *Database Connection Pooling in R*
 
 *Travis:* [![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
 
 *AppVeyor:* [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstudio/pool?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/pool)
 
-This package enables the creation of object pools for various types of objects in R, to make it less computationally expensive to fetch one. Currently the only supported pooled objects are `DBI` connections (see the [`DBI` package](https://github.com/rstats-db/DBI) for more info), which can be used to query a database either directly through `DBI` or through `dplyr`.
-However, the `Pool` class is general enough to allow for pooling of any R objects, provided that someone implements the backend appropriately (creating the object factory class and all the required methods) -- a vignette with instructions on how to do so will be coming soon.
+# pool
+The goal of the `pool` package is to abstract away the logic of connection management and the performance cost of fetching a new connection from a remote database. These concerns are especially prominent in interactive contexts, like Shiny apps (which connect to a remote database) or even at the R console. So, while this package is of most practical value to Shiny developers, there is no harm if it is used in other contexts. Since `pool` integrates with both `DBI` and `dplyr`, there are very few things that will be new to you, if you're already using either of those packages. Essentially, you shouldn't feel the difference, with the exception of creating and closing a Pool object (as opposed to connecting and disconnecting a DBIConnection object).
 
-What follows is the main motivation behind the creation of this package and some fairly simple examples.
-
-### For a more comprehensive guide of how to integrate a database in a Shiny app see [the series of articles under the Databases section](http://shiny.rstudio.com/articles/) on Shiny's official website.
-
-#### In particular, [this article](http://shiny.rstudio.com/articles/pool-basics.html) serves as a good intro to database connection pooling in Shiny, with a complete app example.
-
-## Motivation
-
-In the case of connecting to a database using `DBI`, consider the following code:
+## Usage
+Here’s a simple example of using a pool within a Shiny app (feel free to try it yourself):
 
 ```r
-system.time({
-  conn <- dbConnect(
-    drv = RMySQL::MySQL(),
-    dbname = "shinydemo",
-    host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-    username = "guest",
-    password = "guest")
-  rs <- dbSendQuery(conn, "SELECT * FROM City LIMIT 5;")
-  dbClearResult(rs)
-  dbDisconnect(conn)
-})
-```
-
-On my machine, this takes on the order of 450 to 600ms to run. Now, if we connect to the database before we start our timer, we get a significant performance boost:
-
-```r
-conn <- dbConnect(
-  drv = RMySQL::MySQL(),
-  dbname = "shinydemo",
-  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-  username = "guest",
-  password = "guest")
-system.time({
-  rs <- dbSendQuery(conn, "SELECT * FROM City LIMIT 5;")
-  dbClearResult(rs)
-})
-dbDisconnect(conn)
-```
-
-The timed code only takes about 110ms to run. This makes it clear that getting a connection from the database is the performance bottleneck; the actual queries are much faster. Having a connection pool takes care of this problem by fetching a minimum number of connections and keeping them live, to be checked out of the pool as needed. Instead of using a pool, another possible solution to this would be to get a connection at the beginning of your session, use it whenever you want, and then close it at the end of your session. This is almost always a bad idea because:
-
-- since there is only one connection, it cannot handle simultaneous requests (this is especially an issue if you have a complicated app or if you have more than one session open at any time -- i.e. more than one user at the same time);
-- if the connection breaks at some point (maybe the database server crashed), you won't get a new connection (you have to exit the app and re-run it);
-- even if you're not making any queries at the moment (or if you leave your app running while your gone), you're gonna have an idle connection sitting around for no reason;
-- finally, even if you use use more than one connection per app (but fewer than one connection per query), it can be difficult to keep track of all your connections, since you'll be opening and closing them in potentially very different places.
-
-## Database connection pooling for Shiny apps
-
-`pool` to the rescue! The goal of `pool` is to let you write Shiny apps that connect to databases, without having to worry about connection management or performance. The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady.
-
-## Sample Usage
-
-### Installation and Loading
-
-To install the most stable versions of `DBI`, `shiny` and `pool` (not yet on CRAN), use:
-
-```r
-install.packages("DBI")
-install.packages("shiny")
-devtools::install_github("rstudio/pool")
-```
-
-Then, at the start of your R session or your Shiny app, make sure to load the packages:
-
-```r
-library(DBI)
-library(pool)
 library(shiny)
-```
+library(dplyr)
+library(pool)
 
-### Using the pool to query a database
-
-The pool package is at its most useful when you use it directly, rather than fetching an actual object from it. In the case of databases, this means that you use the Pool object directly to query the database, rather than first fetching a connection and then using that to query the database.
-
-```r
 pool <- dbPool(
   drv = RMySQL::MySQL(),
   dbname = "shinydemo",
@@ -92,38 +24,140 @@ pool <- dbPool(
   username = "guest",
   password = "guest"
 )
+onStop(function() {
+  poolClose(pool)
+})
+  
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
 
-dbGetQuery(pool, "SELECT * FROM City LIMIT 5;")
-#>   ID           Name CountryCode      District Population
-#> 1  1          Kabul         AFG         Kabol    1780000
-#> 2  2       Qandahar         AFG      Qandahar     237500
-#> 3  3          Herat         AFG         Herat     186800
-#> 4  4 Mazar-e-Sharif         AFG         Balkh     127800
-#> 5  5      Amsterdam         NLD Noord-Holland     731200
-```
-
-If this was intended as a Shiny app, you should be creating a pool at the start of the app (if you're not using a single-file app, you could put this at the top of `server.R` or in `global.R`). Then, reference that pool each time you make a query (usually at the reactive/function level). By default, on creation, the pool fetches and keeps around one idle connection. When you make a query to the pool, it will always use that connection, unless it happens to already be busy in another query (this becomes more likely if you have several sessions going on at the same time). If that's the case, the pool will fetch a second connection for the current query; once that's finished, the pool with hold on to it for a minute (by default). If that second connection is requested again in that period of time, the countdown resets. Otherwise, the pool disconnects it. So basically, the pool "knows" when it should have more connections and how to manage them (including disconnecting them when necessary).
-
-### Using a connection to query a database
-
-However, you can also fetch an actual DBIConnection object from the pool. However, this approach should be used with care, since this puts the onus of releasing the connection on you (the user). While this means that you still enjoy the performance benefits associated with having a pool, you lose the benefits of automatic connection management, since you are now yourself responsible for returning the connection to the pool (using `poolReturn(conn)`) at the appropriate time (otherwise, you get a leaked connection). This approach should really only be necessary when you want to perform a non-trivial SQL transaction. You cannot perform SQL transactions using a Pool object directly (because that would imply keeping a connection open and not knowing when to return it back to the pool). Here's an example how to handle transactions with `pool`:
-
-<!--
-For simple transactions, consider using `withTransaction` instead, which is safer since it does not require you to fetch and release the connection yourself.
--->
-
-```r
-conn <- poolCheckout(pool)
-rs <- dbSendQuery(conn, "SELECT * FROM City LIMIT 5;")
-if (dbGetInfo(rs, what = "rowCount") > 5) {
-  warning("dubious result -- rolling back transaction")
-  dbRollback(conn)
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    pool %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+  })
+  output$popPlot <- renderPlot({
+    df <- pool %>% tbl("City") %>% head(input$nrows) %>% collect()
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
 }
-poolReturn(conn)
+
+shinyApp(ui, server)
+```
+## Concept
+The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done.
+
+## Context and motivation
+When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertantly opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.  
+
+Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understading the problems described below.
+
+<details>
+  <summary><font color="blue">oneConnectionPerApp.R</font></summary>
+  
+```r
+library(shiny)
+library(dplyr)
+library(DBI)
+
+conn <- dbConnect(
+    drv = RMySQL::MySQL(),
+    dbname = "shinydemo",
+    host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+    username = "guest",
+    password = "guest"
+  )
+onStop(function() {
+  dbDisconnect(conn)
+})
+  
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
+  
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+  })
+  output$popPlot <- renderPlot({
+    df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
+}
+  
+shinyApp(ui, server)
 ```
 
-=========
+</details>
 
-### Issue and PR tracking (via [waffle.io](https://waffle.io/))
+<details>
+  <summary><font color="blue">oneConnectionPerQuery.R</font></summary>
+  
+```r
+library(shiny)
+library(dplyr)
+library(DBI)
 
-[![Throughput Graph](https://graphs.waffle.io/rstudio/pool/throughput.svg)](https://waffle.io/rstudio/pool/metrics/throughput)
+args <- list(
+  drv = RMySQL::MySQL(),
+  dbname = "shinydemo",
+  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+  username = "guest",
+  password = "guest"
+)
+  
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
+  
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    conn <- do.call(dbConnect, args)
+    on.exit(dbDisconnect(conn))
+    
+    conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+  })
+  output$popPlot <- renderPlot({
+    conn <- do.call(dbConnect, args)
+    on.exit(dbDisconnect(conn))
+    
+    df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
+}
+  
+shinyApp(ui, server)
+```
+
+</details>
+
+Opening only one connection per app makes it fast (because, in the whole app, you only fetch one connection) and your code is kept as simple as possible. However:
+
+- it cannot handle simultaneous requests (e.g. two sessions open, both querying the database at the same time);
+- if the connection breaks at some point (maybe the database server crashed), you won’t get a new connection (you have to exit the app and re-run it);
+- finally, if you are not quite at this extreme, and you use more than one connection per app (but fewer than one connection per query), it can be difficult to keep track of all your connections, since you’ll be opening and closing them in potentially very different places.
+
+While the other extreme of opening (and closing) one connection for each query you make resolves all of these points, it is terribly slow (each time we need to access the database, we first have to fetch a connection), and
+you need a lot more (boilerplate) code to connect and disconnect the connection within each reactive/function.
+
+The `pool` package was created so you don't have to worry about this at all. Since `pool` abstracts away the logic of connection management, for the vast majority of cases, you never have to deal with connections directly. Since the pool “knows” when it should have more connections and how to manage them, you have all the advantages of the second approach (one connection per query), without the disadvantages. You are still using one connection per query, but that connection is always fetched and returned to the pool, rather than getting it from the database directly. This is a whole lot faster and more efficient. Finally, the code is kept just as simple as the code in the first approach (only one connection for the entire app). In fact, if you look back at the `pool` Shiny app example above, you will notice that the code structure is essentially the same that you'd use to open a connection at the start of an app and close it at the end.
+
+## More resources
+
+- [db.rstudio.com](http://db.rstudio.com/) for a lot of best practices, articles and demos on databases in R and in RStudio.
+- [shiny.rstudio.com](http://shiny.rstudio.com/) to learn more about Shiny (there are also more articles, including on data and databases in [/articles](http://shiny.rstudio.com/articles/)).
