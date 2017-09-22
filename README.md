@@ -58,7 +58,7 @@ When you’re connecting to a database, it is important to manage your connectio
 Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understading the problems described below.
 
 <details>
-  <summary><font color="blue">oneConnectionPerApp.R</font></summary>
+  <summary><code>oneConnectionPerApp.R</code></summary>
   
 ```r
 library(shiny)
@@ -101,7 +101,7 @@ shinyApp(ui, server)
 </details>
 
 <details>
-  <summary><font color="blue">oneConnectionPerQuery.R</font></summary>
+  <summary><code>oneConnectionPerQuery.R</code></summary>
   
 ```r
 library(shiny)
@@ -145,6 +145,7 @@ shinyApp(ui, server)
 ```
 
 </details>
+<br>
 
 Opening only one connection per app makes it fast (because, in the whole app, you only fetch one connection) and your code is kept as simple as possible. However:
 
