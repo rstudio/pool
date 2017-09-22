@@ -1,15 +1,15 @@
 Package: pool
 Type: Package
-Title: Object Pooling in R
+Title: Object Pooling
 Version: 0.1.1
 Authors@R: c(
     person("Barbara", "Borges", email = "barbara@rstudio.com",
       role = c("aut", "cre")),
     person(family = "RStudio", role = "cph")
     )
-Description: Creates object pools for various types of objects in R to
-    make it less computationally expensive to fetch one. Currently the
-    only supported pooled objects are DBI connections.
+Description: Enables the creation of object pools, which make it less
+    computationally expensive to fetch a new object. Currently the
+    only supported pooled objects are 'DBI' connections.
 License: GPL-3
 Depends:
     R (>= 3.0.0),
@@ -21,15 +21,12 @@ Imports:
     dbplyr,
     later
 Suggests:
-    knitr,
-    rmarkdown,
     testthat,
     tibble,
     RSQLite
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
 LazyData: TRUE
-VignetteBuilder: knitr
 Collate:
     'utils.R'
     'scheduler.R'
