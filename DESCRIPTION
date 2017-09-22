@@ -27,7 +27,7 @@ Suggests:
     tibble,
     RSQLite
 URL: https://github.com/rstudio/pool
-BugReports: https://github.com/bborgesr/rstudio/issues
+BugReports: https://github.com/rstudio/pool/issues
 LazyData: TRUE
 VignetteBuilder: knitr
 Collate:
