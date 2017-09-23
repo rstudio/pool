@@ -2,11 +2,10 @@ pool
 ======
 ##### *Database Connection Pooling in R*
 
-*Travis:* [![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
+[![Travis-CI Build Status](https://travis-ci.org/rstudio/pool.svg?branch=master)](https://travis-ci.org/rstudio/pool)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstudio/pool?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/pool)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/pool)](https://cran.r-project.org/package=pool)
 
-*AppVeyor:* [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rstudio/pool?branch=master&svg=true)](https://ci.appveyor.com/project/rstudio/pool)
-
-# pool
 The goal of the `pool` package is to abstract away the logic of connection management and the performance cost of fetching a new connection from a remote database. These concerns are especially prominent in interactive contexts, like Shiny apps (which connect to a remote database) or even at the R console. So, while this package is of most practical value to Shiny developers, there is no harm if it is used in other contexts. Since `pool` integrates with both `DBI` and `dplyr`, there are very few things that will be new to you, if you're already using either of those packages. Essentially, you shouldn't feel the difference, with the exception of creating and closing a Pool object (as opposed to connecting and disconnecting a DBIConnection object).
 
 ## Usage
