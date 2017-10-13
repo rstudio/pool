@@ -19,14 +19,14 @@ copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
     stopIfTemporary(temporary)
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
-    copy_to(db_con, df = df, name = name, overwrite = overwrite, ... = ...)
+    copy_to(db_con, df = df, name = name, overwrite = overwrite, ...)
 }
 
 #' @export
 tbl.Pool <- function(src, from, ...) {
   db_con <- poolCheckout(src)
   on.exit(poolReturn(db_con))
-  tbl(db_con, from = from, ... = ...)
+  tbl(db_con, from = from, ...)
 }
 
 # --- These generics are set in dplyr (database-specific)
@@ -34,21 +34,21 @@ tbl.Pool <- function(src, from, ...) {
 db_analyze.Pool <- function(con, table, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_analyze(db_con, table = table, ... = ...)
+  db_analyze(db_con, table = table, ...)
 }
 
 #' @export
 db_begin.Pool <- function(con, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_begin(db_con, ... = ...)
+  db_begin(db_con, ...)
 }
 
 #' @export
 db_commit.Pool <- function(con, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_commit(db_con, ... = ...)
+  db_commit(db_con, ...)
 }
 
 #' @export
@@ -57,7 +57,7 @@ db_create_index.Pool <- function(con, table, columns, name = NULL,
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
     db_create_index(db_con, table = table, columns = columns,
-      name = name, unique = unique, ... = ...)
+      name = name, unique = unique, ...)
 }
 
 #' @export
@@ -66,7 +66,7 @@ db_create_indexes.Pool <- function(con, table, indexes = NULL,
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
     db_create_indexes(db_con, table = table, indexes = indexes,
-      unique = unique, ... = ...)
+      unique = unique, ...)
 }
 
 #' @export
@@ -75,7 +75,7 @@ db_create_table.Pool <- function(con, table, types, temporary = FALSE, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_create_table(db_con, table = table, types = types,
-    temporary = temporary, ... = ...)
+    temporary = temporary, ...)
 }
 
 #' @export
@@ -96,14 +96,14 @@ db_desc.Pool <- function(x) {
 db_drop_table.Pool <-  function(con, table, force = FALSE, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_drop_table(db_con, table = table, force = force, ... = ...)
+  db_drop_table(db_con, table = table, force = force, ...)
 }
 
 #' @export
 db_explain.Pool <- function(con, sql, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_explain(db_con, sql = sql, ... = ...)
+  db_explain(db_con, sql = sql, ...)
 }
 
 #' @export
@@ -117,7 +117,7 @@ db_has_table.Pool <- function(con, table) {
 db_insert_into.Pool <- function(con, table, values, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_insert_into(db_con, table = table, values = values, ... = ...)
+  db_insert_into(db_con, table = table, values = values, ...)
 }
 
 #' @export
@@ -131,21 +131,21 @@ db_list_tables.Pool <- function(con) {
 db_query_fields.Pool <- function(con, sql, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_query_fields(db_con, sql = sql, ... = ...)
+  db_query_fields(db_con, sql = sql, ...)
 }
 
 #' @export
 db_query_rows.Pool <- function(con, sql, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_query_rows(db_con, sql = sql, ... = ...)
+  db_query_rows(db_con, sql = sql, ...)
 }
 
 #' @export
 db_rollback.Pool <- function(con, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_rollback(db_con, ... = ...)
+  db_rollback(db_con, ...)
 }
 
 #' @export
@@ -154,7 +154,7 @@ db_save_query.Pool <- function(con, sql, name, temporary = TRUE, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_save_query(db_con, sql = sql, name = name,
-    temporary = temporary, ... = ...)
+    temporary = temporary, ...)
 }
 
 #' @export
@@ -164,7 +164,7 @@ db_write_table.Pool <- function(con, table, types, values,
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
     db_write_table(db_con, table = table, types = types,
-      values = values, temporary = temporary, ... = ...)
+      values = values, temporary = temporary, ...)
 }
 
 #' @export
@@ -186,7 +186,7 @@ sql_join.Pool <- function(con, x, y, vars, type = "inner", by = NULL, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   sql_join(db_con, x = x, y = y, vars = vars, type = type,
-    by = by, ... = ...)
+    by = by, ...)
 }
 
 #' @export
@@ -197,15 +197,14 @@ sql_select.Pool <- function(con, select, from, where = NULL,
     on.exit(poolReturn(db_con))
     sql_select(db_con, select = select, from = from,
       where = where, group_by = group_by, having = having,
-      order_by = order_by, limit = limit, distinct = distinct, ... = ...)
+      order_by = order_by, limit = limit, distinct = distinct, ...)
 }
 
 #' @export
 sql_semi_join.Pool <- function(con, x, y, anti = FALSE, by = NULL, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  sql_semi_join(db_con, x = x, y = y, anti = anti, by = by,
-    ... = ...)
+  sql_semi_join(db_con, x = x, y = y, anti = anti, by = by, ...)
 }
 
 random_table_name <- function(n = 10) {
@@ -217,7 +216,7 @@ sql_subquery.Pool <- function(con, from,
   name = random_table_name(), ...) {
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
-    sql_subquery(db_con, from = from, name = name, ... = ...)
+    sql_subquery(db_con, from = from, name = name, ...)
 }
 
 #' @export
@@ -233,7 +232,7 @@ db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   db_collect(db_con, sql = sql, n = n,
-    warn_incomplete = warn_incomplete, ... = ...)
+    warn_incomplete = warn_incomplete, ...)
 }
 
 #' @export
@@ -244,7 +243,7 @@ db_compute.Pool <- function(con, table, sql, temporary = TRUE,
     on.exit(poolReturn(db_con))
     db_compute(db_con, table = table, sql = sql,
       temporary = temporary, unique_indexes = unique_indexes,
-      indexes = indexes, ... = ...)
+      indexes = indexes, ...)
 }
 
 #' @export
@@ -257,14 +256,14 @@ db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
     db_copy_to(db_con, table = table, values = values,
       overwrite = overwrite, types = types, temporary = temporary,
       unique_indexes = unique_indexes, indexes = indexes,
-      analyze = analyze, ... = ...)
+      analyze = analyze, ...)
 }
 
 #' @export
 db_sql_render.Pool <- function(con, sql, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  db_sql_render(db_con, sql = sql, ... = ...)
+  db_sql_render(db_con, sql = sql, ...)
 }
 
 #' @export

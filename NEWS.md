@@ -1,3 +1,17 @@
+pool 0.1.1.9000
+================
+
+## Full changelog
+### Breaking changes
+### New features
+### Minor new features and improvements
+
+### Bug fixes
+
+* Fix all dbplyr wrapper functions that weren't passing in additional arguments because the call to the original `dbplyr` function included `... = ...` instead of `...`. ([#50](https://github.com/rstudio/pool/pull/50))
+
+### Library updates
+
 pool 0.1.1
 ================
 
