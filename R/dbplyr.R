@@ -19,7 +19,8 @@ copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
     stopIfTemporary(temporary)
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
-    copy_to(db_con, df = df, name = name, overwrite = overwrite, ...)
+    copy_to(db_con, df = df, name = name, overwrite = overwrite,
+      temporary = temporary, ...)
 }
 
 #' @export
