@@ -6,6 +6,8 @@ pool 0.1.1.9000
 ### New features
 ### Minor new features and improvements
 
+* Fixed the "test-create-destroy.R" test. Previsouly, this test had to be run manually because it uses `later` and its async nature could not be captured by `testthat`. However, using `later::run_now()` immediately after the relevant code snippet (i.e. still inside the first argument of `expect_*`) solves the issue. ([#50](https://github.com/rstudio/pool/pull/50))
+
 ### Bug fixes
 
 * Fix all dbplyr wrapper functions that weren't passing in additional arguments because the call to the original `dbplyr` function included `... = ...` instead of `...`. ([#50](https://github.com/rstudio/pool/pull/50))
