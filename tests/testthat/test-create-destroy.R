@@ -30,7 +30,7 @@ describe("destroyObject", {
     ## we set `idleTimeout = 0`)
     expect_warning({
         poolReturn(b)
-        later::run_now() # this is needed so that the scheduler is not ran asynchronously
+        later::run_now() # this is needed so that the scheduler runs NOW
       },
       "Object of class MockPooledObj could not be ",
       "destroyed properly, but was successfully removed ",
