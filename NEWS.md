@@ -10,6 +10,8 @@ pool 0.1.1.9000
 
 * Fix all dbplyr wrapper functions that weren't passing in additional arguments because the call to the original `dbplyr` function included `... = ...` instead of `...`. ([#50](https://github.com/rstudio/pool/pull/50))
 
+* Change the place where the check for the maximum number of objects is made. Previsouly, this chunk of code was misplaced and it would result in buggy behavior: namely, once the maximum number of objects was reached, no more objects could be checked out (**even if you returned any/all objects back to the pool**). The only reason this wasn't spotted earlier is because the default `maxSize` is `Inf` (and there's usually not a good reason to change it). ([#50](https://github.com/rstudio/pool/pull/50))
+
 ### Library updates
 
 pool 0.1.1

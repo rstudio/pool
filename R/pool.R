@@ -47,9 +47,6 @@ Pool <- R6::R6Class("Pool",
       if (!self$valid) {
         stop("This pool is no longer valid. Cannot fetch new objects.")
       }
-      if (self$counters$free + self$counters$taken >= self$maxSize) {
-        stop("Maximum number of objects in pool has been reached")
-      }
 
       ## see if there's any free objects
       freeEnv <- private$freeObjects
@@ -160,6 +157,10 @@ Pool <- R6::R6Class("Pool",
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
+      if (self$counters$free + self$counters$taken >= self$maxSize) {
+        stop("Maximum number of objects in pool has been reached")
+      }
+
       object <- private$factory()
       if (is.null(object)) {
         stop("Object creation was not successful. The `factory` ",
