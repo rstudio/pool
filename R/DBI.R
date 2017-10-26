@@ -22,7 +22,7 @@ NULL
 #'   \item The required authorization arguments needed by the DBMS
 #'   instance; these typically include \code{user}, \code{password},
 #'   \code{dbname}, \code{host}, \code{port}, etc. For details check
-#'   the appropriate \code{DBIDriver}'s documentayion.
+#'   the appropriate \code{DBIDriver}'s documentation.
 #'   \item Optionally, override the \code{poolCreate} defaults:
 #'   \code{minSize} (minimum number of connections that the pool should
 #'   have at all times), \code{maxSize} (maximum number of connections
@@ -38,7 +38,6 @@ NULL
 #'
 #' @export
 #' @examples
-#' \dontrun{
 #' pool <- dbPool(
 #'   drv = RMySQL::MySQL(),
 #'   dbname = "shinydemo",
@@ -56,7 +55,6 @@ NULL
 #' #> 5  5      Amsterdam         NLD Noord-Holland     731200
 #'
 #' poolClose(pool)
-#' }
 dbPool <- function(drv, ..., validateQuery = NULL) {
   state <- new.env(parent = emptyenv())
   state$validateQuery <- validateQuery

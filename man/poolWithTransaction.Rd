@@ -33,7 +33,7 @@ chunk of code to execute as a transaction (i.e. either run all the
 commands successfully or not run any of them), it takes in a function.
 This function (the \code{func} argument) gives you an argument to use
 in its body, a database connection. So, you can use connection methods
-wihtout ever having to check out a connection. But you can also use
+without ever having to check out a connection. But you can also use
 arbitrary R code inside the \code{func}'s body. This function will be
 called once we fetch a connection from the pool. Once the function
 returns, we release the connection back to the pool.
@@ -45,7 +45,7 @@ This means that calling \code{poolWithTransaction} always has side
 effects, namely to commit or roll back the code executed when \code{func}
 is called. In addition, if you modify the local R environment from within
 \code{func} (e.g. setting global variables, writing to disk), these
-chnages will persist after the function has returned.
+changes will persist after the function has returned.
 
 Also, like \code{\link[DBI]{dbWithTransaction}}, there is also a special
 function called \code{dbBreak()} that allows for an early, silent exit

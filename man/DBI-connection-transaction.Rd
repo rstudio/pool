@@ -22,7 +22,7 @@ Pool objects.}
 \item{conn, ..., code}{See \code{\link[DBI]{transactions}}.}
 }
 \description{
-You cannot perfrom SQL transaction using a Pool object directly
+You cannot perform SQL transaction using a Pool object directly
 (because that would imply keeping a connection open and not
 knowing when to return it back to the pool).
 }

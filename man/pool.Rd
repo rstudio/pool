@@ -39,20 +39,20 @@ Use \code{Inf} if you want created objects never to be destroyed
 \item{validationInterval}{The minimum number of seconds that
 \code{pool} will wait before running a validation check on the
 next checked out object. By not necessarily validating every
-checked out object, there can be substantial perfomance gains
+checked out object, there can be substantial performance gains
 (especially if the interval between checking out new objects is
 very small).}
 
 \item{state}{A \code{pool} public variable to be used by
 backend authors as necessary.}
 
-\item{pool}{A Pool object previsouly created with
+\item{pool}{A Pool object previously created with
 \code{poolCreate}.}
 }
 \description{
 A generic pool class that holds objects. These can be fetched
 from the pool and released back to it at will, with very
-little computaional cost. The pool should be created only once
+little computational cost. The pool should be created only once
 and closed when it is no longer needed, to prevent leaks. See
 \code{\link{dbPool}} for an example of
 object pooling applied to DBI database connections.
@@ -61,7 +61,6 @@ object pooling applied to DBI database connections.
 \code{\link{poolCheckout}}, \code{\link{poolReturn}}}
 \keyword{datasets}
 %\examples{
-%\dontrun{
 %pool <- poolCreate(dbConnect,
 %  drv = RMySQL::MySQL(),
 %  dbname = "shinydemo",
@@ -80,5 +79,3 @@ object pooling applied to DBI database connections.
 %
 %poolClose()
 %}
-%}
-
