@@ -36,10 +36,6 @@ Pool <- R6::R6Class("Pool",
         for (i in seq_len(self$minSize)) {
           private$createObject()
         }
-        # TODO: figure this out
-        # reg.finalizer(self,
-        #   function(self) {if (self$valid) self$close()},
-        #   onexit = TRUE)
     },
 
     ## calls activate and returns an object
