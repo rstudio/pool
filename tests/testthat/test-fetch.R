@@ -45,7 +45,7 @@ describe("fetch", {
     pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
     lastValidated_t1 <- pool_metadata$lastValidated
 
-    if ((t1 - t0) < pool$validationInterval) {
+    if (difftime(t1, t0, units = "secs") < pool$validationInterval) {
       ## because validationInterval hasn't passed yet
       expect_identical(lastValidated_t0, lastValidated_t1)
     }
@@ -59,7 +59,7 @@ describe("fetch", {
     pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
     lastValidated_t2 <- pool_metadata$lastValidated
 
-    if ((t2 - t0) < pool$validationInterval) {
+    if (difftime(t2, t0, units = "secs") < pool$validationInterval) {
       ## because validationInterval hasn't passed yet
       expect_identical(lastValidated_t0, lastValidated_t2)
     }
@@ -75,7 +75,7 @@ describe("fetch", {
     pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
     lastValidated_t3 <- pool_metadata$lastValidated
 
-    if ((t3 - t0) > pool$validationInterval) {
+    if (difftime(t3, t0, units = "secs") > pool$validationInterval) {
       ## because validationInterval HAS passed at this point
       expect_false(identical(lastValidated_t0, lastValidated_t3))
     }
@@ -89,7 +89,7 @@ describe("fetch", {
     pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
     lastValidated_t4 <- pool_metadata$lastValidated
 
-    if ((t4 - t3) < pool$validationInterval) {
+    if (difftime(t4, t3, units = "secs") < pool$validationInterval) {
       ## because validationInterval hasn't passed yet
       expect_identical(lastValidated_t3, lastValidated_t4)
     }

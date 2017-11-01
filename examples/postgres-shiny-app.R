@@ -25,7 +25,7 @@ server <- function(input, output, session) {
     t0 <- Sys.time()
     tbl <- pool %>% tbl("city") %>% filter(id == input$id)
     t1 <- Sys.time()
-    diff <- t1 - t0
+    diff <- difftime(t1, t0, units = "secs")
     print(diff)
     diffs[length(diffs) + 1] <<- diff
     tbl

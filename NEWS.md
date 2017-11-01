@@ -8,6 +8,8 @@ pool 0.1.1.9000
 
 * Fixed the "test-create-destroy.R" test. Previsouly, this test had to be run manually because it uses `later` and its async nature could not be captured by `testthat`. However, using `later::run_now()` immediately after the relevant code snippet (i.e. still inside the first argument of `expect_*`) solves the issue. ([#50](https://github.com/rstudio/pool/pull/50))
 
+* Use `difftime(t1, t0, units = "secs")` when calculating a time interval. Unlike the simpler `t1 - t0` method, this guarantees that the result will always be consistently the number of _seconds_. However, there's no change when calculating a new time (_not_ a time interval) using `t2 <- t1 - interval`, since we want `t2` to be a time, rather than a time interval (which is always what is returned by `difftime`). ([#50](https://github.com/rstudio/pool/pull/50) and [#48](https://github.com/rstudio/pool/pull/48), thank you [@caewok](https://github.com/caewok)!)
+
 ### Bug fixes
 
 * Fix all dbplyr wrapper functions that weren't passing in additional arguments because the call to the original `dbplyr` function included `... = ...` instead of `...`. Also, pass `temporary = temporary` in `copy_to.Pool`, so that we don't defeat the whole purpose of that wrapper. ([#50](https://github.com/rstudio/pool/pull/50))
