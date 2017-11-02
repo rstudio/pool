@@ -26,7 +26,7 @@ pool <- dbPool(
 onStop(function() {
   poolClose(pool)
 })
-  
+
 ui <- fluidPage(
   textInput("ID", "Enter your ID:", "5"),
   tableOutput("tbl"),
@@ -52,13 +52,13 @@ shinyApp(ui, server)
 The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done.
 
 ## Context and motivation
-When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertantly opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.  
+When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertently opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.  
 
-Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understading the problems described below.
+Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understanding the problems described below.
 
 <details>
   <summary><code>oneConnectionPerApp.R</code></summary>
-  
+
 ```r
 library(shiny)
 library(dplyr)
@@ -74,14 +74,14 @@ conn <- dbConnect(
 onStop(function() {
   dbDisconnect(conn)
 })
-  
+
 ui <- fluidPage(
   textInput("ID", "Enter your ID:", "5"),
   tableOutput("tbl"),
   numericInput("nrows", "How many cities to show?", 10),
   plotOutput("popPlot")
 )
-  
+
 server <- function(input, output, session) {
   output$tbl <- renderTable({
     conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
@@ -93,7 +93,7 @@ server <- function(input, output, session) {
     barplot(pop)
   })
 }
-  
+
 shinyApp(ui, server)
 ```
 
@@ -101,7 +101,7 @@ shinyApp(ui, server)
 
 <details>
   <summary><code>oneConnectionPerQuery.R</code></summary>
-  
+
 ```r
 library(shiny)
 library(dplyr)
@@ -114,32 +114,32 @@ args <- list(
   username = "guest",
   password = "guest"
 )
-  
+
 ui <- fluidPage(
   textInput("ID", "Enter your ID:", "5"),
   tableOutput("tbl"),
   numericInput("nrows", "How many cities to show?", 10),
   plotOutput("popPlot")
 )
-  
+
 server <- function(input, output, session) {
   output$tbl <- renderTable({
     conn <- do.call(dbConnect, args)
     on.exit(dbDisconnect(conn))
-    
+
     conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
   })
   output$popPlot <- renderPlot({
     conn <- do.call(dbConnect, args)
     on.exit(dbDisconnect(conn))
-    
+
     df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
     pop <- df$Population
     names(pop) <- df$Name
     barplot(pop)
   })
 }
-  
+
 shinyApp(ui, server)
 ```
 
