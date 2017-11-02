@@ -23,7 +23,8 @@ Imports:
 Suggests:
     testthat,
     tibble,
-    RSQLite
+    RSQLite,
+    RMySQL
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
 LazyData: TRUE

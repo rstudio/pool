@@ -36,19 +36,12 @@ Pool <- R6::R6Class("Pool",
         for (i in seq_len(self$minSize)) {
           private$createObject()
         }
-        # TODO: figure this out
-        # reg.finalizer(self,
-        #   function(self) {if (self$valid) self$close()},
-        #   onexit = TRUE)
     },
 
     ## calls activate and returns an object
     fetch = function() {
       if (!self$valid) {
         stop("This pool is no longer valid. Cannot fetch new objects.")
-      }
-      if (self$counters$free + self$counters$taken >= self$maxSize) {
-        stop("Maximum number of objects in pool has been reached")
       }
 
       ## see if there's any free objects
@@ -160,6 +153,10 @@ Pool <- R6::R6Class("Pool",
     ## creates an object, assigns it to the
     ## free environment and returns it
     createObject = function() {
+      if (self$counters$free + self$counters$taken >= self$maxSize) {
+        stop("Maximum number of objects in pool has been reached")
+      }
+
       object <- private$factory()
       if (is.null(object)) {
         stop("Object creation was not successful. The `factory` ",
@@ -309,8 +306,7 @@ Pool <- R6::R6Class("Pool",
       if (is.null(lastValidated)) {
         lastValidated <- Sys.time() - self$validationInterval
       }
-
-      interval <- difftime(Sys.time(), lastValidated, units = "secs") # ensure the interval is returned in seconds
+      interval <- difftime(Sys.time(), lastValidated, units = "secs")
 
       if (interval >= self$validationInterval) {
         onValidate(object)

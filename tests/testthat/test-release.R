@@ -5,7 +5,29 @@ context("Pool's release method")
 describe("release", {
 
   pool <- poolCreate(MockPooledObj$new,
-    minSize = 1, maxSize = 3, idleTimeout = 1)
+    minSize = 1, maxSize = 3, idleTimeout = 0)
+
+  it("returns the object back to the pool, and it can be recycled", {
+    checkCounts(pool, free = 1, taken = 0)
+    obj1 <- poolCheckout(pool)
+    obj2 <- poolCheckout(pool)
+    obj3 <- poolCheckout(pool)
+    checkCounts(pool, free = 0, taken = 3)
+
+    expect_error(obj4 <- poolCheckout(pool),
+      paste("Maximum number of objects in pool has been reached")
+    )
+
+    checkCounts(pool, free = 0, taken = 3)
+    poolReturn(obj3)
+    obj4 <- poolCheckout(pool)
+    poolReturn(obj1)
+    poolReturn(obj2)
+    poolReturn(obj4)
+
+    later::run_now() # this is needed so that the scheduler runs NOW
+    checkCounts(pool, free = 1, taken = 0)
+  })
 
   it("throws if object was already released", {
     checkCounts(pool, free = 1, taken = 0)

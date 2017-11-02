@@ -23,3 +23,24 @@ Pool object wrappers around DBIObject methods. See
 and \code{\link[DBI]{dbIsValid}} for the original
 documentation.
 }
+\examples{
+pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+
+dbGetInfo(pool)
+dbIsValid(pool)
+
+dbDataType(pool, 1:5)
+dbDataType(pool, 1)
+dbDataType(pool, TRUE)
+dbDataType(pool, Sys.Date())
+dbDataType(pool, Sys.time())
+dbDataType(pool, Sys.time() - as.POSIXct(Sys.Date()))
+dbDataType(pool, c("x", "abc"))
+dbDataType(pool, list(raw(10), raw(20)))
+dbDataType(pool, I(3))
+dbDataType(pool, iris)
+
+poolClose(pool)
+
+dbIsValid(pool)
+}

@@ -6,9 +6,9 @@ NULL
 ## drivers implement different DBI methods and this quickly
 ## became unwieldy. From now on, pool will not reset a
 ## connection's state back to a clean slate (which is not
-## something to worry about unless users are explictly
-## checking out connections -- only necessary for complicated
-## transactions).
+## something to worry about unless users are explicitly
+## checking out connections -- only necessary for pretty
+## complicated transactions).
 #' @export
 #' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {

@@ -9,6 +9,26 @@ NULL
 #' documentation.
 #'
 #' @name DBI-object
+#' @examples
+#' pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+#'
+#' dbGetInfo(pool)
+#' dbIsValid(pool)
+#'
+#' dbDataType(pool, 1:5)
+#' dbDataType(pool, 1)
+#' dbDataType(pool, TRUE)
+#' dbDataType(pool, Sys.Date())
+#' dbDataType(pool, Sys.time())
+#' dbDataType(pool, Sys.time() - as.POSIXct(Sys.Date()))
+#' dbDataType(pool, c("x", "abc"))
+#' dbDataType(pool, list(raw(10), raw(20)))
+#' dbDataType(pool, I(3))
+#' dbDataType(pool, iris)
+#'
+#' poolClose(pool)
+#'
+#' dbIsValid(pool)
 NULL
 
 #' @param dbObj,obj,... See \code{\link[DBI]{dbDataType}}.
