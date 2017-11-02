@@ -68,14 +68,6 @@ checkCounts <- function(pool, free, taken) {
   }
 }
 
-# checkShiny <- function() {
-#   if (!requireNamespace("shiny", quietly = TRUE)) {
-#     skip("Did not test integration with shiny package")
-#   }
-# }
-
-
-
 #********************************************************************#
 #**************************** Sample data ***************************#
 #********************************************************************#

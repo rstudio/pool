@@ -104,7 +104,7 @@ setMethod("dbWithTransaction", "Pool", function(conn, code) {
 #'   connection checked out from \code{pool}).
 #'
 #' @return \code{func}'s return value.
-#'
+#' @export
 #' @examples
 #' pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
 #'
@@ -140,8 +140,6 @@ setMethod("dbWithTransaction", "Pool", function(conn, code) {
 #' dbReadTable(pool, "cars")   # still 6 rows
 #'
 #' poolClose(pool)
-#'
-#' @export
 poolWithTransaction <- function(pool, func) {
   conn <- poolCheckout(pool)
   on.exit(poolReturn(conn))

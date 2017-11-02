@@ -86,5 +86,4 @@ poolWithTransaction(pool, function(conn) {
 dbReadTable(pool, "cars")   # still 6 rows
 
 poolClose(pool)
-
 }
