@@ -1,4 +1,4 @@
-pool 0.1.1.9000
+pool 0.1.2
 ================
 
 ### Minor new features and improvements
