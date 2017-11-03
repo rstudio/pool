@@ -1,3 +1,8 @@
+pool 0.1.3
+================
+
+* Use `requireNamespace("pkg", quietly = TRUE)` for `RMySQL` and `RSQLite` in the examples and tests since these are "Suggests" packages (i.e. not "Depends"). (commit [#4205feb](https://github.com/rstudio/pool/commit/4205feb8a685384fb8db93114c35220fb9611752))
+
 pool 0.1.2
 ================
 
