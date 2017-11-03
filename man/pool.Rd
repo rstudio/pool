@@ -17,13 +17,6 @@ poolClose(pool)
 the objects that the pool will hold (ex: for DBI database connections,
 this function is \code{dbConnect}). It must take no arguments.}
 
-%\item{...}{Additional arguments needed by the \code{factory}
-%function. Depending on your \code{factory}, these may or may
-%not exist. For example, if \code{factory} is \code{dbConnect},
-%you need to specify the database driver and possibly other
-%arguments such as \code{user}, \code{password}, \code{host}, etc.
-%For more info, see \code{\link{dbPool}}.}
-
 \item{minSize}{An optional number specifying the minimum
 number of objects that the pool should have at all times.}
 
@@ -60,22 +53,3 @@ object pooling applied to DBI database connections.
 \seealso{\code{\link{dbPool}},
 \code{\link{poolCheckout}}, \code{\link{poolReturn}}}
 \keyword{datasets}
-%\examples{
-%pool <- poolCreate(dbConnect,
-%  drv = RMySQL::MySQL(),
-%  dbname = "shinydemo",
-%  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-%  username = "guest",
-%  password = "guest"
-%)
-%
-%dbGetQuery(pool, "SELECT * from City LIMIT 5;")
-%#>   ID           Name CountryCode      District Population
-%#> 1  1          Kabul         AFG         Kabol    1780000
-%#> 2  2       Qandahar         AFG      Qandahar     237500
-%#> 3  3          Herat         AFG         Herat     186800
-%#> 4  4 Mazar-e-Sharif         AFG         Balkh     127800
-%#> 5  5      Amsterdam         NLD Noord-Holland     731200
-%
-%poolClose()
-%}

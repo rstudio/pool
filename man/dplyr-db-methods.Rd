@@ -119,36 +119,41 @@ For the original documentation, see
 and \href{http://dbplyr.tidyverse.org/reference/index.html}{dbplyr's reference page}.
 }
 \examples{
-library(dplyr)
+if (requireNamespace("RSQLite", quietly = TRUE)) {
+  library(dplyr)
 
-pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+  pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
 
-# describe the type of the pool/its connections
-db_desc(pool)
+  # describe the type of the pool/its connections
+  db_desc(pool)
 
-# use dplyr syntax to copy a table into the database
-copy_to(pool, mtcars, "mtcars", temporary = FALSE)
+  # use dplyr syntax to copy a table into the database
+  copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 
-# list the current tables in the database
-db_list_tables(pool)
+  # list the current tables in the database
+  db_list_tables(pool)
 
-# extract a table from the database
-mtcars_db <- tbl(pool, "mtcars")
+  # extract a table from the database
+  mtcars_db <- tbl(pool, "mtcars")
 
-# select only 3 columns
-mtcars_db_thin <- select(mtcars_db, mpg, cyl, disp)
+  # select only 3 columns
+  mtcars_db_thin <- select(mtcars_db, mpg, cyl, disp)
 
-# get the names of the columns in the databases's table
-db_query_fields(pool, "mtcars")
+  # get the names of the columns in the databases's table
+  db_query_fields(pool, "mtcars")
 
-# get the number of rows in the databases's table
-db_query_rows(pool, "mtcars")
+  # get the number of rows in the databases's table
+  db_query_rows(pool, "mtcars")
 
-# drop the "mtcars" table from the database
-db_drop_table(pool, "mtcars")
+  # drop the "mtcars" table from the database
+  db_drop_table(pool, "mtcars")
 
-# list the current tables in the database
-db_list_tables(pool)
+  # list the current tables in the database
+  db_list_tables(pool)
 
-poolClose(pool)
+  poolClose(pool)
+
+} else {
+  message("Please install the 'RSQLite' package to run this example")
+}
 }
