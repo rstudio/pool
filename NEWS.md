@@ -1,3 +1,8 @@
+pool 0.1.3.9000
+================
+
+* Changed the methods `dbGetQuery()`, `dbExecute()`, `dbListFields()` and `dbReadTable()` to dispatch over the first two arguments, as per the [default definition in DBI](https://github.com/r-dbi/DBI/blob/master/R/DBConnection.R). ([]())
+
 pool 0.1.3
 ================
 
