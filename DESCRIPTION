@@ -17,8 +17,6 @@ Depends:
 Imports:
     DBI,
     R6,
-    dplyr,
-    dbplyr,
     later
 Suggests:
     testthat,
@@ -28,7 +26,7 @@ Suggests:
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
 LazyData: TRUE
-Collate:
+Collate: 
     'utils.R'
     'scheduler.R'
     'pool.R'
@@ -44,5 +42,4 @@ Collate:
     'DBI-object-deprecated.R'
     'DBI-object.R'
     'DBI-pool.R'
-    'dbplyr.R'
 RoxygenNote: 6.0.1
