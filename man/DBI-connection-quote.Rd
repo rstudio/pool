@@ -3,22 +3,13 @@
 \docType{methods}
 \name{DBI-connection-quote}
 \alias{DBI-connection-quote}
-\alias{dbQuoteIdentifier,Pool,character-method}
-\alias{dbQuoteIdentifier,Pool,SQL-method}
-\alias{dbQuoteIdentifier,Pool,Table-method}
-\alias{dbQuoteString,Pool,character-method}
-\alias{dbQuoteString,Pool,SQL-method}
+\alias{dbQuoteIdentifier,Pool,ANY-method}
+\alias{dbQuoteString,Pool,ANY-method}
 \title{SQL quoting.}
 \usage{
-\S4method{dbQuoteIdentifier}{Pool,character}(conn, x, ...)
+\S4method{dbQuoteIdentifier}{Pool,ANY}(conn, x, ...)
 
-\S4method{dbQuoteIdentifier}{Pool,SQL}(conn, x, ...)
-
-\S4method{dbQuoteIdentifier}{Pool,Table}(conn, x, ...)
-
-\S4method{dbQuoteString}{Pool,character}(conn, x, ...)
-
-\S4method{dbQuoteString}{Pool,SQL}(conn, x, ...)
+\S4method{dbQuoteString}{Pool,ANY}(conn, x, ...)
 }
 \arguments{
 \item{conn, x, ...}{See \code{\link[DBI]{SQL}}.}

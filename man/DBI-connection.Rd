@@ -4,36 +4,36 @@
 \name{DBI-connection}
 \alias{DBI-connection}
 \alias{dbSendQuery,Pool-method}
-\alias{dbGetQuery,Pool,ANY-method}
-\alias{dbExecute,Pool,ANY-method}
+\alias{dbGetQuery,Pool,character-method}
+\alias{dbExecute,Pool,character-method}
 \alias{dbListResults,Pool-method}
-\alias{dbListFields,Pool-method}
+\alias{dbListFields,Pool,character-method}
 \alias{dbListTables,Pool-method}
-\alias{dbReadTable,Pool,ANY-method}
-\alias{dbWriteTable,Pool-method}
-\alias{dbExistsTable,Pool-method}
-\alias{dbRemoveTable,Pool-method}
+\alias{dbReadTable,Pool,character-method}
+\alias{dbWriteTable,Pool,ANY-method}
+\alias{dbExistsTable,Pool,ANY-method}
+\alias{dbRemoveTable,Pool,ANY-method}
 \title{DBIConnection methods.}
 \usage{
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
 
-\S4method{dbGetQuery}{Pool,ANY}(conn, statement, ...)
+\S4method{dbGetQuery}{Pool,character}(conn, statement, ...)
 
-\S4method{dbExecute}{Pool,ANY}(conn, statement, ...)
+\S4method{dbExecute}{Pool,character}(conn, statement, ...)
 
 \S4method{dbListResults}{Pool}(conn, ...)
 
-\S4method{dbListFields}{Pool}(conn, name, ...)
+\S4method{dbListFields}{Pool,character}(conn, name, ...)
 
 \S4method{dbListTables}{Pool}(conn, ...)
 
-\S4method{dbReadTable}{Pool,ANY}(conn, name, ...)
+\S4method{dbReadTable}{Pool,character}(conn, name, ...)
 
-\S4method{dbWriteTable}{Pool}(conn, name, value, ...)
+\S4method{dbWriteTable}{Pool,ANY}(conn, name, value, ...)
 
-\S4method{dbExistsTable}{Pool}(conn, name, ...)
+\S4method{dbExistsTable}{Pool,ANY}(conn, name, ...)
 
-\S4method{dbRemoveTable}{Pool}(conn, name, ...)
+\S4method{dbRemoveTable}{Pool,ANY}(conn, name, ...)
 }
 \arguments{
 \item{conn, statement, ...}{See \code{\link[DBI]{dbSendQuery}}.}
