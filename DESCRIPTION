@@ -1,10 +1,12 @@
 Package: pool
 Type: Package
 Title: Object Pooling
-Version: 0.1.4
+Version: 0.1.4.1
 Authors@R: c(
-    person("Barbara", "Borges", email = "barbara@rstudio.com",
+    person("Joe", "Cheng", email = "joe@rstudio.com",
       role = c("aut", "cre")),
+    person("Barbara", "Borges", email = "barb.b.ribeiro@gmail.com",
+      role = c("aut")),
     person(family = "RStudio", role = "cph")
     )
 Description: Enables the creation of object pools, which make it less

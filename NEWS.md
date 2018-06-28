@@ -1,3 +1,8 @@
+pool 0.1.4.1
+================
+
+* Change package maintainer
+
 pool 0.1.4
 ================
 
