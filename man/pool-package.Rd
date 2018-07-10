@@ -6,8 +6,8 @@
 \alias{pool-package}
 \title{pool: Object Pooling}
 \description{
-Enables the creation of object pools, which make it less
-    computationally expensive to fetch a new object. Currently the
+Enables the creation of object pools, which make it
+    less computationally expensive to fetch a new object. Currently the
     only supported pooled objects are 'DBI' connections.
 }
 \seealso{

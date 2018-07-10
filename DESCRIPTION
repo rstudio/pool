@@ -24,13 +24,13 @@ Depends:
     R (>= 3.0.0)
 Imports:
     DBI,
-    dbplyr,
-    dplyr,
-    later,
-    R6
+    R6,
+    later
 Suggests:
-    covr,
-    RMySQL,
+    testthat,
+    tibble,
+    dplyr,
+    dbplyr,
     RSQLite,
     testthat,
     tibble
@@ -55,3 +55,4 @@ Collate:
     'DBI-object.R'
     'DBI-pool.R'
     'dbplyr.R'
+    'zzz-hooks.R'
