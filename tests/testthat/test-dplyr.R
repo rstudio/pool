@@ -43,7 +43,7 @@ describe("pool package", {
       checkCounts(pool, free = 1, taken = 0)
       flights_db <- tbl(pool, "flights")
       checkCounts(pool, free = 1, taken = 0)
-      expect_equal(class(flights_db), c("tbl_dbi", "tbl_sql", "tbl_lazy", "tbl"))
+      expect_s3_class(flights_db, "tbl_dbi")
     })
 
     it("can use dplyr syntax to select", {
