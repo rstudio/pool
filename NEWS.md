@@ -1,3 +1,8 @@
+pool 0.1.4.2
+================
+
+* Update unit test for compatibility with future dbplyr. ([#82](https://github.com/rstudio/pool/pull/82))
+
 pool 0.1.4.1
 ================
 

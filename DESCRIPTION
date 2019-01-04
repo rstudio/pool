@@ -1,7 +1,7 @@
 Package: pool
 Type: Package
 Title: Object Pooling
-Version: 0.1.4.1
+Version: 0.1.4.2
 Authors@R: c(
     person("Joe", "Cheng", email = "joe@rstudio.com",
       role = c("aut", "cre")),
