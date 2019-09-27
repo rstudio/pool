@@ -28,13 +28,27 @@ describe("destroyObject", {
     ## since we're over the minSize, once we return `b` to
     ## the pool, it will be destroyed immediately (since
     ## we set `idleTimeout = 0`)
-    expect_warning({
+    #
+    # Previously, the expect_error() below was a expect_warning(), but a
+    # change in later 1.0.0 altered the way that warnings are handled; they no
+    # longer pass up through run_now(). A future version of later may change
+    # that back to the original behavior. The workaround is to convert the
+    # warning to an error and look for the error.
+    op <- options(warn = 2)
+    on.exit(options(op), add = TRUE)
+    expect_error({
         poolReturn(b)
         later::run_now() # this is needed so that the scheduler runs NOW
       },
-      "Object of class MockPooledObj could not be ",
-      "destroyed properly, but was successfully removed ",
-      "from pool."
+      regexp = paste0(
+        "Object of class MockPooledObj could not be ",
+        "destroyed properly, but was successfully removed ",
+        "from pool."
+      ),
+      # The class seems redundant, but is necessary for this test to not throw
+      # an unnecessary error with later<1.0.0. It can be removed in the future
+      # after later 1.0.0 has been released.
+      class = "error"
     )
 
     checkCounts(pool, free = 0, taken = 1)

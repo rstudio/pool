@@ -5,8 +5,13 @@ NULL
 scheduleTask <- function(func, delay) {
   force(func)
   later::later(function() {
-    op <- options(warn = 1)
-    on.exit(options(op))
+    # Make sure warn is at least 1 so that warnings are emitted immediately.
+    # (warn=2 is also OK, for use in debugging.)
+    warn_level <- getOption("warn")
+    if (is.numeric(warn_level) && !is.na(warn_level) && warn_level < 1) {
+      op <- options(warn = 1)
+      on.exit(options(op), add = TRUE)
+    }
     if (!is.null(func))
       func()
   }, delay)

@@ -1,3 +1,8 @@
+pool 0.1.4.9000
+================
+
+* Previously, pool would always set `options(warn=1)` when running tasks. It now ensures that the value of `warn` can be 1 or greater. This can be useful in debugging, so that `options(warn=2)` can be used. ([#90](https://github.com/rstudio/pool/pull/90))
+
 pool 0.1.4
 ================
 
