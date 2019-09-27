@@ -44,7 +44,11 @@ describe("destroyObject", {
         "Object of class MockPooledObj could not be ",
         "destroyed properly, but was successfully removed ",
         "from pool."
-      )
+      ),
+      # The class seems redundant, but is necessary for this test to not throw
+      # an unnecessary error with later<1.0.0. It can be removed in the future
+      # after later 1.0.0 has been released.
+      class = "error"
     )
 
     checkCounts(pool, free = 0, taken = 1)
