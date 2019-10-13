@@ -1,3 +1,6 @@
+#' @include s4.R
+NULL
+
 #' Object Pooling in R.
 #'
 #' Creates objects pools for various types of objects in R to
