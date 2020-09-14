@@ -1,3 +1,8 @@
+pool 0.1.5
+================
+
+* `dbQuoteLiteral()` method is now implemented for pool objects. ([#100](https://github.com/rstudio/pool/pull/100))
+
 pool 0.1.4.3
 ================
 
