@@ -42,16 +42,16 @@
 <meta property="og:title" content="DBIConnection methods. — DBI-connection" />
 <meta property="og:description" content="Pool object wrappers around DBIConnection methods. For the original
 documentation, see:
-dbSendQuery
-dbGetQuery
-dbExecute
-dbListResults
-dbListFields
-dbListTables
-dbReadTable
-dbWriteTable
-dbExistsTable
-dbRemoveTable
+DBI::dbSendQuery()
+DBI::dbGetQuery()
+DBI::dbExecute()
+DBI::dbListResults()
+DBI::dbListFields()
+DBI::dbListTables()
+DBI::dbReadTable()
+DBI::dbWriteTable()
+DBI::dbExistsTable()
+DBI::dbRemoveTable()
 
 " />
 
@@ -132,16 +132,16 @@ dbRemoveTable
     <div class="ref-description">
     <p>Pool object wrappers around DBIConnection methods. For the original
 documentation, see:</p><ul>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbSendQuery.html'>dbSendQuery</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListResults.html'>dbListResults</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListFields.html'>dbListFields</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbExistsTable.html'>dbExistsTable</a></code></p></li>
-<li><p><code><a href='https://dbi.r-dbi.org/reference/dbRemoveTable.html'>dbRemoveTable</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbSendQuery.html'>DBI::dbSendQuery()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>DBI::dbGetQuery()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>DBI::dbExecute()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListResults.html'>DBI::dbListResults()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListFields.html'>DBI::dbListFields()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>DBI::dbListTables()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>DBI::dbReadTable()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>DBI::dbWriteTable()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbExistsTable.html'>DBI::dbExistsTable()</a></code></p></li>
+<li><p><code><a href='https://dbi.r-dbi.org/reference/dbRemoveTable.html'>DBI::dbRemoveTable()</a></code></p></li>
 </ul>
 
     </div>
@@ -181,11 +181,11 @@ documentation, see:</p><ul>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>conn, statement, ...</th>
-      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/dbSendQuery.html'>dbSendQuery</a></code>.</p></td>
+      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/dbSendQuery.html'>DBI::dbSendQuery()</a></code>.</p></td>
     </tr>
     <tr>
       <th>name, value</th>
-      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></code>.</p></td>
+      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>DBI::dbWriteTable()</a></code>.</p></td>
     </tr>
     </table>
 
@@ -233,7 +233,7 @@ documentation, see:</p><ul>
   <span class='co'># list the current tables in the database</span>
   <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></span>(<span class='kw'>pool</span>)
 
-  <span class='fu'><a href='Pool.html'>poolClose</a></span>(<span class='kw'>pool</span>)
+  <span class='fu'><a href='Pool-class.html'>poolClose</a></span>(<span class='kw'>pool</span>)
 
 } <span class='co'>else</span> {
   <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span>(<span class='st'>"Please install the 'RSQLite' package to run this example"</span>)

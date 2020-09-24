@@ -41,10 +41,10 @@
 
 <meta property="og:title" content="Create a DBI Database Connection Pool. — dbPool" />
 <meta property="og:description" content="A wrapper around poolCreate to simplify the creation of a DBI
-database connection pool. Check the documentation of poolCreate
+database connection pool. Check the documentation of poolCreate()
 for a generic overview of the parent function and the Pool object. The
 main thing to point out is that, for dbPool, you always need to
-provide a DBI driver (i.e. of class DBIDriver-class),
+provide a DBI driver (i.e. of class DBI::DBIDriver-class()),
 and it should always be accompanied by the required authorization
 arguments (see the example below)." />
 
@@ -124,10 +124,10 @@ arguments (see the example below)." />
 
     <div class="ref-description">
     <p>A wrapper around <code>poolCreate</code> to simplify the creation of a DBI
-database connection pool. Check the documentation of <code><a href='Pool.html'>poolCreate</a></code>
+database connection pool. Check the documentation of <code><a href='Pool-class.html'>poolCreate()</a></code>
 for a generic overview of the parent function and the Pool object. The
 main thing to point out is that, for <code>dbPool</code>, you always need to
-provide a DBI driver (i.e. of class <code><a href='https://dbi.r-dbi.org/reference/DBIDriver-class.html'>DBIDriver-class</a></code>),
+provide a DBI driver (i.e. of class <code><a href='https://dbi.r-dbi.org/reference/DBIDriver-class.html'>DBI::DBIDriver-class()</a></code>),
 and it should always be accompanied by the required authorization
 arguments (see the example below).</p>
     </div>
@@ -139,26 +139,26 @@ arguments (see the example below).</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>drv</th>
-      <td><p>An object that inherits from <code><a href='https://dbi.r-dbi.org/reference/DBIDriver-class.html'>DBIDriver-class</a></code>,
-or an existing <code><a href='https://dbi.r-dbi.org/reference/DBIConnection-class.html'>DBIConnection-class</a></code> object (in order to
+      <td><p>An object that inherits from <code><a href='https://dbi.r-dbi.org/reference/DBIDriver-class.html'>DBI::DBIDriver-class()</a></code>,
+or an existing <code><a href='https://dbi.r-dbi.org/reference/DBIConnection-class.html'>DBI::DBIConnection-class()</a></code> object (in order to
 clone an existing connection).</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments needed for both <code><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></code>
+      <td><p>Arguments needed for both <code><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>DBI::dbConnect()</a></code>
 (mandatory if required by the <code>DBIDriver</code> you're using) and
-<code><a href='Pool.html'>poolCreate</a></code> (optional) - all arguments should be named:</p><ol>
+<code><a href='Pool-class.html'>poolCreate()</a></code> (optional) - all arguments should be named:</p><ol>
 <li><p>The required authorization arguments needed by the DBMS
-  instance; these typically include <code>user</code>, <code>password</code>,
-  <code>dbname</code>, <code>host</code>, <code>port</code>, etc. For details check
-  the appropriate <code>DBIDriver</code>'s documentation.</p></li>
+instance; these typically include <code>user</code>, <code>password</code>,
+<code>dbname</code>, <code>host</code>, <code>port</code>, etc. For details check
+the appropriate <code>DBIDriver</code>'s documentation.</p></li>
 <li><p>Optionally, override the <code>poolCreate</code> defaults:
-  <code>minSize</code> (minimum number of connections that the pool should
-  have at all times), <code>maxSize</code> (maximum number of connections
-  that the pool may have at any time), <code>idleTimeout</code> (number
-  of seconds to wait before closing a connection, if the number
-  of connection is above <code>minSize</code>), and <code>validationInterval</code>
-  (number of seconds to wait before validating the connection again).</p></li>
+<code>minSize</code> (minimum number of connections that the pool should
+have at all times), <code>maxSize</code> (maximum number of connections
+that the pool may have at any time), <code>idleTimeout</code> (number
+of seconds to wait before closing a connection, if the number
+of connection is above <code>minSize</code>), and <code>validationInterval</code>
+(number of seconds to wait before validating the connection again).</p></li>
 </ol></td>
     </tr>
     <tr>
@@ -189,7 +189,7 @@ not exhaustive.</p></td>
   <span class='co'>#&gt; 4  4 Mazar-e-Sharif         AFG         Balkh     127800</span>
   <span class='co'>#&gt; 5  5      Amsterdam         NLD Noord-Holland     731200</span>
 
-  <span class='fu'><a href='Pool.html'>poolClose</a></span>(<span class='kw'>pool</span>)
+  <span class='fu'><a href='Pool-class.html'>poolClose</a></span>(<span class='kw'>pool</span>)
 
 } <span class='co'>else</span> {
   <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span>(<span class='st'>"Please install the 'RMySQL' package to run this example"</span>)

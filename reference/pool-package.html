@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S4 class for compatibility with DBI methods — Pool-class • pool</title>
+<title>pool: Object Pooling — pool-package • pool</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="S4 class for compatibility with DBI methods — Pool-class" />
-<meta property="og:description" content="A generic pool class that holds objects. These can be fetched" />
+<meta property="og:title" content="pool: Object Pooling — pool-package" />
+<meta property="og:description" content="Enables the creation of object pools, which make it less
+    computationally expensive to fetch a new object. Currently the
+    only supported pooled objects are 'DBI' connections." />
 
 
 
@@ -111,75 +113,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>S4 class for compatibility with DBI methods</h1>
-    <small class="dont-index">Source: <a href='https://github.com/rstudio/pool/blob/master/R/pool-methods.R'><code>R/pool-methods.R</code></a></small>
-    <div class="hidden name"><code>Pool-class.Rd</code></div>
+    <h1>pool: Object Pooling</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rstudio/pool/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>pool-package.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A generic pool class that holds objects. These can be fetched</p>
+    <p>Enables the creation of object pools, which make it less
+    computationally expensive to fetch a new object. Currently the
+    only supported pooled objects are 'DBI' connections.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>poolCreate</span>(
-  <span class='kw'>factory</span>,
-  minSize = <span class='fl'>1</span>,
-  maxSize = <span class='fl'>Inf</span>,
-  idleTimeout = <span class='fl'>60</span>,
-  validationInterval = <span class='fl'>600</span>,
-  state = <span class='kw'>NULL</span>
-)
 
-<span class='fu'>poolClose</span>(<span class='kw'>pool</span>)
 
-<span class='co'># S4 method for Pool</span>
-<span class='fu'>poolClose</span>(<span class='kw'>pool</span>)</pre>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>factory</th>
-      <td><p>A factory function responsible for the generation of
-the objects that the pool will hold (ex: for DBI database connections,
-this function is <code>dbConnect</code>). It must take no arguments.</p></td>
-    </tr>
-    <tr>
-      <th>minSize</th>
-      <td><p>An optional number specifying the minimum
-number of objects that the pool should have at all times.</p></td>
-    </tr>
-    <tr>
-      <th>maxSize</th>
-      <td><p>An optional number specifying the maximum
-number of objects that the pool may have at any time.</p></td>
-    </tr>
-    <tr>
-      <th>idleTimeout</th>
-      <td><p>The number of seconds that an idle
-object will be kept in the pool before it is destroyed (only
-applies if the number of objects is over the <code>minSize</code>).
-Use <code>Inf</code> if you want created objects never to be destroyed
-(there isn't a great reason for this usually).</p></td>
-    </tr>
-    <tr>
-      <th>validationInterval</th>
-      <td><p>The minimum number of seconds that
-<code>pool</code> will wait before running a validation check on the
-next checked out object. By not necessarily validating every
-checked out object, there can be substantial performance gains
-(especially if the interval between checking out new objects is
-very small).</p></td>
-    </tr>
-    <tr>
-      <th>state</th>
-      <td><p>A <code>pool</code> public variable to be used by
-backend authors as necessary.</p></td>
-    </tr>
-    <tr>
-      <th>pool</th>
-      <td><p>A Pool object previously created with <code>poolCreate</code></p></td>
-    </tr>
-    </table>
+    <div class='dont-index'><p>Useful links:</p><ul>
+<li><p><a href='https://github.com/rstudio/pool'>https://github.com/rstudio/pool</a></p></li>
+<li><p>Report bugs at <a href='https://github.com/rstudio/pool/issues'>https://github.com/rstudio/pool/issues</a></p></li>
+</ul>
+
+</div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p><strong>Maintainer</strong>: Joe Cheng <a href='mailto:joe@rstudio.com'>joe@rstudio.com</a></p>
+<p>Authors:</p><ul>
+<li><p>Barbara Borges <a href='mailto:barb.b.ribeiro@gmail.com'>barb.b.ribeiro@gmail.com</a></p></li>
+</ul>
+
+<p>Other contributors:</p><ul>
+<li><p>RStudio [copyright holder]</p></li>
+</ul>
+
 
 
   </div>

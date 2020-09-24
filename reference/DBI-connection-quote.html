@@ -41,7 +41,7 @@
 
 <meta property="og:title" content="SQL quoting. — DBI-connection-quote" />
 <meta property="og:description" content="Pool object wrappers around DBIConnection methods that deal
-with SQL escaping needs. See SQL for the
+with SQL escaping needs. See DBI::SQL() for the
 original documentation." />
 
 
@@ -120,12 +120,15 @@ original documentation." />
 
     <div class="ref-description">
     <p>Pool object wrappers around DBIConnection methods that deal
-with SQL escaping needs. See <code><a href='https://dbi.r-dbi.org/reference/SQL.html'>SQL</a></code> for the
+with SQL escaping needs. See <code><a href='https://dbi.r-dbi.org/reference/SQL.html'>DBI::SQL()</a></code> for the
 original documentation.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for Pool,ANY</span>
 <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbQuoteIdentifier.html'>dbQuoteIdentifier</a></span>(<span class='kw'>conn</span>, <span class='kw'>x</span>, <span class='kw'>...</span>)
+
+<span class='co'># S4 method for Pool</span>
+<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbQuoteLiteral.html'>dbQuoteLiteral</a></span>(<span class='kw'>conn</span>, <span class='kw'>x</span>, <span class='kw'>...</span>)
 
 <span class='co'># S4 method for Pool,ANY</span>
 <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbQuoteString.html'>dbQuoteString</a></span>(<span class='kw'>conn</span>, <span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
@@ -135,7 +138,7 @@ original documentation.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>conn, x, ...</th>
-      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/SQL.html'>SQL</a></code>.</p></td>
+      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/SQL.html'>DBI::SQL()</a></code>.</p></td>
     </tr>
     </table>
 

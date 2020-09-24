@@ -144,7 +144,7 @@ knowing when to return it back to the pool).</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>conn, ..., code</th>
-      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>transactions</a></code>.</p></td>
+      <td><p>See <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>DBI::transactions()</a></code>.</p></td>
     </tr>
     </table>
 
@@ -157,10 +157,10 @@ from the pool yourself, you must also remember to return it
 back to the pool when you're done: <code><a href='poolReturn.html'>poolReturn(conn)</a></code>
 (otherwise, you have a leaked connection).</p>
 <p>For simple transactions, consider using
-<code><a href='poolWithTransaction.html'>poolWithTransaction</a></code> instead,
+<code><a href='poolWithTransaction.html'>poolWithTransaction()</a></code> instead,
 which is safer since it does not require you to fetch and
 release the connection yourself.</p>
-<p>See <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>transactions</a></code> for the original
+<p>See <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>DBI::transactions()</a></code> for the original
 documentation.</p>
 
   </div>

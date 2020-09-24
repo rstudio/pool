@@ -151,7 +151,7 @@ connection checked out from <code>pool</code>).</p></td>
     <p><code>func</code>'s return value.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function is similar to <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>dbWithTransaction</a></code>, but
+    <p>This function is similar to <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>DBI::dbWithTransaction()</a></code>, but
 its arguments work a little differently. First, it takes in a pool
 object, instead of a connection. Second, instead of taking an arbitrary
 chunk of code to execute as a transaction (i.e. either run all the
@@ -162,7 +162,7 @@ without ever having to check out a connection. But you can also use
 arbitrary R code inside the <code>func</code>'s body. This function will be
 called once we fetch a connection from the pool. Once the function
 returns, we release the connection back to the pool.</p>
-<p>Like its DBI sister <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>dbWithTransaction</a></code>, this function
+<p>Like its DBI sister <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>DBI::dbWithTransaction()</a></code>, this function
 calls <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>dbBegin()</a></code> before executing the code, and <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>dbCommit()</a></code>
 after successful completion, or <code><a href='https://dbi.r-dbi.org/reference/transactions.html'>dbRollback()</a></code> in case of an error.
 This means that calling <code>poolWithTransaction</code> always has side
@@ -170,7 +170,7 @@ effects, namely to commit or roll back the code executed when <code>func</code>
 is called. In addition, if you modify the local R environment from within
 <code>func</code> (e.g. setting global variables, writing to disk), these
 changes will persist after the function has returned.</p>
-<p>Also, like <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>dbWithTransaction</a></code>, there is also a special
+<p>Also, like <code><a href='https://dbi.r-dbi.org/reference/dbWithTransaction.html'>DBI::dbWithTransaction()</a></code>, there is also a special
 function called <code>dbBreak()</code> that allows for an early, silent exit
 with rollback. It can be called only from inside <code>poolWithTransaction</code>.</p>
 
@@ -209,7 +209,7 @@ with rollback. It can be called only from inside <code>poolWithTransaction</code
   })
   <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span>(<span class='kw'>pool</span>, <span class='st'>"cars"</span>)   <span class='co'># still 6 rows</span>
 
-  <span class='fu'><a href='Pool.html'>poolClose</a></span>(<span class='kw'>pool</span>)
+  <span class='fu'><a href='Pool-class.html'>poolClose</a></span>(<span class='kw'>pool</span>)
 
 } <span class='co'>else</span> {
   <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span>(<span class='st'>"Please install the 'RSQLite' package to run this example"</span>)

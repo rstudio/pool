@@ -41,10 +41,10 @@
 
 <meta property="og:title" content="Make R identifiers into legal SQL identifiers. — DBI-object-deprecated" />
 <meta property="og:description" content="Pool object wrappers around DBIObject methods. See
-make.db.names for the original documentation.
+DBI::make.db.names() for the original documentation.
 Note that these methods are DEPRECATED. Please use
 dbQuoteIdentifier (or possibly dbQuoteString)
-instead, as documented in DBI-connection-quote." />
+instead, as documented in DBI-connection-quote()." />
 
 
 
@@ -122,19 +122,30 @@ instead, as documented in DBI-connection-quote." />
 
     <div class="ref-description">
     <p>Pool object wrappers around DBIObject methods. See
-<code><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>make.db.names</a></code> for the original documentation.
+<code><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>DBI::make.db.names()</a></code> for the original documentation.
 Note that these methods are DEPRECATED. Please use
 <code>dbQuoteIdentifier</code> (or possibly <code>dbQuoteString</code>)
-instead, as documented in <code><a href='DBI-connection-quote.html'>DBI-connection-quote</a></code>.</p>
+instead, as documented in <code><a href='DBI-connection-quote.html'>DBI-connection-quote()</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for Pool,character</span>
-<span class='fu'><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>make.db.names</a></span>(<span class='kw'>dbObj</span>, <span class='kw'>snames</span>,
-  keywords = <span class='kw'>.SQL92Keywords</span>, unique = <span class='fl'>TRUE</span>, allow.keywords = <span class='fl'>TRUE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>make.db.names</a></span>(
+  <span class='kw'>dbObj</span>,
+  <span class='kw'>snames</span>,
+  keywords = <span class='kw'>.SQL92Keywords</span>,
+  unique = <span class='fl'>TRUE</span>,
+  allow.keywords = <span class='fl'>TRUE</span>,
+  <span class='kw'>...</span>
+)
 
 <span class='co'># S4 method for Pool,character</span>
-<span class='fu'><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>isSQLKeyword</a></span>(<span class='kw'>dbObj</span>, <span class='kw'>name</span>,
-  keywords = <span class='kw'>.SQL92Keywords</span>, case = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lower"</span>, <span class='st'>"upper"</span>, <span class='st'>"any"</span>)[<span class='fl'>3</span>], <span class='kw'>...</span>)
+<span class='fu'><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>isSQLKeyword</a></span>(
+  <span class='kw'>dbObj</span>,
+  <span class='kw'>name</span>,
+  keywords = <span class='kw'>.SQL92Keywords</span>,
+  case = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lower"</span>, <span class='st'>"upper"</span>, <span class='st'>"any"</span>)[<span class='fl'>3</span>],
+  <span class='kw'>...</span>
+)
 
 <span class='co'># S4 method for Pool</span>
 <span class='fu'><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>SQLKeywords</a></span>(<span class='kw'>dbObj</span>, <span class='kw'>...</span>)</pre>
@@ -144,7 +155,7 @@ instead, as documented in <code><a href='DBI-connection-quote.html'>DBI-connecti
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dbObj, snames, keywords, unique, allow.keywords, name, case, ...</th>
-      <td><p>see <code><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>make.db.names</a></code></p></td>
+      <td><p>see <code><a href='https://dbi.r-dbi.org/reference/make.db.names.html'>DBI::make.db.names()</a></code></p></td>
     </tr>
     </table>
 
