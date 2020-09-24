@@ -47,4 +47,4 @@ Collate:
     'DBI-object.R'
     'DBI-pool.R'
     'dbplyr.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1

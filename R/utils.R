@@ -1,13 +1,6 @@
-#' Object Pooling in R.
-#'
-#' Creates objects pools for various types of objects in R to
-#' make it less computationally expensive to get a fetch and
-#' release them.
-#'
-#' @name pool
 #' @docType package
-#' @import DBI
-NULL
+#' @keywords internal
+"_PACKAGE"
 
 #' @import DBI
 NULL
