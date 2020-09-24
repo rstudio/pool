@@ -36,8 +36,14 @@
 \alias{sql_escape_logical.Pool}
 \title{DBIConnection methods from dplyr and dbplyr}
 \usage{
-\method{copy_to}{Pool}(dest, df, name = deparse(substitute(df)),
-  overwrite = FALSE, temporary = TRUE, ...)
+\method{copy_to}{Pool}(
+  dest,
+  df,
+  name = deparse(substitute(df)),
+  overwrite = FALSE,
+  temporary = TRUE,
+  ...
+)
 
 \method{tbl}{Pool}(src, from, ...)
 
@@ -47,11 +53,9 @@
 
 \method{db_commit}{Pool}(con, ...)
 
-\method{db_create_index}{Pool}(con, table, columns, name = NULL,
-  unique = FALSE, ...)
+\method{db_create_index}{Pool}(con, table, columns, name = NULL, unique = FALSE, ...)
 
-\method{db_create_indexes}{Pool}(con, table, indexes = NULL, unique = FALSE,
-  ...)
+\method{db_create_indexes}{Pool}(con, table, indexes = NULL, unique = FALSE, ...)
 
 \method{db_create_table}{Pool}(con, table, types, temporary = FALSE, ...)
 
@@ -77,8 +81,7 @@
 
 \method{db_save_query}{Pool}(con, sql, name, temporary = TRUE, ...)
 
-\method{db_write_table}{Pool}(con, table, types, values, temporary = FALSE,
-  ...)
+\method{db_write_table}{Pool}(con, table, types, values, temporary = FALSE, ...)
 
 \method{sql_escape_ident}{Pool}(con, x)
 
@@ -86,8 +89,18 @@
 
 \method{sql_join}{Pool}(con, x, y, vars, type = "inner", by = NULL, ...)
 
-\method{sql_select}{Pool}(con, select, from, where = NULL, group_by = NULL,
-  having = NULL, order_by = NULL, limit = NULL, distinct = FALSE, ...)
+\method{sql_select}{Pool}(
+  con,
+  select,
+  from,
+  where = NULL,
+  group_by = NULL,
+  having = NULL,
+  order_by = NULL,
+  limit = NULL,
+  distinct = FALSE,
+  ...
+)
 
 \method{sql_semi_join}{Pool}(con, x, y, anti = FALSE, by = NULL, ...)
 
@@ -97,12 +110,28 @@
 
 \method{db_collect}{Pool}(con, sql, n = -1, warn_incomplete = TRUE, ...)
 
-\method{db_compute}{Pool}(con, table, sql, temporary = TRUE,
-  unique_indexes = list(), indexes = list(), ...)
+\method{db_compute}{Pool}(
+  con,
+  table,
+  sql,
+  temporary = TRUE,
+  unique_indexes = list(),
+  indexes = list(),
+  ...
+)
 
-\method{db_copy_to}{Pool}(con, table, values, overwrite = FALSE,
-  types = NULL, temporary = TRUE, unique_indexes = NULL, indexes = NULL,
-  analyze = TRUE, ...)
+\method{db_copy_to}{Pool}(
+  con,
+  table,
+  values,
+  overwrite = FALSE,
+  types = NULL,
+  temporary = TRUE,
+  unique_indexes = NULL,
+  indexes = NULL,
+  analyze = TRUE,
+  ...
+)
 
 \method{db_sql_render}{Pool}(con, sql, ...)
 

@@ -6,6 +6,8 @@
 \title{Checks out an object from the pool.}
 \usage{
 poolCheckout(pool)
+
+\S4method{poolCheckout}{Pool}(pool)
 }
 \arguments{
 \item{pool}{The pool to get the object from.}

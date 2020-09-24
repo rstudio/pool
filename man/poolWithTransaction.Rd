@@ -26,7 +26,7 @@ function instead of the direct transaction methods will guarantee that
 you don't leak connections or forget to commit/rollback a transaction.
 }
 \details{
-This function is similar to \code{\link[DBI]{dbWithTransaction}}, but
+This function is similar to \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}}, but
 its arguments work a little differently. First, it takes in a pool
 object, instead of a connection. Second, instead of taking an arbitrary
 chunk of code to execute as a transaction (i.e. either run all the
@@ -38,7 +38,7 @@ arbitrary R code inside the \code{func}'s body. This function will be
 called once we fetch a connection from the pool. Once the function
 returns, we release the connection back to the pool.
 
-Like its DBI sister \code{\link[DBI]{dbWithTransaction}}, this function
+Like its DBI sister \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}}, this function
 calls \code{dbBegin()} before executing the code, and \code{dbCommit()}
 after successful completion, or \code{dbRollback()} in case of an error.
 This means that calling \code{poolWithTransaction} always has side
@@ -47,7 +47,7 @@ is called. In addition, if you modify the local R environment from within
 \code{func} (e.g. setting global variables, writing to disk), these
 changes will persist after the function has returned.
 
-Also, like \code{\link[DBI]{dbWithTransaction}}, there is also a special
+Also, like \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}}, there is also a special
 function called \code{dbBreak()} that allows for an early, silent exit
 with rollback. It can be called only from inside \code{poolWithTransaction}.
 }

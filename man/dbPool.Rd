@@ -7,25 +7,25 @@
 dbPool(drv, ..., validateQuery = NULL)
 }
 \arguments{
-\item{drv}{An object that inherits from \code{\link[DBI]{DBIDriver-class}},
-or an existing \code{\link[DBI]{DBIConnection-class}} object (in order to
+\item{drv}{An object that inherits from \code{\link[DBI:DBIDriver-class]{DBI::DBIDriver-class()}},
+or an existing \code{\link[DBI:DBIConnection-class]{DBI::DBIConnection-class()}} object (in order to
 clone an existing connection).}
 
-\item{...}{Arguments needed for both \code{\link[DBI]{dbConnect}}
+\item{...}{Arguments needed for both \code{\link[DBI:dbConnect]{DBI::dbConnect()}}
 (mandatory if required by the \code{DBIDriver} you're using) and
-\code{\link{poolCreate}} (optional) - all arguments should be named:
+\code{\link[=poolCreate]{poolCreate()}} (optional) - all arguments should be named:
 \enumerate{
-  \item The required authorization arguments needed by the DBMS
-  instance; these typically include \code{user}, \code{password},
-  \code{dbname}, \code{host}, \code{port}, etc. For details check
-  the appropriate \code{DBIDriver}'s documentation.
-  \item Optionally, override the \code{poolCreate} defaults:
-  \code{minSize} (minimum number of connections that the pool should
-  have at all times), \code{maxSize} (maximum number of connections
-  that the pool may have at any time), \code{idleTimeout} (number
-  of seconds to wait before closing a connection, if the number
-  of connection is above \code{minSize}), and \code{validationInterval}
-  (number of seconds to wait before validating the connection again).
+\item The required authorization arguments needed by the DBMS
+instance; these typically include \code{user}, \code{password},
+\code{dbname}, \code{host}, \code{port}, etc. For details check
+the appropriate \code{DBIDriver}'s documentation.
+\item Optionally, override the \code{poolCreate} defaults:
+\code{minSize} (minimum number of connections that the pool should
+have at all times), \code{maxSize} (maximum number of connections
+that the pool may have at any time), \code{idleTimeout} (number
+of seconds to wait before closing a connection, if the number
+of connection is above \code{minSize}), and \code{validationInterval}
+(number of seconds to wait before validating the connection again).
 }}
 
 \item{validateQuery}{The query to run to verify that the connection
@@ -35,10 +35,10 @@ not exhaustive.}
 }
 \description{
 A wrapper around \code{poolCreate} to simplify the creation of a DBI
-database connection pool. Check the documentation of \code{\link{poolCreate}}
+database connection pool. Check the documentation of \code{\link[=poolCreate]{poolCreate()}}
 for a generic overview of the parent function and the Pool object. The
 main thing to point out is that, for \code{dbPool}, you always need to
-provide a DBI driver (i.e. of class \code{\link[DBI]{DBIDriver-class}}),
+provide a DBI driver (i.e. of class \code{\link[DBI:DBIDriver-class]{DBI::DBIDriver-class()}}),
 and it should always be accompanied by the required authorization
 arguments (see the example below).
 }
