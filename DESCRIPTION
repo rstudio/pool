@@ -1,35 +1,42 @@
-Package: pool
 Type: Package
+Package: pool
 Title: Object Pooling
 Version: 0.1.4.9001
-Authors@R: c(
-    person("Joe", "Cheng", email = "joe@rstudio.com",
-      role = c("aut", "cre")),
-    person("Barbara", "Borges", email = "barb.b.ribeiro@gmail.com",
-      role = c("aut")),
-    person(family = "RStudio", role = "cph")
-    )
-Description: Enables the creation of object pools, which make it less
-    computationally expensive to fetch a new object. Currently the
+Authors@R: 
+    c(person(given = "Joe",
+             family = "Cheng",
+             role = c("aut", "cre"),
+             email = "joe@rstudio.com"),
+      person(given = "Barbara",
+             family = "Borges",
+             role = "aut",
+             email = "barb.b.ribeiro@gmail.com"),
+      person(family = "RStudio",
+             role = "cph"))
+Description: Enables the creation of object pools, which make it
+    less computationally expensive to fetch a new object. Currently the
     only supported pooled objects are 'DBI' connections.
 License: GPL-3
-Depends:
-    R (>= 3.0.0),
-    methods
-Imports:
-    DBI,
-    R6,
-    dplyr,
-    dbplyr,
-    later
-Suggests:
-    testthat,
-    tibble,
-    RSQLite,
-    RMySQL
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
+Depends:
+    methods,
+    R (>= 3.0.0)
+Imports:
+    DBI,
+    dbplyr,
+    dplyr,
+    later,
+    R6
+Suggests:
+    RMySQL,
+    RSQLite,
+    testthat,
+    tibble
+Encoding: UTF-8
 LazyData: TRUE
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
 Collate:
     'utils.R'
     'scheduler.R'
@@ -47,6 +54,3 @@ Collate:
     'DBI-object.R'
     'DBI-pool.R'
     'dbplyr.R'
-RoxygenNote: 7.1.1
-Roxygen: list(markdown = TRUE)
-Encoding: UTF-8
