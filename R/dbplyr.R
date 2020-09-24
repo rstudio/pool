@@ -17,7 +17,8 @@ NULL
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   library(dplyr)
 #'
-#'   pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+#'   db <- tempfile()
+#'   pool <- dbPool(RSQLite::SQLite(), dbname = db)
 #'
 #'   # describe the type of the pool/its connections
 #'   db_desc(pool)
@@ -72,16 +73,16 @@ copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
     stopIfTemporary(temporary)
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
+
     copy_to(db_con, df = df, name = name, overwrite = overwrite,
       temporary = temporary, ...)
+    tbl(dest, name, vars = db_query_fields(db_con, name))
 }
 
 #' @export
 #' @rdname dplyr-db-methods
 tbl.Pool <- function(src, from, ...) {
-  db_con <- poolCheckout(src)
-  on.exit(poolReturn(db_con))
-  tbl(db_con, from = from, ...)
+  dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ...)
 }
 
 # --- These generics are set in dplyr (database-specific)
@@ -326,20 +327,6 @@ db_compute.Pool <- function(con, table, sql, temporary = TRUE,
     db_compute(db_con, table = table, sql = sql,
       temporary = temporary, unique_indexes = unique_indexes,
       indexes = indexes, ...)
-}
-
-#' @export
-#' @rdname dplyr-db-methods
-db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
-  types = NULL, temporary = TRUE, unique_indexes = NULL,
-  indexes = NULL, analyze = TRUE, ...) {
-    stopIfTemporary(temporary)
-    db_con <- poolCheckout(con)
-    on.exit(poolReturn(db_con))
-    db_copy_to(db_con, table = table, values = values,
-      overwrite = overwrite, types = types, temporary = temporary,
-      unique_indexes = unique_indexes, indexes = indexes,
-      analyze = analyze, ...)
 }
 
 #' @export
