@@ -242,20 +242,6 @@ and <a href='http://dbplyr.tidyverse.org/reference/index.html'>dbplyr's referenc
 )
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'>db_copy_to</span>(
-  <span class='kw'>con</span>,
-  <span class='kw'>table</span>,
-  <span class='kw'>values</span>,
-  overwrite = <span class='fl'>FALSE</span>,
-  types = <span class='kw'>NULL</span>,
-  temporary = <span class='fl'>TRUE</span>,
-  unique_indexes = <span class='kw'>NULL</span>,
-  indexes = <span class='kw'>NULL</span>,
-  analyze = <span class='fl'>TRUE</span>,
-  <span class='kw'>...</span>
-)
-
-<span class='co'># S3 method for Pool</span>
 <span class='fu'>db_sql_render</span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>...</span>)
 
 <span class='co'># S3 method for Pool</span>
@@ -265,7 +251,7 @@ and <a href='http://dbplyr.tidyverse.org/reference/index.html'>dbplyr's referenc
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>dest, df, name, overwrite, temporary, ..., src, from, con, table, columns, unique, indexes, types, fields, x, force, sql, values, y, vars, type, by, select, where, group_by, having, order_by, limit, distinct, anti, n, warn_incomplete, unique_indexes, analyze</th>
+      <th>dest, df, name, overwrite, temporary, ..., src, from, con, table, columns, unique, indexes, types, fields, x, force, sql, values, y, vars, type, by, select, where, group_by, having, order_by, limit, distinct, anti, n, warn_incomplete, unique_indexes</th>
       <td><p>See original documentation.</p></td>
     </tr>
     </table>
@@ -275,37 +261,19 @@ and <a href='http://dbplyr.tidyverse.org/reference/index.html'>dbplyr's referenc
     <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
   <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>)
 
-  <span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), dbname = <span class='st'>":memory:"</span>)
+  <span class='kw'>db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
+  <span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), dbname = <span class='kw'>db</span>)
 
-  <span class='co'># describe the type of the pool/its connections</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_desc</a></span>(<span class='kw'>pool</span>)
-
-  <span class='co'># use dplyr syntax to copy a table into the database</span>
+  <span class='co'># copy a table into the database</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/copy_to.html'>copy_to</a></span>(<span class='kw'>pool</span>, <span class='kw'>mtcars</span>, <span class='st'>"mtcars"</span>, temporary = <span class='fl'>FALSE</span>)
 
-  <span class='co'># list the current tables in the database</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_list_tables</a></span>(<span class='kw'>pool</span>)
-
-  <span class='co'># extract a table from the database</span>
+  <span class='co'># retrieve a table</span>
   <span class='kw'>mtcars_db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/tbl.html'>tbl</a></span>(<span class='kw'>pool</span>, <span class='st'>"mtcars"</span>)
-
-  <span class='co'># select only 3 columns</span>
-  <span class='kw'>mtcars_db_thin</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span>(<span class='kw'>mtcars_db</span>, <span class='kw'>mpg</span>, <span class='kw'>cyl</span>, <span class='kw'>disp</span>)
-
-  <span class='co'># get the names of the columns in the databases's table</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_fields</a></span>(<span class='kw'>pool</span>, <span class='st'>"mtcars"</span>)
-
-  <span class='co'># get the number of rows in the databases's table</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_rows</a></span>(<span class='kw'>pool</span>, <span class='st'>"mtcars"</span>)
-
-  <span class='co'># drop the "mtcars" table from the database</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_drop_table</a></span>(<span class='kw'>pool</span>, <span class='st'>"mtcars"</span>)
-
-  <span class='co'># list the current tables in the database</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_list_tables</a></span>(<span class='kw'>pool</span>)
+  <span class='kw'>mtcars_db</span>
+  <span class='kw'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span>(<span class='kw'>mpg</span>, <span class='kw'>cyl</span>, <span class='kw'>disp</span>)
+  <span class='kw'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span>(<span class='kw'>cyl</span> <span class='op'>==</span> <span class='fl'>6</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span>()
 
   <span class='fu'><a href='Pool-class.html'>poolClose</a></span>(<span class='kw'>pool</span>)
-
 } <span class='co'>else</span> {
   <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span>(<span class='st'>"Please install the 'RSQLite' package to run this example"</span>)
 }
