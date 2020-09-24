@@ -8,33 +8,29 @@ NULL
 #' not be called directly either by backend authors or by the end
 #' users.
 #'
+#' @keywords internal
 #' @param object A pooled object.
-#'
 #' @name object
 NULL
 
-#' @aliases onActivate,ANY-method
 #' @export
 #' @rdname object
 setGeneric("onActivate", function(object) {
   standardGeneric("onActivate")
 })
 
-#' @aliases onPassivate,ANY-method
 #' @export
 #' @rdname object
 setGeneric("onPassivate", function(object) {
   standardGeneric("onPassivate")
 })
 
-#' @aliases onDestroy,ANY-method
 #' @export
 #' @rdname object
 setGeneric("onDestroy", function(object) {
   standardGeneric("onDestroy")
 })
 
-#' @aliases onValidate,ANY-method
 #' @param query A simple query that can be used to verify that
 #' the `object` functions as expected.
 #' @export
@@ -46,21 +42,25 @@ setGeneric("onValidate", function(object, query) {
 #************************ Set defaults ************************#
 
 #' @export
+#' @rdname object
 setMethod("onActivate", "ANY", function(object) {
   invisible()
 })
 
 #' @export
+#' @rdname object
 setMethod("onPassivate", "ANY", function(object) {
   invisible()
 })
 
 #' @export
+#' @rdname object
 setMethod("onDestroy", "ANY", function(object) {
   invisible()
 })
 
 #' @export
+#' @rdname object
 setMethod("onValidate", "ANY", function(object, query) {
   invisible()
 })

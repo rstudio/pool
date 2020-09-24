@@ -11,6 +11,7 @@ NULL
 # connections.
 #'
 #' @export
+#' @aliases Pool
 setClass("Pool")
 
 #' @export
@@ -50,13 +51,12 @@ poolCreate <- function(factory, minSize = 1, maxSize = Inf,
 #' to the pool using `poolReturn(object)`.
 #'
 #' @param pool The pool to get the object from.
-#'
-#' @aliases poolCheckout,Pool-method
 #' @export
 setGeneric("poolCheckout", function(pool) {
   standardGeneric("poolCheckout")
 })
 
+#' @rdname poolCheckout
 #' @export
 setMethod("poolCheckout", "Pool", function(pool) {
   pool$fetch()
@@ -69,14 +69,13 @@ setMethod("poolCheckout", "Pool", function(pool) {
 #' and are now done with said object.
 #'
 #' @param object A pooled object.
-#'
-#' @aliases poolReturn,ANY-method
 #' @export
 setGeneric("poolReturn", function(object) {
   standardGeneric("poolReturn")
 })
 
 #' @export
+#' @rdname poolReturn
 setMethod("poolReturn", "ANY", function(object) {
   pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
   if (is.null(pool_metadata) || !pool_metadata$valid) {
@@ -94,6 +93,7 @@ setGeneric("poolClose", function(pool) {
 })
 
 #' @export
+#' @rdname Pool-class
 setMethod("poolClose", "Pool", function(pool) {
   pool$close()
 })

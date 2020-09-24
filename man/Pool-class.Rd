@@ -3,8 +3,10 @@
 \docType{class}
 \name{Pool-class}
 \alias{Pool-class}
+\alias{Pool}
 \alias{poolCreate}
 \alias{poolClose}
+\alias{poolClose,Pool-method}
 \title{S4 class for compatibility with DBI methods}
 \usage{
 poolCreate(
@@ -17,6 +19,8 @@ poolCreate(
 )
 
 poolClose(pool)
+
+\S4method{poolClose}{Pool}(pool)
 }
 \arguments{
 \item{factory}{A factory function responsible for the generation of

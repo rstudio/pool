@@ -6,6 +6,8 @@
 \title{Returns an object back to the pool.}
 \usage{
 poolReturn(object)
+
+\S4method{poolReturn}{ANY}(object)
 }
 \arguments{
 \item{object}{A pooled object.}
