@@ -29,6 +29,7 @@ Imports:
     later,
     R6
 Suggests:
+    covr,
     RMySQL,
     RSQLite,
     testthat,
