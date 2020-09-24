@@ -9,7 +9,7 @@ NULL
 #' [dplyr's reference page](http://dplyr.tidyverse.org/reference/index.html)
 #' and [dbplyr's reference page](http://dbplyr.tidyverse.org/reference/index.html).
 #'
-#' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes,analyze See original documentation.
+#' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes See original documentation.
 #'
 #' @name dplyr-db-methods
 #'
@@ -20,35 +20,16 @@ NULL
 #'   db <- tempfile()
 #'   pool <- dbPool(RSQLite::SQLite(), dbname = db)
 #'
-#'   # describe the type of the pool/its connections
-#'   db_desc(pool)
-#'
-#'   # use dplyr syntax to copy a table into the database
+#'   # copy a table into the database
 #'   copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 #'
-#'   # list the current tables in the database
-#'   db_list_tables(pool)
-#'
-#'   # extract a table from the database
+#'   # retrieve a table
 #'   mtcars_db <- tbl(pool, "mtcars")
-#'
-#'   # select only 3 columns
-#'   mtcars_db_thin <- select(mtcars_db, mpg, cyl, disp)
-#'
-#'   # get the names of the columns in the databases's table
-#'   db_query_fields(pool, "mtcars")
-#'
-#'   # get the number of rows in the databases's table
-#'   db_query_rows(pool, "mtcars")
-#'
-#'   # drop the "mtcars" table from the database
-#'   db_drop_table(pool, "mtcars")
-#'
-#'   # list the current tables in the database
-#'   db_list_tables(pool)
+#'   mtcars_db
+#'   mtcars_db %>% select(mpg, cyl, disp)
+#'   mtcars_db %>% filter(cyl == 6) %>% collect()
 #'
 #'   poolClose(pool)
-#'
 #' } else {
 #'   message("Please install the 'RSQLite' package to run this example")
 #' }
