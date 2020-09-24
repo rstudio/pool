@@ -4,3 +4,5 @@
 ^appveyor\.yml$
 ^Dockerfile$
 ^examples$
+^codecov\.yml$
+^\.github$

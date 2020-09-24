@@ -26,7 +26,8 @@ Suggests:
     testthat,
     tibble,
     RSQLite,
-    RMySQL
+    RMySQL,
+    covr
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
 LazyData: TRUE
