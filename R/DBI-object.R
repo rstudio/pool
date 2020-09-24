@@ -4,8 +4,8 @@ NULL
 #' DBIObject methods.
 #'
 #' Pool object wrappers around DBIObject methods. See
-#' \code{\link[DBI]{dbDataType}}, \code{\link[DBI]{dbGetInfo}}
-#' and \code{\link[DBI]{dbIsValid}} for the original
+#' [DBI::dbDataType()], [DBI::dbGetInfo()]
+#' and [DBI::dbIsValid()] for the original
 #' documentation.
 #'
 #' @name DBI-object
@@ -36,7 +36,7 @@ NULL
 #' }
 NULL
 
-#' @param dbObj,obj,... See \code{\link[DBI]{dbDataType}}.
+#' @param dbObj,obj,... See [DBI::dbDataType()].
 #' @export
 #' @rdname DBI-object
 setMethod("dbDataType", "Pool", function(dbObj, obj, ...) {

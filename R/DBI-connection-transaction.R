@@ -9,21 +9,21 @@ NULL
 #' knowing when to return it back to the pool).
 #'
 #' If you must use these methods, fetch an actual connection first
-#' with \code{conn <- poolCheckout(pool)} -- then call the appropriate
-#' DBI method on \code{conn}. Since you're fetching a connection
+#' with `conn <- poolCheckout(pool)` -- then call the appropriate
+#' DBI method on `conn`. Since you're fetching a connection
 #' from the pool yourself, you must also remember to return it
-#' back to the pool when you're done: \code{poolReturn(conn)}
+#' back to the pool when you're done: `poolReturn(conn)`
 #' (otherwise, you have a leaked connection).
 #'
 #' For simple transactions, consider using
-#' \code{\link{poolWithTransaction}} instead,
+#' [poolWithTransaction()] instead,
 #' which is safer since it does not require you to fetch and
 #' release the connection yourself.
 #'
-#' See \code{\link[DBI]{transactions}} for the original
+#' See [DBI::transactions()] for the original
 #' documentation.
 #'
-#' @param conn,...,code See \code{\link[DBI]{transactions}}.
+#' @param conn,...,code See [DBI::transactions()].
 #'
 #' @name DBI-connection-transaction
 NULL
@@ -74,36 +74,36 @@ setMethod("dbWithTransaction", "Pool", function(conn, code) {
 #' function instead of the direct transaction methods will guarantee that
 #' you don't leak connections or forget to commit/rollback a transaction.
 #'
-#' This function is similar to \code{\link[DBI]{dbWithTransaction}}, but
+#' This function is similar to [DBI::dbWithTransaction()], but
 #' its arguments work a little differently. First, it takes in a pool
 #' object, instead of a connection. Second, instead of taking an arbitrary
 #' chunk of code to execute as a transaction (i.e. either run all the
 #' commands successfully or not run any of them), it takes in a function.
-#' This function (the \code{func} argument) gives you an argument to use
+#' This function (the `func` argument) gives you an argument to use
 #' in its body, a database connection. So, you can use connection methods
 #' without ever having to check out a connection. But you can also use
-#' arbitrary R code inside the \code{func}'s body. This function will be
+#' arbitrary R code inside the `func`'s body. This function will be
 #' called once we fetch a connection from the pool. Once the function
 #' returns, we release the connection back to the pool.
 #'
-#' Like its DBI sister \code{\link[DBI]{dbWithTransaction}}, this function
-#' calls \code{dbBegin()} before executing the code, and \code{dbCommit()}
-#' after successful completion, or \code{dbRollback()} in case of an error.
-#' This means that calling \code{poolWithTransaction} always has side
-#' effects, namely to commit or roll back the code executed when \code{func}
+#' Like its DBI sister [DBI::dbWithTransaction()], this function
+#' calls `dbBegin()` before executing the code, and `dbCommit()`
+#' after successful completion, or `dbRollback()` in case of an error.
+#' This means that calling `poolWithTransaction` always has side
+#' effects, namely to commit or roll back the code executed when `func`
 #' is called. In addition, if you modify the local R environment from within
-#' \code{func} (e.g. setting global variables, writing to disk), these
+#' `func` (e.g. setting global variables, writing to disk), these
 #' changes will persist after the function has returned.
 #'
-#' Also, like \code{\link[DBI]{dbWithTransaction}}, there is also a special
-#' function called \code{dbBreak()} that allows for an early, silent exit
-#' with rollback. It can be called only from inside \code{poolWithTransaction}.
+#' Also, like [DBI::dbWithTransaction()], there is also a special
+#' function called `dbBreak()` that allows for an early, silent exit
+#' with rollback. It can be called only from inside `poolWithTransaction`.
 #'
 #' @param pool The pool object to fetch the connection from.
-#' @param func A function that has one argument, \code{conn} (a database
-#'   connection checked out from \code{pool}).
+#' @param func A function that has one argument, `conn` (a database
+#'   connection checked out from `pool`).
 #'
-#' @return \code{func}'s return value.
+#' @return `func`'s return value.
 #' @export
 #' @examples
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {

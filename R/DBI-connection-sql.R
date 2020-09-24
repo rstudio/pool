@@ -5,14 +5,14 @@ NULL
 #'
 #' Pool object wrappers around DBIConnection methods that deal
 #' with the creation and manipulation of SQL tables. See
-#' \code{\link[DBI]{sqlData}}, \code{\link[DBI]{sqlCreateTable}}
-#' and \code{\link[DBI]{sqlAppendTable}} for the original
+#' [DBI::sqlData()], [DBI::sqlCreateTable()]
+#' and [DBI::sqlAppendTable()] for the original
 #' documentation.
 #'
 #' @name DBI-connection-sql
 NULL
 
-#' @param con,value,row.names,... See \code{\link[DBI]{sqlData}}.
+#' @param con,value,row.names,... See [DBI::sqlData()].
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
@@ -21,7 +21,7 @@ setMethod("sqlData", "Pool", function(con, value, row.names = NA, ...) {
   DBI::sqlData(connection, value, row.names = NA, ...)
 })
 
-#' @param table,fields,temporary See \code{\link[DBI]{sqlCreateTable}}.
+#' @param table,fields,temporary See [DBI::sqlCreateTable()].
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlCreateTable", "Pool",
@@ -33,7 +33,7 @@ setMethod("sqlCreateTable", "Pool",
   }
 )
 
-#' @param values See \code{\link[DBI]{sqlAppendTable}}.
+#' @param values See [DBI::sqlAppendTable()].
 #' @export
 #' @rdname DBI-connection-sql
 setMethod("sqlAppendTable", "Pool",
