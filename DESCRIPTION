@@ -32,8 +32,7 @@ Suggests:
     dplyr,
     dbplyr,
     RSQLite,
-    testthat,
-    tibble
+    RMySQL
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
