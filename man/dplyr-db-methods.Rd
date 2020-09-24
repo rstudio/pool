@@ -31,7 +31,6 @@
 \alias{sql_translate_env.Pool}
 \alias{db_collect.Pool}
 \alias{db_compute.Pool}
-\alias{db_copy_to.Pool}
 \alias{db_sql_render.Pool}
 \alias{sql_escape_logical.Pool}
 \title{DBIConnection methods from dplyr and dbplyr}
@@ -120,19 +119,6 @@
   ...
 )
 
-\method{db_copy_to}{Pool}(
-  con,
-  table,
-  values,
-  overwrite = FALSE,
-  types = NULL,
-  temporary = TRUE,
-  unique_indexes = NULL,
-  indexes = NULL,
-  analyze = TRUE,
-  ...
-)
-
 \method{db_sql_render}{Pool}(con, sql, ...)
 
 \method{sql_escape_logical}{Pool}(con, x)
@@ -151,7 +137,8 @@ and \href{http://dbplyr.tidyverse.org/reference/index.html}{dbplyr's reference p
 if (requireNamespace("RSQLite", quietly = TRUE)) {
   library(dplyr)
 
-  pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+  db <- tempfile()
+  pool <- dbPool(RSQLite::SQLite(), dbname = db)
 
   # describe the type of the pool/its connections
   db_desc(pool)
