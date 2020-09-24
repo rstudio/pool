@@ -47,7 +47,7 @@ poolCreate <- function(factory, minSize = 1, maxSize = Inf,
 #' Should be called by the end user if they need a persistent
 #' object, that is not returned to the pool automatically.
 #' When you don't longer need the object, be sure to return it
-#' to the pool using \code{poolReturn(object)}.
+#' to the pool using `poolReturn(object)`.
 #'
 #' @param pool The pool to get the object from.
 #'
@@ -65,7 +65,7 @@ setMethod("poolCheckout", "Pool", function(pool) {
 #' Returns an object back to the pool.
 #'
 #' Should be called by the end user if they previously fetched
-#' an object directly using \code{object <- poolCheckout(pool)}
+#' an object directly using `object <- poolCheckout(pool)`
 #' and are now done with said object.
 #'
 #' @param object A pooled object.

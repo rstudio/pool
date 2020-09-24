@@ -11,13 +11,13 @@
 \S4method{sqlParseVariables}{Pool}(conn, sql, ...)
 }
 \arguments{
-\item{conn, sql, ..., .dots}{See \code{\link[DBI]{sqlInterpolate}}.}
+\item{conn, sql, ..., .dots}{See \code{\link[DBI:sqlInterpolate]{DBI::sqlInterpolate()}}.}
 }
 \description{
 Pool object wrappers around DBIConnection methods that deal
 with the safe interpolation of values into an SQL string and
 the reverse -- parsing interpolated variables from SQL. See
-\code{\link[DBI]{sqlInterpolate}} and
-\code{\link[DBI]{sqlParseVariables}} for the original
+\code{\link[DBI:sqlInterpolate]{DBI::sqlInterpolate()}} and
+\code{\link[DBI:sqlParseVariables]{DBI::sqlParseVariables()}} for the original
 documentation.
 }

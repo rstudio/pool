@@ -14,10 +14,10 @@
 \S4method{dbQuoteString}{Pool,ANY}(conn, x, ...)
 }
 \arguments{
-\item{conn, x, ...}{See \code{\link[DBI]{SQL}}.}
+\item{conn, x, ...}{See \code{\link[DBI:SQL]{DBI::SQL()}}.}
 }
 \description{
 Pool object wrappers around DBIConnection methods that deal
-with SQL escaping needs. See \code{\link[DBI]{SQL}} for the
+with SQL escaping needs. See \code{\link[DBI:SQL]{DBI::SQL()}} for the
 original documentation.
 }

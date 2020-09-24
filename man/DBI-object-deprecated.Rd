@@ -27,12 +27,12 @@
 \S4method{SQLKeywords}{Pool}(dbObj, ...)
 }
 \arguments{
-\item{dbObj, snames, keywords, unique, allow.keywords, name, case, ...}{see \code{\link[DBI]{make.db.names}}}
+\item{dbObj, snames, keywords, unique, allow.keywords, name, case, ...}{see \code{\link[DBI:make.db.names]{DBI::make.db.names()}}}
 }
 \description{
 Pool object wrappers around DBIObject methods. See
-\code{\link[DBI]{make.db.names}} for the original documentation.
+\code{\link[DBI:make.db.names]{DBI::make.db.names()}} for the original documentation.
 Note that these methods are DEPRECATED. Please use
 \code{dbQuoteIdentifier} (or possibly \code{dbQuoteString})
-instead, as documented in \code{\link{DBI-connection-quote}}.
+instead, as documented in \code{\link[=DBI-connection-quote]{DBI-connection-quote()}}.
 }

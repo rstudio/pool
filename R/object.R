@@ -36,7 +36,7 @@ setGeneric("onDestroy", function(object) {
 
 #' @aliases onValidate,ANY-method
 #' @param query A simple query that can be used to verify that
-#' the \code{object} functions as expected.
+#' the `object` functions as expected.
 #' @export
 #' @rdname object
 setGeneric("onValidate", function(object, query) {

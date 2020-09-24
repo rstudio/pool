@@ -14,16 +14,16 @@
 \S4method{sqlAppendTable}{Pool}(con, table, values, row.names = NA, ...)
 }
 \arguments{
-\item{con, value, row.names, ...}{See \code{\link[DBI]{sqlData}}.}
+\item{con, value, row.names, ...}{See \code{\link[DBI:sqlData]{DBI::sqlData()}}.}
 
-\item{table, fields, temporary}{See \code{\link[DBI]{sqlCreateTable}}.}
+\item{table, fields, temporary}{See \code{\link[DBI:sqlCreateTable]{DBI::sqlCreateTable()}}.}
 
-\item{values}{See \code{\link[DBI]{sqlAppendTable}}.}
+\item{values}{See \code{\link[DBI:sqlAppendTable]{DBI::sqlAppendTable()}}.}
 }
 \description{
 Pool object wrappers around DBIConnection methods that deal
 with the creation and manipulation of SQL tables. See
-\code{\link[DBI]{sqlData}}, \code{\link[DBI]{sqlCreateTable}}
-and \code{\link[DBI]{sqlAppendTable}} for the original
+\code{\link[DBI:sqlData]{DBI::sqlData()}}, \code{\link[DBI:sqlCreateTable]{DBI::sqlCreateTable()}}
+and \code{\link[DBI:sqlAppendTable]{DBI::sqlAppendTable()}} for the original
 documentation.
 }

@@ -14,12 +14,12 @@
 \S4method{dbIsValid}{Pool}(dbObj, obj, ...)
 }
 \arguments{
-\item{dbObj, obj, ...}{See \code{\link[DBI]{dbDataType}}.}
+\item{dbObj, obj, ...}{See \code{\link[DBI:dbDataType]{DBI::dbDataType()}}.}
 }
 \description{
 Pool object wrappers around DBIObject methods. See
-\code{\link[DBI]{dbDataType}}, \code{\link[DBI]{dbGetInfo}}
-and \code{\link[DBI]{dbIsValid}} for the original
+\code{\link[DBI:dbDataType]{DBI::dbDataType()}}, \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}}
+and \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}} for the original
 documentation.
 }
 \examples{

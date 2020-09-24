@@ -18,7 +18,7 @@ Pool objects.}
 \S4method{dbWithTransaction}{Pool}(conn, code)
 }
 \arguments{
-\item{conn, ..., code}{See \code{\link[DBI]{transactions}}.}
+\item{conn, ..., code}{See \code{\link[DBI:transactions]{DBI::transactions()}}.}
 }
 \description{
 You cannot perform SQL transaction using a Pool object directly
@@ -34,10 +34,10 @@ back to the pool when you're done: \code{poolReturn(conn)}
 (otherwise, you have a leaked connection).
 
 For simple transactions, consider using
-\code{\link{poolWithTransaction}} instead,
+\code{\link[=poolWithTransaction]{poolWithTransaction()}} instead,
 which is safer since it does not require you to fetch and
 release the connection yourself.
 
-See \code{\link[DBI]{transactions}} for the original
+See \code{\link[DBI:transactions]{DBI::transactions()}} for the original
 documentation.
 }

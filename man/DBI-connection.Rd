@@ -35,24 +35,24 @@
 \S4method{dbRemoveTable}{Pool,ANY}(conn, name, ...)
 }
 \arguments{
-\item{conn, statement, ...}{See \code{\link[DBI]{dbSendQuery}}.}
+\item{conn, statement, ...}{See \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}.}
 
-\item{name, value}{See \code{\link[DBI]{dbWriteTable}}.}
+\item{name, value}{See \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}.}
 }
 \description{
 Pool object wrappers around DBIConnection methods. For the original
 documentation, see:
 \itemize{
- \item \code{\link[DBI]{dbSendQuery}}
- \item \code{\link[DBI]{dbGetQuery}}
- \item \code{\link[DBI]{dbExecute}}
- \item \code{\link[DBI]{dbListResults}}
- \item \code{\link[DBI]{dbListFields}}
- \item \code{\link[DBI]{dbListTables}}
- \item \code{\link[DBI]{dbReadTable}}
- \item \code{\link[DBI]{dbWriteTable}}
- \item \code{\link[DBI]{dbExistsTable}}
- \item \code{\link[DBI]{dbRemoveTable}}
+\item \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}
+\item \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
+\item \code{\link[DBI:dbExecute]{DBI::dbExecute()}}
+\item \code{\link[DBI:dbListResults]{DBI::dbListResults()}}
+\item \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
+\item \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
+\item \code{\link[DBI:dbReadTable]{DBI::dbReadTable()}}
+\item \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
+\item \code{\link[DBI:dbExistsTable]{DBI::dbExistsTable()}}
+\item \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
 }
 }
 \examples{

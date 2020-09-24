@@ -6,16 +6,16 @@ NULL
 #' Pool object wrappers around DBIConnection methods. For the original
 #' documentation, see:
 #' \itemize{
-#'  \item \code{\link[DBI]{dbSendQuery}}
-#'  \item \code{\link[DBI]{dbGetQuery}}
-#'  \item \code{\link[DBI]{dbExecute}}
-#'  \item \code{\link[DBI]{dbListResults}}
-#'  \item \code{\link[DBI]{dbListFields}}
-#'  \item \code{\link[DBI]{dbListTables}}
-#'  \item \code{\link[DBI]{dbReadTable}}
-#'  \item \code{\link[DBI]{dbWriteTable}}
-#'  \item \code{\link[DBI]{dbExistsTable}}
-#'  \item \code{\link[DBI]{dbRemoveTable}}
+#'  \item [DBI::dbSendQuery()]
+#'  \item [DBI::dbGetQuery()]
+#'  \item [DBI::dbExecute()]
+#'  \item [DBI::dbListResults()]
+#'  \item [DBI::dbListFields()]
+#'  \item [DBI::dbListTables()]
+#'  \item [DBI::dbReadTable()]
+#'  \item [DBI::dbWriteTable()]
+#'  \item [DBI::dbExistsTable()]
+#'  \item [DBI::dbRemoveTable()]
 #' }
 #'
 #' @name DBI-connection
@@ -71,7 +71,7 @@ NULL
 
 ## Throw error here since this would require keeping a connection
 ## open and never releasing it back to the pool.
-#' @param conn,statement,... See \code{\link[DBI]{dbSendQuery}}.
+#' @param conn,statement,... See [DBI::dbSendQuery()].
 #' @export
 #' @rdname DBI-connection
 setMethod("dbSendQuery", "Pool", function(conn, statement, ...) {
@@ -129,7 +129,7 @@ setMethod("dbReadTable", signature("Pool", "character"), function(conn, name, ..
   DBI::dbReadTable(connection, name, ...)
 })
 
-#' @param name,value See \code{\link[DBI]{dbWriteTable}}.
+#' @param name,value See [DBI::dbWriteTable()].
 #' @export
 #' @rdname DBI-connection
 setMethod("dbWriteTable", "Pool", function(conn, name, value, ...) {

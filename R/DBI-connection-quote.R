@@ -4,10 +4,10 @@ NULL
 #' SQL quoting.
 #'
 #' Pool object wrappers around DBIConnection methods that deal
-#' with SQL escaping needs. See \code{\link[DBI]{SQL}} for the
+#' with SQL escaping needs. See [DBI::SQL()] for the
 #' original documentation.
 #'
-#' @param conn,x,... See \code{\link[DBI]{SQL}}.
+#' @param conn,x,... See [DBI::SQL()].
 #'
 #' @name DBI-connection-quote
 NULL

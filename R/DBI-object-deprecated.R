@@ -4,16 +4,16 @@ NULL
 #' Make R identifiers into legal SQL identifiers.
 #'
 #' Pool object wrappers around DBIObject methods. See
-#' \code{\link[DBI]{make.db.names}} for the original documentation.
+#' [DBI::make.db.names()] for the original documentation.
 #' Note that these methods are DEPRECATED. Please use
-#' \code{dbQuoteIdentifier} (or possibly \code{dbQuoteString})
-#' instead, as documented in \code{\link{DBI-connection-quote}}.
+#' `dbQuoteIdentifier` (or possibly `dbQuoteString`)
+#' instead, as documented in [DBI-connection-quote()].
 #'
 #' @name DBI-object-deprecated
 NULL
 
 #' @param dbObj,snames,keywords,unique,allow.keywords,name,case,...
-#'   see \code{\link[DBI]{make.db.names}}
+#'   see [DBI::make.db.names()]
 #' @export
 #' @rdname DBI-object-deprecated
 setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
