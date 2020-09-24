@@ -6,7 +6,8 @@ describe("pool package", {
 
   if (requireNamespace("RSQLite", quietly = TRUE)) {
 
-    pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+    db <- tempfile()
+    pool <- dbPool(RSQLite::SQLite(), dbname = db)
 
     it("can create local SQLite pool", {
       expect_equal(class(pool), c("Pool", "R6"))
@@ -36,14 +37,15 @@ describe("pool package", {
         )
       )
       checkCounts(pool, free = 1, taken = 0)
-      expect_true(db_has_table(pool, "flights"))
+      expect_true(dbExistsTable(pool, "flights"))
     })
 
     it("can use dplyr syntax to get a table from DB", {
       checkCounts(pool, free = 1, taken = 0)
       flights_db <- tbl(pool, "flights")
+      expect_s3_class(flights_db$src$con, "Pool")
       checkCounts(pool, free = 1, taken = 0)
-      expect_s3_class(flights_db, "tbl_dbi")
+      expect_s3_class(flights_db, "tbl_Pool")
     })
 
     it("can use dplyr syntax to select", {

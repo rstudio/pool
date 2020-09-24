@@ -9,7 +9,7 @@ NULL
 #' [dplyr's reference page](http://dplyr.tidyverse.org/reference/index.html)
 #' and [dbplyr's reference page](http://dbplyr.tidyverse.org/reference/index.html).
 #'
-#' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes,analyze See original documentation.
+#' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes See original documentation.
 #'
 #' @name dplyr-db-methods
 #'
@@ -17,37 +17,19 @@ NULL
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   library(dplyr)
 #'
-#'   pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+#'   db <- tempfile()
+#'   pool <- dbPool(RSQLite::SQLite(), dbname = db)
 #'
-#'   # describe the type of the pool/its connections
-#'   db_desc(pool)
-#'
-#'   # use dplyr syntax to copy a table into the database
+#'   # copy a table into the database
 #'   copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 #'
-#'   # list the current tables in the database
-#'   db_list_tables(pool)
-#'
-#'   # extract a table from the database
+#'   # retrieve a table
 #'   mtcars_db <- tbl(pool, "mtcars")
-#'
-#'   # select only 3 columns
-#'   mtcars_db_thin <- select(mtcars_db, mpg, cyl, disp)
-#'
-#'   # get the names of the columns in the databases's table
-#'   db_query_fields(pool, "mtcars")
-#'
-#'   # get the number of rows in the databases's table
-#'   db_query_rows(pool, "mtcars")
-#'
-#'   # drop the "mtcars" table from the database
-#'   db_drop_table(pool, "mtcars")
-#'
-#'   # list the current tables in the database
-#'   db_list_tables(pool)
+#'   mtcars_db
+#'   mtcars_db %>% select(mpg, cyl, disp)
+#'   mtcars_db %>% filter(cyl == 6) %>% collect()
 #'
 #'   poolClose(pool)
-#'
 #' } else {
 #'   message("Please install the 'RSQLite' package to run this example")
 #' }
@@ -72,16 +54,16 @@ copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
     stopIfTemporary(temporary)
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
+
     copy_to(db_con, df = df, name = name, overwrite = overwrite,
       temporary = temporary, ...)
+    tbl(dest, name, vars = db_query_fields(db_con, name))
 }
 
 #' @export
 #' @rdname dplyr-db-methods
 tbl.Pool <- function(src, from, ...) {
-  db_con <- poolCheckout(src)
-  on.exit(poolReturn(db_con))
-  tbl(db_con, from = from, ...)
+  dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ...)
 }
 
 # --- These generics are set in dplyr (database-specific)
@@ -326,20 +308,6 @@ db_compute.Pool <- function(con, table, sql, temporary = TRUE,
     db_compute(db_con, table = table, sql = sql,
       temporary = temporary, unique_indexes = unique_indexes,
       indexes = indexes, ...)
-}
-
-#' @export
-#' @rdname dplyr-db-methods
-db_copy_to.Pool <- function(con, table, values, overwrite = FALSE,
-  types = NULL, temporary = TRUE, unique_indexes = NULL,
-  indexes = NULL, analyze = TRUE, ...) {
-    stopIfTemporary(temporary)
-    db_con <- poolCheckout(con)
-    on.exit(poolReturn(db_con))
-    db_copy_to(db_con, table = table, values = values,
-      overwrite = overwrite, types = types, temporary = temporary,
-      unique_indexes = unique_indexes, indexes = indexes,
-      analyze = analyze, ...)
 }
 
 #' @export
