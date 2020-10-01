@@ -197,24 +197,20 @@
 <p>Fix <a href="https://github.com/rstudio/pool/issues/39"><a href='https://github.com/rstudio/pool/issues/39'>#39</a></a>: Moved <code>dplyr</code> support in <code>pool</code> from <code>dplyr</code> 0.5.0 to <code>dplyr</code> 0.7.0, which includes a lot of breaking changes including the addition of a brand new package called <code>dbplyr</code>. (<a href="https://github.com/rstudio/pool/pull/42"><a href='https://github.com/rstudio/pool/issues/42'>#42</a></a>)</p>
 <p>For <code>pool</code> users, the main change is that all the <code>src_*</code> functions are now gone (from <code>dplyr</code> and <code>pool</code>). Therefore, if you had something like:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">data</span> <span class="op">&lt;-</span> <span class="fu">src_pool</span>(<span class="kw">pool</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span>(<span class="st">"test"</span>)
-</pre></div>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">src_pool</span><span class="op">(</span><span class="va">pool</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></pre></div>
 <p>You can just change it to the simpler:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">data</span> <span class="op">&lt;-</span> <span class="kw">pool</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span>(<span class="st">"test"</span>)
-</pre></div>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">pool</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></pre></div>
 <p>If you’re still on an old version of <code>dplyr</code> and want to use <code>pool</code> as well, please install the package using the tag created for that purpose:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"rstudio/pool@dplyr-pre-0.7.0-compat"</span>)
-</pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/pool@dplyr-pre-0.7.0-compat"</span><span class="op">)</span></pre></div>
 </li>
 <li><p>Changed all time arguments to accept number of <em><strong>seconds</strong></em>, instead of milliseconds. This is because this is what the <code>later</code> package uses and there was no reason for <code>pool</code> to be different, except backward compatibility. Since both time arguments to <code>dbPool</code> (<code>idleTimeout</code> and <code>validationInterval</code>) have default values, we’re hoping this change won’t even be noticed by most users. If you were setting either of those directly, however, you will need to update your app if you update the <code>pool</code> package. (<a href="https://github.com/rstudio/pool/pull/44"><a href='https://github.com/rstudio/pool/issues/44'>#44</a></a>) <!--Since this release is already breaking backward compatibility, we're going to town!--></p></li>
 <li>
 <p>Dropped the Pool methods around <code>dbConnect</code> and <code>dbDisconnect</code>, because these made it easier to lose track of whether you’re operating on a Pool object or on a database connection directly. From now on, only these allow you to get a connection from the pool and return it back, respectively: (<a href="https://github.com/rstudio/pool/pull/44"><a href='https://github.com/rstudio/pool/issues/44'>#44</a></a>)</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/poolCheckout.html">poolCheckout</a></span>(<span class="kw">pool</span>)
-<span class="fu"><a href="../reference/poolReturn.html">poolReturn</a></span>(<span class="kw">con</span>)
-</pre></div>
+<span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/poolCheckout.html">poolCheckout</a></span><span class="op">(</span><span class="va">pool</span><span class="op">)</span>
+<span class="fu"><a href="../reference/poolReturn.html">poolReturn</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></pre></div>
 </li>
 </ul>
 </div>

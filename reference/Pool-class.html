@@ -120,19 +120,19 @@
     <p>A generic pool class that holds objects. These can be fetched</p>
     </div>
 
-    <pre class="usage"><span class='fu'>poolCreate</span>(
-  <span class='kw'>factory</span>,
-  minSize = <span class='fl'>1</span>,
-  maxSize = <span class='fl'>Inf</span>,
-  idleTimeout = <span class='fl'>60</span>,
-  validationInterval = <span class='fl'>600</span>,
-  state = <span class='kw'>NULL</span>
-)
+    <pre class="usage"><span class='fu'>poolCreate</span><span class='op'>(</span>
+  <span class='va'>factory</span>,
+  minSize <span class='op'>=</span> <span class='fl'>1</span>,
+  maxSize <span class='op'>=</span> <span class='cn'>Inf</span>,
+  idleTimeout <span class='op'>=</span> <span class='fl'>60</span>,
+  validationInterval <span class='op'>=</span> <span class='fl'>600</span>,
+  state <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span>
 
-<span class='fu'>poolClose</span>(<span class='kw'>pool</span>)
+<span class='fu'>poolClose</span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
 
 <span class='co'># S4 method for Pool</span>
-<span class='fu'>poolClose</span>(<span class='kw'>pool</span>)</pre>
+<span class='fu'>poolClose</span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

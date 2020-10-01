@@ -129,123 +129,123 @@ and <a href='http://dbplyr.tidyverse.org/reference/index.html'>dbplyr's referenc
     </div>
 
     <pre class="usage"><span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/copy_to.html'>copy_to</a></span>(
-  <span class='kw'>dest</span>,
-  <span class='kw'>df</span>,
-  name = <span class='fu'><a href='https://rdrr.io/r/base/deparse.html'>deparse</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>substitute</a></span>(<span class='kw'>df</span>)),
-  overwrite = <span class='fl'>FALSE</span>,
-  temporary = <span class='fl'>TRUE</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/copy_to.html'>copy_to</a></span><span class='op'>(</span>
+  <span class='va'>dest</span>,
+  <span class='va'>df</span>,
+  name <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/deparse.html'>deparse</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/substitute.html'>substitute</a></span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span><span class='op'>)</span>,
+  overwrite <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  temporary <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/tbl.html'>tbl</a></span>(<span class='kw'>src</span>, <span class='kw'>from</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/tbl.html'>tbl</a></span><span class='op'>(</span><span class='va'>src</span>, <span class='va'>from</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_analyze</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_analyze</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_begin</a></span>(<span class='kw'>con</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_begin</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_commit</a></span>(<span class='kw'>con</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_commit</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_index</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, <span class='kw'>columns</span>, name = <span class='kw'>NULL</span>, unique = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_index</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, <span class='va'>columns</span>, name <span class='op'>=</span> <span class='cn'>NULL</span>, unique <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_indexes</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, indexes = <span class='kw'>NULL</span>, unique = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_indexes</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, indexes <span class='op'>=</span> <span class='cn'>NULL</span>, unique <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_table</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, <span class='kw'>types</span>, temporary = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_create_table</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, <span class='va'>types</span>, temporary <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_data_type</a></span>(<span class='kw'>con</span>, <span class='kw'>fields</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_data_type</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>fields</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_desc</a></span>(<span class='kw'>x</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_desc</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_drop_table</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, force = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_drop_table</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, force <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_explain</a></span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_explain</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_has_table</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_has_table</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_insert_into</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, <span class='kw'>values</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_insert_into</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, <span class='va'>values</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_list_tables</a></span>(<span class='kw'>con</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_list_tables</a></span><span class='op'>(</span><span class='va'>con</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_fields</a></span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_fields</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_rows</a></span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_query_rows</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_rollback</a></span>(<span class='kw'>con</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_rollback</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_save_query</a></span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>name</span>, temporary = <span class='fl'>TRUE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_save_query</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, <span class='va'>name</span>, temporary <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_write_table</a></span>(<span class='kw'>con</span>, <span class='kw'>table</span>, <span class='kw'>types</span>, <span class='kw'>values</span>, temporary = <span class='fl'>FALSE</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>db_write_table</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>table</span>, <span class='va'>types</span>, <span class='va'>values</span>, temporary <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_escape_ident</a></span>(<span class='kw'>con</span>, <span class='kw'>x</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_escape_ident</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>x</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_escape_string</a></span>(<span class='kw'>con</span>, <span class='kw'>x</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_escape_string</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>x</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_join</a></span>(<span class='kw'>con</span>, <span class='kw'>x</span>, <span class='kw'>y</span>, <span class='kw'>vars</span>, type = <span class='st'>"inner"</span>, by = <span class='kw'>NULL</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_join</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>vars</span>, type <span class='op'>=</span> <span class='st'>"inner"</span>, by <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_select</a></span>(
-  <span class='kw'>con</span>,
-  <span class='kw'>select</span>,
-  <span class='kw'>from</span>,
-  where = <span class='kw'>NULL</span>,
-  group_by = <span class='kw'>NULL</span>,
-  having = <span class='kw'>NULL</span>,
-  order_by = <span class='kw'>NULL</span>,
-  limit = <span class='kw'>NULL</span>,
-  distinct = <span class='fl'>FALSE</span>,
-  <span class='kw'>...</span>
-)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_select</a></span><span class='op'>(</span>
+  <span class='va'>con</span>,
+  <span class='va'>select</span>,
+  <span class='va'>from</span>,
+  where <span class='op'>=</span> <span class='cn'>NULL</span>,
+  group_by <span class='op'>=</span> <span class='cn'>NULL</span>,
+  having <span class='op'>=</span> <span class='cn'>NULL</span>,
+  order_by <span class='op'>=</span> <span class='cn'>NULL</span>,
+  limit <span class='op'>=</span> <span class='cn'>NULL</span>,
+  distinct <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_semi_join</a></span>(<span class='kw'>con</span>, <span class='kw'>x</span>, <span class='kw'>y</span>, anti = <span class='fl'>FALSE</span>, by = <span class='kw'>NULL</span>, <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_semi_join</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>x</span>, <span class='va'>y</span>, anti <span class='op'>=</span> <span class='cn'>FALSE</span>, by <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_subquery</a></span>(<span class='kw'>con</span>, <span class='kw'>from</span>, name = <span class='fu'>random_table_name</span>(), <span class='kw'>...</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_subquery</a></span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>from</span>, name <span class='op'>=</span> <span class='fu'>random_table_name</span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_translate_env</a></span>(<span class='kw'>con</span>)
+<span class='fu'><a href='https://dplyr.tidyverse.org/reference/backend_dbplyr.html'>sql_translate_env</a></span><span class='op'>(</span><span class='va'>con</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'>db_collect</span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, n = <span class='op'>-</span><span class='fl'>1</span>, warn_incomplete = <span class='fl'>TRUE</span>, <span class='kw'>...</span>)
+<span class='fu'>db_collect</span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, n <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1</span>, warn_incomplete <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'>db_compute</span>(
-  <span class='kw'>con</span>,
-  <span class='kw'>table</span>,
-  <span class='kw'>sql</span>,
-  temporary = <span class='fl'>TRUE</span>,
-  unique_indexes = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  indexes = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(),
-  <span class='kw'>...</span>
-)
+<span class='fu'>db_compute</span><span class='op'>(</span>
+  <span class='va'>con</span>,
+  <span class='va'>table</span>,
+  <span class='va'>sql</span>,
+  temporary <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  unique_indexes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  indexes <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'>db_sql_render</span>(<span class='kw'>con</span>, <span class='kw'>sql</span>, <span class='kw'>...</span>)
+<span class='fu'>db_sql_render</span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>sql</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for Pool</span>
-<span class='fu'>sql_escape_logical</span>(<span class='kw'>con</span>, <span class='kw'>x</span>)</pre>
+<span class='fu'>sql_escape_logical</span><span class='op'>(</span><span class='va'>con</span>, <span class='va'>x</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -258,25 +258,25 @@ and <a href='http://dbplyr.tidyverse.org/reference/index.html'>dbplyr's referenc
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
-  <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>)
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 
-  <span class='kw'>db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span>()
-  <span class='kw'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), dbname = <span class='kw'>db</span>)
+  <span class='va'>db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span><span class='op'>)</span>
+  <span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, dbname <span class='op'>=</span> <span class='va'>db</span><span class='op'>)</span>
 
   <span class='co'># copy a table into the database</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/copy_to.html'>copy_to</a></span>(<span class='kw'>pool</span>, <span class='kw'>mtcars</span>, <span class='st'>"mtcars"</span>, temporary = <span class='fl'>FALSE</span>)
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/copy_to.html'>copy_to</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='va'>mtcars</span>, <span class='st'>"mtcars"</span>, temporary <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
   <span class='co'># retrieve a table</span>
-  <span class='kw'>mtcars_db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/tbl.html'>tbl</a></span>(<span class='kw'>pool</span>, <span class='st'>"mtcars"</span>)
-  <span class='kw'>mtcars_db</span>
-  <span class='kw'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span>(<span class='kw'>mpg</span>, <span class='kw'>cyl</span>, <span class='kw'>disp</span>)
-  <span class='kw'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span>(<span class='kw'>cyl</span> <span class='op'>==</span> <span class='fl'>6</span>) <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span>()
+  <span class='va'>mtcars_db</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/tbl.html'>tbl</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span>
+  <span class='va'>mtcars_db</span>
+  <span class='va'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>mpg</span>, <span class='va'>cyl</span>, <span class='va'>disp</span><span class='op'>)</span>
+  <span class='va'>mtcars_db</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>cyl</span> <span class='op'>==</span> <span class='fl'>6</span><span class='op'>)</span> <span class='op'>%&gt;%</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/compute.html'>collect</a></span><span class='op'>(</span><span class='op'>)</span>
 
-  <span class='fu'><a href='Pool-class.html'>poolClose</a></span>(<span class='kw'>pool</span>)
-} <span class='co'>else</span> {
-  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span>(<span class='st'>"Please install the 'RSQLite' package to run this example"</span>)
-}
+  <span class='fu'><a href='Pool-class.html'>poolClose</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
+<span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span><span class='op'>(</span><span class='st'>"Please install the 'RSQLite' package to run this example"</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
 #&gt; <span class='message'></span>
