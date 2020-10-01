@@ -38,6 +38,7 @@ NULL
 #'
 #' @export
 #' @examples
+#' # Using the RMySQL package
 #' if (requireNamespace("RMySQL", quietly = TRUE)) {
 #'   pool <- dbPool(
 #'     drv = RMySQL::MySQL(),
@@ -59,6 +60,11 @@ NULL
 #'
 #' } else {
 #'   message("Please install the 'RMySQL' package to run this example")
+#' }
+#'
+#' # Using a DSN with an ODBC driver
+#' \dontrun{
+#' pool <- dbPool(odbc::odbc(), dsn = "Data Source Name")
 #' }
 dbPool <- function(drv, ..., validateQuery = NULL) {
   state <- new.env(parent = emptyenv())
