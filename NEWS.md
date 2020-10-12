@@ -2,9 +2,9 @@ pool 0.1.5
 ================
 
 * When used with dbplyr, `tbl`s now store a copy of the pool, not a checked
-  out connection.
+  out connection. (#107)
 
-* `dbQuoteLiteral()` method is now implemented for pool objects. ([#100](https://github.com/rstudio/pool/pull/100))
+* `dbListObjects()`, `dbCreateTable()`, `dbAppendTable()`, `dbIsReadOnly()`, `dbQuoteLiteral()`, and `dbUnquoteIdentifier()` methods are now implemented for pool objects. ([#100](https://github.com/rstudio/pool/pull/100))
 
 pool 0.1.4.3
 ================

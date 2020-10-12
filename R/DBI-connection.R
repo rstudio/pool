@@ -3,22 +3,42 @@ NULL
 
 #' DBIConnection methods.
 #'
-#' Pool object wrappers around DBIConnection methods. For the original
-#' documentation, see:
-#' \itemize{
-#'  \item [DBI::dbSendQuery()]
-#'  \item [DBI::dbGetQuery()]
-#'  \item [DBI::dbExecute()]
-#'  \item [DBI::dbListResults()]
-#'  \item [DBI::dbListFields()]
-#'  \item [DBI::dbListTables()]
-#'  \item [DBI::dbReadTable()]
-#'  \item [DBI::dbWriteTable()]
-#'  \item [DBI::dbExistsTable()]
-#'  \item [DBI::dbRemoveTable()]
-#' }
+#' As a convenience, Pool implements DBIConnection methods; calling any implemented
+#' DBI method directly on a Pool object will result in a connection being checked
+#' out (with [poolCheckout()]), the operation being performed on that connection,
+#' and the connection being returned to the pool (with [poolReturn()]).
+#'
+#' Pool cannot implement the [DBI::dbSendQuery()] and [DBI::dbSendStatement()]
+#' methods because they both return live ResultSet objects. This is incompatible
+#' with the Pool model, because once a connection is returned to the pool, using
+#' an existing ResultSet object could give erroneous results, throw an error, or
+#' even crash the entire R process. In most cases, [DBI::dbGetQuery()] and
+#' [DBI::dbExecute()] can be used instead. If you really need the control that
+#' `dbSendQuery` gives you (for example, to process a large table in chunks)
+#' then use `poolCheckout()` to get a real connection object (and don't forget
+#' to return it to the pool using `poolReturn()` afterwards).
+#'
+#' @param conn,dbObj A Pool object, as returned from [dbPool()].
+#' @param statement,name,value,prefix,fields,row.names,temporary,... See DBI
+#'   documentation.
 #'
 #' @name DBI-connection
+#' @seealso For the original documentation, see:
+#'   * [DBI::dbSendQuery()] (not implemented by Pool)
+#'   * [DBI::dbSendStatement()] (not implemented by Pool)
+#'   * [DBI::dbAppendTable()]
+#'   * [DBI::dbCreateTable()]
+#'   * [DBI::dbGetQuery()]
+#'   * [DBI::dbExecute()]
+#'   * [DBI::dbIsReadOnly()]
+#'   * [DBI::dbListFields()]
+#'   * [DBI::dbListObjects()]
+#'   * [DBI::dbListResults()]
+#'   * [DBI::dbListTables()]
+#'   * [DBI::dbReadTable()]
+#'   * [DBI::dbWriteTable()]
+#'   * [DBI::dbExistsTable()]
+#'   * [DBI::dbRemoveTable()]
 #' @examples
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
@@ -71,13 +91,16 @@ NULL
 
 ## Throw error here since this would require keeping a connection
 ## open and never releasing it back to the pool.
-#' @param conn,statement,... See [DBI::dbSendQuery()].
 #' @export
 #' @rdname DBI-connection
 setMethod("dbSendQuery", "Pool", function(conn, statement, ...) {
-  stop("Must use `conn <- poolCheckout(pool); dbSendQuery(conn, statement, ...)` ",
-       "instead. Remember to `poolReturn(conn)` when `conn` is no longer ",
-       "necessary.")
+  stop("Pool does not implement the dbSendQuery() method. Either use dbGetQuery(), or `conn <- poolCheckout(pool); dbSendQuery(conn, ...)` (and call `poolReturn(conn)` when finished).")
+})
+
+#' @export
+#' @rdname DBI-connection
+setMethod("dbSendStatement", "Pool", function(conn, statement, ...) {
+  stop("Pool does not implement the dbSendStatement() method. Use dbExecute() instead.")
 })
 
 ## Always use this, except if dealing with transactions that
@@ -123,19 +146,42 @@ setMethod("dbListTables", "Pool", function(conn, ...) {
 
 #' @export
 #' @rdname DBI-connection
+setMethod("dbListObjects", "Pool", function(conn, prefix = NULL, ...) {
+  connection <- poolCheckout(conn)
+  on.exit(poolReturn(connection))
+  DBI::dbListObjects(connection, prefix = prefix, ...)
+})
+
+#' @export
+#' @rdname DBI-connection
 setMethod("dbReadTable", signature("Pool", "character"), function(conn, name, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbReadTable(connection, name, ...)
 })
 
-#' @param name,value See [DBI::dbWriteTable()].
 #' @export
 #' @rdname DBI-connection
 setMethod("dbWriteTable", "Pool", function(conn, name, value, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbWriteTable(connection, name, value, ...)
+})
+
+#' @export
+#' @rdname DBI-connection
+setMethod("dbCreateTable", "Pool", function(conn, name, fields, ..., row.names = NULL, temporary = FALSE) {
+  connection <- poolCheckout(conn)
+  on.exit(poolReturn(connection))
+  DBI::dbCreateTable(connection, name, fields, ..., row.names = row.names, temporary = temporary)
+})
+
+#' @export
+#' @rdname DBI-connection
+setMethod("dbAppendTable", "Pool", function(conn, name, value, ..., row.names = NULL) {
+  connection <- poolCheckout(conn)
+  on.exit(poolReturn(connection))
+  DBI::dbAppendTable(connection, name, value, ..., row.names = row.names)
 })
 
 #' @export
@@ -152,4 +198,12 @@ setMethod("dbRemoveTable", "Pool", function(conn, name, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbRemoveTable(connection, name, ...)
+})
+
+#' @export
+#' @rdname DBI-connection
+setMethod("dbIsReadOnly", "Pool", function(dbObj, ...) {
+  connection <- poolCheckout(dbObj)
+  on.exit(poolReturn(connection))
+  DBI::dbIsReadOnly(connection, ...)
 })
