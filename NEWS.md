@@ -1,6 +1,8 @@
 pool 0.1.5
 ================
 
+* dplyr and dbplyr are now Suggests instead of Imports. (#106)
+
 * When used with dbplyr, `tbl`s now store a copy of the pool, not a checked
   out connection. (#107)
 
