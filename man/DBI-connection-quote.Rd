@@ -3,11 +3,14 @@
 \name{DBI-connection-quote}
 \alias{DBI-connection-quote}
 \alias{dbQuoteIdentifier,Pool,ANY-method}
+\alias{dbUnquoteIdentifier,Pool-method}
 \alias{dbQuoteLiteral,Pool-method}
 \alias{dbQuoteString,Pool,ANY-method}
 \title{SQL quoting.}
 \usage{
 \S4method{dbQuoteIdentifier}{Pool,ANY}(conn, x, ...)
+
+\S4method{dbUnquoteIdentifier}{Pool}(conn, x, ...)
 
 \S4method{dbQuoteLiteral}{Pool}(conn, x, ...)
 

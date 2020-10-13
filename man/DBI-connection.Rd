@@ -3,18 +3,25 @@
 \name{DBI-connection}
 \alias{DBI-connection}
 \alias{dbSendQuery,Pool-method}
+\alias{dbSendStatement,Pool,ANY-method}
 \alias{dbGetQuery,Pool,character-method}
 \alias{dbExecute,Pool,character-method}
 \alias{dbListResults,Pool-method}
 \alias{dbListFields,Pool,character-method}
 \alias{dbListTables,Pool-method}
+\alias{dbListObjects,Pool-method}
 \alias{dbReadTable,Pool,character-method}
 \alias{dbWriteTable,Pool,ANY-method}
+\alias{dbCreateTable,Pool-method}
+\alias{dbAppendTable,Pool-method}
 \alias{dbExistsTable,Pool,ANY-method}
 \alias{dbRemoveTable,Pool,ANY-method}
+\alias{dbIsReadOnly,Pool-method}
 \title{DBIConnection methods.}
 \usage{
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
+
+\S4method{dbSendStatement}{Pool,ANY}(conn, statement, ...)
 
 \S4method{dbGetQuery}{Pool,character}(conn, statement, ...)
 
@@ -26,34 +33,44 @@
 
 \S4method{dbListTables}{Pool}(conn, ...)
 
+\S4method{dbListObjects}{Pool}(conn, prefix = NULL, ...)
+
 \S4method{dbReadTable}{Pool,character}(conn, name, ...)
 
 \S4method{dbWriteTable}{Pool,ANY}(conn, name, value, ...)
 
+\S4method{dbCreateTable}{Pool}(conn, name, fields, ..., row.names = NULL, temporary = FALSE)
+
+\S4method{dbAppendTable}{Pool}(conn, name, value, ..., row.names = NULL)
+
 \S4method{dbExistsTable}{Pool,ANY}(conn, name, ...)
 
 \S4method{dbRemoveTable}{Pool,ANY}(conn, name, ...)
+
+\S4method{dbIsReadOnly}{Pool}(dbObj, ...)
 }
 \arguments{
-\item{conn, statement, ...}{See \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}.}
+\item{conn, dbObj}{A Pool object, as returned from \code{\link[=dbPool]{dbPool()}}.}
 
-\item{name, value}{See \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}.}
+\item{statement, name, value, prefix, fields, row.names, temporary, ...}{See DBI
+documentation.}
 }
 \description{
-Pool object wrappers around DBIConnection methods. For the original
-documentation, see:
-\itemize{
-\item \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}}
-\item \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
-\item \code{\link[DBI:dbExecute]{DBI::dbExecute()}}
-\item \code{\link[DBI:dbListResults]{DBI::dbListResults()}}
-\item \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
-\item \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
-\item \code{\link[DBI:dbReadTable]{DBI::dbReadTable()}}
-\item \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
-\item \code{\link[DBI:dbExistsTable]{DBI::dbExistsTable()}}
-\item \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
+As a convenience, Pool implements DBIConnection methods; calling any implemented
+DBI method directly on a Pool object will result in a connection being checked
+out (with \code{\link[=poolCheckout]{poolCheckout()}}), the operation being performed on that connection,
+and the connection being returned to the pool (with \code{\link[=poolReturn]{poolReturn()}}).
 }
+\details{
+Pool cannot implement the \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}} and \code{\link[DBI:dbSendStatement]{DBI::dbSendStatement()}}
+methods because they both return live ResultSet objects. This is incompatible
+with the Pool model, because once a connection is returned to the pool, using
+an existing ResultSet object could give erroneous results, throw an error, or
+even crash the entire R process. In most cases, \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}} and
+\code{\link[DBI:dbExecute]{DBI::dbExecute()}} can be used instead. If you really need the control that
+\code{dbSendQuery} gives you (for example, to process a large table in chunks)
+then use \code{poolCheckout()} to get a real connection object (and don't forget
+to return it to the pool using \code{poolReturn()} afterwards).
 }
 \examples{
 if (requireNamespace("RSQLite", quietly = TRUE)) {
@@ -102,5 +119,25 @@ if (requireNamespace("RSQLite", quietly = TRUE)) {
 
 } else {
   message("Please install the 'RSQLite' package to run this example")
+}
+}
+\seealso{
+For the original documentation, see:
+\itemize{
+\item \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}} (not implemented by Pool)
+\item \code{\link[DBI:dbSendStatement]{DBI::dbSendStatement()}} (not implemented by Pool)
+\item \code{\link[DBI:dbAppendTable]{DBI::dbAppendTable()}}
+\item \code{\link[DBI:dbCreateTable]{DBI::dbCreateTable()}}
+\item \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
+\item \code{\link[DBI:dbExecute]{DBI::dbExecute()}}
+\item \code{\link[DBI:dbIsReadOnly]{DBI::dbIsReadOnly()}}
+\item \code{\link[DBI:dbListFields]{DBI::dbListFields()}}
+\item \code{\link[DBI:dbListObjects]{DBI::dbListObjects()}}
+\item \code{\link[DBI:dbListResults]{DBI::dbListResults()}}
+\item \code{\link[DBI:dbListTables]{DBI::dbListTables()}}
+\item \code{\link[DBI:dbReadTable]{DBI::dbReadTable()}}
+\item \code{\link[DBI:dbWriteTable]{DBI::dbWriteTable()}}
+\item \code{\link[DBI:dbExistsTable]{DBI::dbExistsTable()}}
+\item \code{\link[DBI:dbRemoveTable]{DBI::dbRemoveTable()}}
 }
 }
