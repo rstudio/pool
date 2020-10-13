@@ -43,6 +43,7 @@ and it should always be accompanied by the required authorization
 arguments (see the example below).
 }
 \examples{
+# Using the RMySQL package
 if (requireNamespace("RMySQL", quietly = TRUE)) {
   pool <- dbPool(
     drv = RMySQL::MySQL(),
@@ -64,5 +65,10 @@ if (requireNamespace("RMySQL", quietly = TRUE)) {
 
 } else {
   message("Please install the 'RMySQL' package to run this example")
+}
+
+# Using a DSN with an ODBC driver
+\dontrun{
+pool <- dbPool(odbc::odbc(), dsn = "Data Source Name")
 }
 }

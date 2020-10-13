@@ -31,10 +31,9 @@
 
   register_s3_method("dbplyr", "db_collect", "Pool")
   register_s3_method("dbplyr", "db_compute", "Pool")
-  register_s3_method("dbplyr", "db_copy_to", "Pool")
   register_s3_method("dbplyr", "db_sql_render", "Pool")
   register_s3_method("dbplyr", "sql_escape_logical", "Pool")
-  
+
 }
 
 register_s3_method <- function(pkg, generic, class, fun = NULL) {

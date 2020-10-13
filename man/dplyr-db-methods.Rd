@@ -31,7 +31,6 @@
 \alias{sql_translate_env.Pool}
 \alias{db_collect.Pool}
 \alias{db_compute.Pool}
-\alias{db_copy_to.Pool}
 \alias{db_sql_render.Pool}
 \alias{sql_escape_logical.Pool}
 \title{DBIConnection methods from dplyr and dbplyr}
@@ -120,25 +119,12 @@ db_compute.Pool(
   ...
 )
 
-db_copy_to.Pool(
-  con,
-  table,
-  values,
-  overwrite = FALSE,
-  types = NULL,
-  temporary = TRUE,
-  unique_indexes = NULL,
-  indexes = NULL,
-  analyze = TRUE,
-  ...
-)
-
 db_sql_render.Pool(con, sql, ...)
 
 sql_escape_logical.Pool(con, x)
 }
 \arguments{
-\item{dest, df, name, overwrite, temporary, ..., src, from, con, table, columns, unique, indexes, types, fields, x, force, sql, values, y, vars, type, by, select, where, group_by, having, order_by, limit, distinct, anti, n, warn_incomplete, unique_indexes, analyze}{See original documentation.}
+\item{dest, df, name, overwrite, temporary, ..., src, from, con, table, columns, unique, indexes, types, fields, x, force, sql, values, y, vars, type, by, select, where, group_by, having, order_by, limit, distinct, anti, n, warn_incomplete, unique_indexes}{See original documentation.}
 }
 \description{
 Pool object wrappers around DBIConnection methods, whose generics are
@@ -151,37 +137,19 @@ and \href{http://dbplyr.tidyverse.org/reference/index.html}{dbplyr's reference p
 if (requireNamespace("RSQLite", quietly = TRUE)) {
   library(dplyr)
 
-  pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
+  db <- tempfile()
+  pool <- dbPool(RSQLite::SQLite(), dbname = db)
 
-  # describe the type of the pool/its connections
-  db_desc(pool)
-
-  # use dplyr syntax to copy a table into the database
+  # copy a table into the database
   copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 
-  # list the current tables in the database
-  db_list_tables(pool)
-
-  # extract a table from the database
+  # retrieve a table
   mtcars_db <- tbl(pool, "mtcars")
-
-  # select only 3 columns
-  mtcars_db_thin <- select(mtcars_db, mpg, cyl, disp)
-
-  # get the names of the columns in the databases's table
-  db_query_fields(pool, "mtcars")
-
-  # get the number of rows in the databases's table
-  db_query_rows(pool, "mtcars")
-
-  # drop the "mtcars" table from the database
-  db_drop_table(pool, "mtcars")
-
-  # list the current tables in the database
-  db_list_tables(pool)
+  mtcars_db
+  mtcars_db \%>\% select(mpg, cyl, disp)
+  mtcars_db \%>\% filter(cyl == 6) \%>\% collect()
 
   poolClose(pool)
-
 } else {
   message("Please install the 'RSQLite' package to run this example")
 }
