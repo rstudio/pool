@@ -24,6 +24,16 @@ setMethod("dbQuoteIdentifier", c("Pool", "ANY"),
 
 #' @export
 #' @rdname DBI-connection-quote
+setMethod("dbUnquoteIdentifier", c("Pool", "ANY"),
+  function(conn, x, ...) {
+    connection <- poolCheckout(conn)
+    on.exit(poolReturn(connection))
+    DBI::dbUnquoteIdentifier(connection, x, ...)
+  }
+)
+
+#' @export
+#' @rdname DBI-connection-quote
 setMethod("dbQuoteLiteral", c("Pool", "ANY"),
   function(conn, x, ...) {
     connection <- poolCheckout(conn)
