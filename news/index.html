@@ -119,8 +119,8 @@
 <a href="#pool-015" class="anchor"></a>pool 0.1.5<small> Unreleased </small>
 </h1>
 <ul>
-<li><p>When used with dbplyr, <code>tbl</code>s now store a copy of the pool, not a checked out connection.</p></li>
-<li><p><code><a href="https://dbi.r-dbi.org/reference/dbQuoteLiteral.html">dbQuoteLiteral()</a></code> method is now implemented for pool objects. (<a href="https://github.com/rstudio/pool/pull/100"><a href='https://github.com/rstudio/pool/issues/100'>#100</a></a>)</p></li>
+<li><p>When used with dbplyr, <code>tbl</code>s now store a copy of the pool, not a checked out connection. (<a href='https://github.com/rstudio/pool/issues/107'>#107</a>)</p></li>
+<li><p><code><a href="https://dbi.r-dbi.org/reference/dbListObjects.html">dbListObjects()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbCreateTable.html">dbCreateTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html">dbAppendTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbIsReadOnly.html">dbIsReadOnly()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbQuoteLiteral.html">dbQuoteLiteral()</a></code>, and <code><a href="https://dbi.r-dbi.org/reference/dbUnquoteIdentifier.html">dbUnquoteIdentifier()</a></code> methods are now implemented for pool objects. (<a href='https://github.com/rstudio/pool/issues/100'>#100</a>, <a href='https://github.com/rstudio/pool/issues/109'>#109</a>)</p></li>
 </ul>
 </div>
     <div id="pool-0143" class="section level1">
@@ -128,7 +128,7 @@
 <a href="#pool-0143" class="anchor"></a>pool 0.1.4.3<small> 2019-10-03 </small>
 </h1>
 <ul>
-<li>Previously, pool would always set <code><a href="https://rdrr.io/r/base/options.html">options(warn=1)</a></code> when running tasks. It now ensures that the value of <code>warn</code> can be 1 or greater. This can be useful in debugging, so that <code><a href="https://rdrr.io/r/base/options.html">options(warn=2)</a></code> can be used. (<a href="https://github.com/rstudio/pool/pull/90"><a href='https://github.com/rstudio/pool/issues/90'>#90</a></a>)</li>
+<li>Previously, pool would always set <code><a href="https://rdrr.io/r/base/options.html">options(warn=1)</a></code> when running tasks. It now ensures that the value of <code>warn</code> can be 1 or greater. This can be useful in debugging, so that <code><a href="https://rdrr.io/r/base/options.html">options(warn=2)</a></code> can be used. (<a href='https://github.com/rstudio/pool/issues/90'>#90</a>)</li>
 </ul>
 </div>
     <div id="pool-0142" class="section level1">
@@ -136,7 +136,7 @@
 <a href="#pool-0142" class="anchor"></a>pool 0.1.4.2<small> 2019-01-07 </small>
 </h1>
 <ul>
-<li>Update unit test for compatibility with future dbplyr. (<a href="https://github.com/rstudio/pool/pull/82"><a href='https://github.com/rstudio/pool/issues/82'>#82</a></a>)</li>
+<li>Update unit test for compatibility with future dbplyr. (<a href='https://github.com/rstudio/pool/issues/82'>#82</a>)</li>
 </ul>
 </div>
     <div id="pool-0141" class="section level1">
@@ -152,7 +152,7 @@
 <a href="#pool-014" class="anchor"></a>pool 0.1.4<small> 2018-03-10 </small>
 </h1>
 <ul>
-<li>Changed the methods <code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html">dbExistsTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbRemoveTable.html">dbRemoveTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html">dbWriteTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html">dbListFields()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable()</a></code> to dispatch over the first two arguments, as per the <a href="https://github.com/r-dbi/DBI/blob/master/R/DBConnection.R">default definition in DBI</a>. (<a href="https://github.com/rstudio/pool/pull/57"><a href='https://github.com/rstudio/pool/issues/57'>#57</a></a>)</li>
+<li>Changed the methods <code><a href="https://dbi.r-dbi.org/reference/dbExistsTable.html">dbExistsTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbRemoveTable.html">dbRemoveTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html">dbWriteTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbListFields.html">dbListFields()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable()</a></code> to dispatch over the first two arguments, as per the <a href="https://github.com/r-dbi/DBI/blob/master/R/DBConnection.R">default definition in DBI</a>. (<a href='https://github.com/rstudio/pool/issues/57'>#57</a>)</li>
 </ul>
 </div>
     <div id="pool-013" class="section level1">
@@ -160,7 +160,7 @@
 <a href="#pool-013" class="anchor"></a>pool 0.1.3<small> 2017-11-03 </small>
 </h1>
 <ul>
-<li>Use <code>requireNamespace("pkg", quietly = TRUE)</code> for <code>RMySQL</code> and <code>RSQLite</code> in the examples and tests since these are “Suggests” packages (i.e. not “Depends”). (commit <a href="https://github.com/rstudio/pool/commit/4205feb8a685384fb8db93114c35220fb9611752"><a href='https://github.com/rstudio/pool/issues/4205'>#4205</a>feb</a>)</li>
+<li>Use <code>requireNamespace("pkg", quietly = TRUE)</code> for <code>RMySQL</code> and <code>RSQLite</code> in the examples and tests since these are “Suggests” packages (i.e. not “Depends”). (commit 4205feb)</li>
 </ul>
 </div>
     <div id="pool-012" class="section level1">
@@ -171,17 +171,17 @@
 <h3 class="hasAnchor">
 <a href="#minor-new-features-and-improvements" class="anchor"></a>Minor new features and improvements</h3>
 <ul>
-<li><p>Included more examples in the documentation. (<a href="https://github.com/rstudio/pool/pull/50"><a href='https://github.com/rstudio/pool/issues/50'>#50</a></a>)</p></li>
-<li><p>Fixed the “test-create-destroy.R” test. Previously, this test had to be run manually because it uses <code>later</code> and its async nature could not be captured by <code>testthat</code>. However, using <code><a href="https://rdrr.io/pkg/later/man/run_now.html">later::run_now()</a></code> immediately after the relevant code snippet (i.e. still inside the first argument of <code>expect_*</code>) solves the issue. (<a href="https://github.com/rstudio/pool/pull/50"><a href='https://github.com/rstudio/pool/issues/50'>#50</a></a>)</p></li>
-<li><p>Use <code><a href="https://rdrr.io/r/base/difftime.html">difftime(t1, t0, units = "secs")</a></code> when calculating a time interval. Unlike the simpler <code>t1 - t0</code> method, this guarantees that the result will always be consistently the number of <em>seconds</em>. However, there’s no change when calculating a new time (<em>not</em> a time interval) using <code>t2 &lt;- t1 - interval</code>, since we want <code>t2</code> to be a time, rather than a time interval (which is always what is returned by <code>difftime</code>). (<a href="https://github.com/rstudio/pool/pull/50"><a href='https://github.com/rstudio/pool/issues/50'>#50</a></a> and <a href="https://github.com/rstudio/pool/pull/48"><a href='https://github.com/rstudio/pool/issues/48'>#48</a></a>, thank you <a href="https://github.com/caewok">@caewok</a>!)</p></li>
+<li><p>Included more examples in the documentation. (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
+<li><p>Fixed the “test-create-destroy.R” test. Previously, this test had to be run manually because it uses <code>later</code> and its async nature could not be captured by <code>testthat</code>. However, using <code><a href="https://rdrr.io/pkg/later/man/run_now.html">later::run_now()</a></code> immediately after the relevant code snippet (i.e. still inside the first argument of <code>expect_*</code>) solves the issue. (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
+<li><p>Use <code><a href="https://rdrr.io/r/base/difftime.html">difftime(t1, t0, units = "secs")</a></code> when calculating a time interval. Unlike the simpler <code>t1 - t0</code> method, this guarantees that the result will always be consistently the number of <em>seconds</em>. However, there’s no change when calculating a new time (<em>not</em> a time interval) using <code>t2 &lt;- t1 - interval</code>, since we want <code>t2</code> to be a time, rather than a time interval (which is always what is returned by <code>difftime</code>). (<a href='https://github.com/rstudio/pool/issues/50'>#50</a> and <a href='https://github.com/rstudio/pool/issues/48'>#48</a>, thank you <a href="https://github.com/caewok">@caewok</a>!)</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug fixes</h3>
 <ul>
-<li><p>Fix all dbplyr wrapper functions that weren’t passing in additional arguments because the call to the original <code>dbplyr</code> function included <code>... = ...</code> instead of <code>...</code>. Also, pass <code>temporary = temporary</code> in <code>copy_to.Pool</code>, so that we don’t defeat the whole purpose of that wrapper. (<a href="https://github.com/rstudio/pool/pull/50"><a href='https://github.com/rstudio/pool/issues/50'>#50</a></a>)</p></li>
-<li><p>Change the place where the check for the maximum number of objects is made. Previously, this chunk of code was misplaced and it would result in buggy behavior: namely, once the maximum number of objects was reached, no more objects could be checked out (<strong>even if you returned any/all objects back to the pool</strong>). The only reason this wasn’t spotted earlier is because the default <code>maxSize</code> is <code>Inf</code> (and there’s usually not a good reason to change it). (<a href="https://github.com/rstudio/pool/pull/50"><a href='https://github.com/rstudio/pool/issues/50'>#50</a></a>)</p></li>
+<li><p>Fix all dbplyr wrapper functions that weren’t passing in additional arguments because the call to the original <code>dbplyr</code> function included <code>... = ...</code> instead of <code>...</code>. Also, pass <code>temporary = temporary</code> in <code>copy_to.Pool</code>, so that we don’t defeat the whole purpose of that wrapper. (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
+<li><p>Change the place where the check for the maximum number of objects is made. Previously, this chunk of code was misplaced and it would result in buggy behavior: namely, once the maximum number of objects was reached, no more objects could be checked out (<strong>even if you returned any/all objects back to the pool</strong>). The only reason this wasn’t spotted earlier is because the default <code>maxSize</code> is <code>Inf</code> (and there’s usually not a good reason to change it). (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
 </ul>
 </div>
 </div>
@@ -194,7 +194,7 @@
 <a href="#breaking-changes" class="anchor"></a>Breaking changes</h3>
 <ul>
 <li>
-<p>Fix <a href="https://github.com/rstudio/pool/issues/39"><a href='https://github.com/rstudio/pool/issues/39'>#39</a></a>: Moved <code>dplyr</code> support in <code>pool</code> from <code>dplyr</code> 0.5.0 to <code>dplyr</code> 0.7.0, which includes a lot of breaking changes including the addition of a brand new package called <code>dbplyr</code>. (<a href="https://github.com/rstudio/pool/pull/42"><a href='https://github.com/rstudio/pool/issues/42'>#42</a></a>)</p>
+<p>Fix <a href='https://github.com/rstudio/pool/issues/39'>#39</a>: Moved <code>dplyr</code> support in <code>pool</code> from <code>dplyr</code> 0.5.0 to <code>dplyr</code> 0.7.0, which includes a lot of breaking changes including the addition of a brand new package called <code>dbplyr</code>. (<a href='https://github.com/rstudio/pool/issues/42'>#42</a>)</p>
 <p>For <code>pool</code> users, the main change is that all the <code>src_*</code> functions are now gone (from <code>dplyr</code> and <code>pool</code>). Therefore, if you had something like:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">src_pool</span><span class="op">(</span><span class="va">pool</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></pre></div>
@@ -205,9 +205,9 @@
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"rstudio/pool@dplyr-pre-0.7.0-compat"</span><span class="op">)</span></pre></div>
 </li>
-<li><p>Changed all time arguments to accept number of <em><strong>seconds</strong></em>, instead of milliseconds. This is because this is what the <code>later</code> package uses and there was no reason for <code>pool</code> to be different, except backward compatibility. Since both time arguments to <code>dbPool</code> (<code>idleTimeout</code> and <code>validationInterval</code>) have default values, we’re hoping this change won’t even be noticed by most users. If you were setting either of those directly, however, you will need to update your app if you update the <code>pool</code> package. (<a href="https://github.com/rstudio/pool/pull/44"><a href='https://github.com/rstudio/pool/issues/44'>#44</a></a>) <!--Since this release is already breaking backward compatibility, we're going to town!--></p></li>
+<li><p>Changed all time arguments to accept number of <em><strong>seconds</strong></em>, instead of milliseconds. This is because this is what the <code>later</code> package uses and there was no reason for <code>pool</code> to be different, except backward compatibility. Since both time arguments to <code>dbPool</code> (<code>idleTimeout</code> and <code>validationInterval</code>) have default values, we’re hoping this change won’t even be noticed by most users. If you were setting either of those directly, however, you will need to update your app if you update the <code>pool</code> package. (<a href='https://github.com/rstudio/pool/issues/44'>#44</a>) <!--Since this release is already breaking backward compatibility, we're going to town!--></p></li>
 <li>
-<p>Dropped the Pool methods around <code>dbConnect</code> and <code>dbDisconnect</code>, because these made it easier to lose track of whether you’re operating on a Pool object or on a database connection directly. From now on, only these allow you to get a connection from the pool and return it back, respectively: (<a href="https://github.com/rstudio/pool/pull/44"><a href='https://github.com/rstudio/pool/issues/44'>#44</a></a>)</p>
+<p>Dropped the Pool methods around <code>dbConnect</code> and <code>dbDisconnect</code>, because these made it easier to lose track of whether you’re operating on a Pool object or on a database connection directly. From now on, only these allow you to get a connection from the pool and return it back, respectively: (<a href='https://github.com/rstudio/pool/issues/44'>#44</a>)</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/poolCheckout.html">poolCheckout</a></span><span class="op">(</span><span class="va">pool</span><span class="op">)</span>
 <span class="fu"><a href="../reference/poolReturn.html">poolReturn</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></pre></div>
@@ -218,14 +218,14 @@
 <h3 class="hasAnchor">
 <a href="#new-features" class="anchor"></a>New features</h3>
 <ul>
-<li>Use <code>later</code> package for scheduling tasks (<a href="https://github.com/rstudio/pool/pull/44"><a href='https://github.com/rstudio/pool/issues/44'>#44</a></a>). This also has the side effect of fixing <a href="https://github.com/rstudio/pool/issues/40"><a href='https://github.com/rstudio/pool/issues/40'>#40</a></a> and <a href="https://github.com/rstudio/pool/issues/43"><a href='https://github.com/rstudio/pool/issues/43'>#43</a></a> since <code>later</code> allows us to get rid of the <code>naiveScheduler</code> completely.</li>
+<li>Use <code>later</code> package for scheduling tasks (<a href='https://github.com/rstudio/pool/issues/44'>#44</a>). This also has the side effect of fixing <a href='https://github.com/rstudio/pool/issues/40'>#40</a> and <a href='https://github.com/rstudio/pool/issues/43'>#43</a> since <code>later</code> allows us to get rid of the <code>naiveScheduler</code> completely.</li>
 </ul>
 </div>
 <div id="library-updates" class="section level3">
 <h3 class="hasAnchor">
 <a href="#library-updates" class="anchor"></a>Library updates</h3>
 <ul>
-<li>Roxygen 5.0.1 to 6.0.1. (commit <a href="https://github.com/rstudio/pool/commit/99520001a65dd51a4f5eaaacad4bfbec696cc0f1"><a href='https://github.com/rstudio/pool/issues/9952000'>#9952000</a></a>)</li>
+<li>Roxygen 5.0.1 to 6.0.1. (commit <a href='https://github.com/rstudio/pool/issues/9952000'>#9952000</a>)</li>
 </ul>
 </div>
 </div>
