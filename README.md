@@ -38,7 +38,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   output$tbl <- renderTable({
-    pool %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+    pool %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
   })
   output$popPlot <- renderPlot({
     df <- pool %>% tbl("City") %>% head(input$nrows) %>% collect()
@@ -86,7 +86,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   output$tbl <- renderTable({
-    conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+    conn %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
   })
   output$popPlot <- renderPlot({
     df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
@@ -129,7 +129,7 @@ server <- function(input, output, session) {
     conn <- do.call(dbConnect, args)
     on.exit(dbDisconnect(conn))
 
-    conn %>% tbl("City") %>% filter(ID == input$ID) %>% collect()
+    conn %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
   })
   output$popPlot <- renderPlot({
     conn <- do.call(dbConnect, args)

@@ -23,7 +23,7 @@ diffs <- c()
 server <- function(input, output, session) {
   output$tbl <- renderTable({
     t0 <- Sys.time()
-    tbl <- pool %>% tbl("city") %>% filter(id == input$id)
+    tbl <- pool %>% tbl("city") %>% filter(id == !!input$id)
     t1 <- Sys.time()
     diff <- difftime(t1, t0, units = "secs")
     print(diff)
