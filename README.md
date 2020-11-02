@@ -161,5 +161,5 @@ The `pool` package was created so you don't have to worry about this at all. Sin
 
 ## More resources
 
-- [db.rstudio.com](http://db.rstudio.com/) for a lot of best practices, articles and demos on databases in R and in RStudio.
-- [shiny.rstudio.com](http://shiny.rstudio.com/) to learn more about Shiny (there are also more articles, including on data and databases in [/articles](http://shiny.rstudio.com/articles/)).
+- [db.rstudio.com](https://db.rstudio.com/) for a lot of best practices, articles and demos on databases in R and in RStudio.
+- [shiny.rstudio.com](https://shiny.rstudio.com/) to learn more about Shiny (there are also more articles, including on data and databases in [/articles](https://shiny.rstudio.com/articles/)).

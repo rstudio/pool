@@ -6,8 +6,8 @@ NULL
 #' Pool object wrappers around DBIConnection methods, whose generics are
 #' defined either in `dplyr` or in `dbplyr`.
 #' For the original documentation, see
-#' [dplyr's reference page](http://dplyr.tidyverse.org/reference/index.html)
-#' and [dbplyr's reference page](http://dbplyr.tidyverse.org/reference/index.html).
+#' [dplyr's reference page](https://dplyr.tidyverse.org/reference/index.html)
+#' and [dbplyr's reference page](https://dbplyr.tidyverse.org/reference/index.html).
 #'
 #' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes See original documentation.
 #'

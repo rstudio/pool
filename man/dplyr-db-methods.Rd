@@ -130,8 +130,8 @@ sql_escape_logical.Pool(con, x)
 Pool object wrappers around DBIConnection methods, whose generics are
 defined either in \code{dplyr} or in \code{dbplyr}.
 For the original documentation, see
-\href{http://dplyr.tidyverse.org/reference/index.html}{dplyr's reference page}
-and \href{http://dbplyr.tidyverse.org/reference/index.html}{dbplyr's reference page}.
+\href{https://dplyr.tidyverse.org/reference/index.html}{dplyr's reference page}
+and \href{https://dbplyr.tidyverse.org/reference/index.html}{dbplyr's reference page}.
 }
 \examples{
 if (requireNamespace("RSQLite", quietly = TRUE)) {
