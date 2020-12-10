@@ -4,7 +4,7 @@ NULL
 ## Used in the Pool class to schedule and cancel tasks (based on `later`)
 scheduleTask <- function(func, delay) {
   force(func)
-  later::later(function() {
+  cancel <- later::later(function() {
     # Make sure warn is at least 1 so that warnings are emitted immediately.
     # (warn=2 is also OK, for use in debugging.)
     warn_level <- getOption("warn")
@@ -21,10 +21,7 @@ scheduleTask <- function(func, delay) {
   ##    > cancel <- scheduleTaskRecurring(function() print("hello"), 1)
   ##    [1] "hello"
   ##    [1] "hello"
-  ##    > cancel()
-  function() {
-    func <<- NULL
-  }
+  cancel
 }
 
 ## Used in the Pool class. This function builds on top of `scheduleTask`
