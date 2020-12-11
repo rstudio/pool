@@ -86,8 +86,8 @@
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <p>Here’s a simple example of using a pool within a Shiny app (feel free to try it yourself):</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/pool">pool</a></span><span class="op">)</span>
 
@@ -121,7 +121,7 @@
   <span class="op">}</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></pre></div>
+<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="concept" class="section level2">
 <h2 class="hasAnchor">
@@ -134,8 +134,8 @@
 <p>When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to <em>many</em> slowdowns (from inadvertently opening too many connections) and/or <em>many</em> leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.</p>
 <p>Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understanding the problems described below.</p>
 <details><p><summary><code>oneConnectionPerApp.R</code></summary></p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://r-dbi.github.io/DBI">DBI</a></span><span class="op">)</span>
 
@@ -169,10 +169,10 @@
   <span class="op">}</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></pre></div>
+<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></code></pre></div>
 </details><details><p><summary><code>oneConnectionPerQuery.R</code></summary></p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">shiny</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://r-dbi.github.io/DBI">DBI</a></span><span class="op">)</span>
 
@@ -209,7 +209,7 @@
   <span class="op">}</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></pre></div>
+<span class="fu">shinyApp</span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></code></pre></div>
 </details><p><br></p>
 <p>Opening only one connection per app makes it fast (because, in the whole app, you only fetch one connection) and your code is kept as simple as possible. However:</p>
 <ul>
