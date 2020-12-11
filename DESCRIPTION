@@ -25,7 +25,7 @@ Depends:
 Imports:
     DBI,
     R6,
-    later
+    later (>= 1.0.0)
 Suggests:
     testthat,
     tibble,
