@@ -22,7 +22,6 @@
 \alias{db_rollback.Pool}
 \alias{db_save_query.Pool}
 \alias{db_write_table.Pool}
-\alias{sql_escape_ident.Pool}
 \alias{sql_escape_string.Pool}
 \alias{sql_join.Pool}
 \alias{sql_select.Pool}
@@ -33,6 +32,7 @@
 \alias{db_compute.Pool}
 \alias{db_sql_render.Pool}
 \alias{sql_escape_logical.Pool}
+\alias{sql_join_suffix.Pool}
 \title{DBIConnection methods from dplyr and dbplyr}
 \usage{
 copy_to.Pool(
@@ -44,7 +44,7 @@ copy_to.Pool(
   ...
 )
 
-tbl.Pool(src, from, ...)
+tbl.Pool(src, from, ..., vars = NULL, con = NULL)
 
 db_analyze.Pool(con, table, ...)
 
@@ -81,8 +81,6 @@ db_rollback.Pool(con, ...)
 db_save_query.Pool(con, sql, name, temporary = TRUE, ...)
 
 db_write_table.Pool(con, table, types, values, temporary = FALSE, ...)
-
-sql_escape_ident.Pool(con, x)
 
 sql_escape_string.Pool(con, x)
 
@@ -122,6 +120,8 @@ db_compute.Pool(
 db_sql_render.Pool(con, sql, ...)
 
 sql_escape_logical.Pool(con, x)
+
+sql_join_suffix.Pool(con, ...)
 }
 \arguments{
 \item{dest, df, name, overwrite, temporary, ..., src, from, con, table, columns, unique, indexes, types, fields, x, force, sql, values, y, vars, type, by, select, where, group_by, having, order_by, limit, distinct, anti, n, warn_incomplete, unique_indexes}{See original documentation.}

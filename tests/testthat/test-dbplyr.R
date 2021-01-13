@@ -93,3 +93,28 @@ describe("pool package", {
     poolClose(pool)
   }
 })
+
+test_that("left join works", {
+  pool <- dbPool(RSQLite::SQLite(), dbname = tempfile())
+  on.exit(poolClose(pool))
+
+  db <- dplyr::copy_to(pool, data.frame(x = 1), "df", temporary = FALSE)
+  out <- dplyr::collect(dplyr::left_join(db, db))
+  expect_equal(out, tibble::tibble(x = 1))
+})
+
+test_that("can use schemas with pool", {
+  pool <- dbPool(RSQLite::SQLite(), dbname = tempfile())
+  on.exit(poolClose(pool))
+
+  df <- tibble::tibble(x = 1:5)
+
+  dplyr::copy_to(pool, df,
+    dbplyr::in_schema("main", "df"),
+    temporary = FALSE,
+    overwrite = TRUE
+  )
+
+  tbl <- dplyr::tbl(pool, dbplyr::in_schema("main", "df"))
+  expect_equal(dplyr::collect(tbl), df)
+})

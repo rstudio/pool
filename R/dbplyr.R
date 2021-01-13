@@ -54,16 +54,26 @@ copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
     db_con <- poolCheckout(dest)
     on.exit(poolReturn(db_con))
 
-    dplyr::check_dbplyr()
     dplyr::copy_to(db_con, df = df, name = name, overwrite = overwrite,
       temporary = temporary, ...)
-    dplyr::tbl(dest, name, vars = dplyr::db_query_fields(db_con, name))
+    dplyr::tbl(dest, name, con = db_con)
 }
 
 #' @rdname dplyr-db-methods
-tbl.Pool <- function(src, from, ...) {
+tbl.Pool <- function(src, from, ..., vars = NULL, con = NULL) {
   dplyr::check_dbplyr()
-  dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ...)
+
+  if (is.null(con)) {
+    con <- poolCheckout(src)
+    on.exit(poolReturn(con))
+  }
+
+  from <- dbplyr::as.sql(from, con)
+  if (is.null(vars)) {
+    vars <- dplyr::db_query_fields(con, from)
+  }
+
+  dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ..., vars = vars)
 }
 
 # --- These generics are set in dplyr (database-specific)
@@ -223,14 +233,6 @@ db_write_table.Pool <- function(con, table, types, values,
 }
 
 #' @rdname dplyr-db-methods
-sql_escape_ident.Pool <- function(con, x) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_escape_ident(db_con, x = x)
-}
-
-#' @rdname dplyr-db-methods
 sql_escape_string.Pool <- function(con, x) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
@@ -320,4 +322,11 @@ sql_escape_logical.Pool <- function(con, x) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
   dbplyr::sql_escape_logical(db_con, x = x)
+}
+
+#' @rdname dplyr-db-methods
+sql_join_suffix.Pool <- function(con, ...) {
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  dbplyr::sql_join_suffix(db_con, ...)
 }
