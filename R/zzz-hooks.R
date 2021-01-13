@@ -18,7 +18,6 @@
   register_s3_method("dplyr", "db_rollback", "Pool")
   register_s3_method("dplyr", "db_save_query", "Pool")
   register_s3_method("dplyr", "db_write_table", "Pool")
-  register_s3_method("dplyr", "sql_escape_ident", "Pool")
   register_s3_method("dplyr", "sql_escape_string", "Pool")
   register_s3_method("dplyr", "sql_join", "Pool")
   register_s3_method("dplyr", "sql_select", "Pool")

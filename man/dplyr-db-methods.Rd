@@ -22,7 +22,6 @@
 \alias{db_rollback.Pool}
 \alias{db_save_query.Pool}
 \alias{db_write_table.Pool}
-\alias{sql_escape_ident.Pool}
 \alias{sql_escape_string.Pool}
 \alias{sql_join.Pool}
 \alias{sql_select.Pool}
@@ -45,7 +44,7 @@ copy_to.Pool(
   ...
 )
 
-tbl.Pool(src, from, ...)
+tbl.Pool(src, from, ..., vars = NULL, con = NULL)
 
 db_analyze.Pool(con, table, ...)
 
@@ -82,8 +81,6 @@ db_rollback.Pool(con, ...)
 db_save_query.Pool(con, sql, name, temporary = TRUE, ...)
 
 db_write_table.Pool(con, table, types, values, temporary = FALSE, ...)
-
-sql_escape_ident.Pool(con, x)
 
 sql_escape_string.Pool(con, x)
 
