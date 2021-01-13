@@ -321,3 +321,10 @@ sql_escape_logical.Pool <- function(con, x) {
   on.exit(poolReturn(db_con))
   dbplyr::sql_escape_logical(db_con, x = x)
 }
+
+#' @rdname dplyr-db-methods
+sql_join_suffix.Pool <- function(con, ...) {
+  db_con <- poolCheckout(con)
+  on.exit(poolReturn(db_con))
+  dbplyr::sql_join_suffix(db_con, ...)
+}

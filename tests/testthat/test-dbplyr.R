@@ -93,3 +93,12 @@ describe("pool package", {
     poolClose(pool)
   }
 })
+
+test_that("left join works", {
+  pool <- dbPool(RSQLite::SQLite(), dbname = tempfile())
+  on.exit(poolClose(pool))
+
+  db <- copy_to(pool, data.frame(x = 1), "df", temporary = FALSE)
+  out <- collect(left_join(db, db))
+  expect_equal(out, tibble::tibble(x = 1))
+})

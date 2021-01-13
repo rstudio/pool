@@ -33,6 +33,7 @@
   register_s3_method("dbplyr", "db_compute", "Pool")
   register_s3_method("dbplyr", "db_sql_render", "Pool")
   register_s3_method("dbplyr", "sql_escape_logical", "Pool")
+  register_s3_method("dbplyr", "sql_join_suffix", "Pool")
 
 }
 

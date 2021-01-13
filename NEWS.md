@@ -1,6 +1,8 @@
 pool 0.1.5.9000
 ================
 
+* `left_join()` and friends once again work with pool objects (#111).
+
 * Fixed #114: `dbPool()` objects previously could leak memory. (#115)
 
 pool 0.1.5
