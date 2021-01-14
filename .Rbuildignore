@@ -6,3 +6,4 @@
 ^examples$
 ^codecov\.yml$
 ^\.github$
+^cran-comments\.md$
