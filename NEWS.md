@@ -1,7 +1,6 @@
-# pool 0.1.6
+# pool (development version)
 
-pool 0.1.5.9000
-================
+# pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).
 
