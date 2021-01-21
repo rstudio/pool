@@ -30,7 +30,7 @@ Suggests:
     testthat,
     tibble,
     dplyr,
-    dbplyr,
+    dbplyr (>= 2.0.0),
     RSQLite,
     RMySQL
 Encoding: UTF-8
