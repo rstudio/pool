@@ -154,7 +154,7 @@ knowing when to return it back to the pool).</p>
 with <code>conn &lt;- poolCheckout(pool)</code> -- then call the appropriate
 DBI method on <code>conn</code>. Since you're fetching a connection
 from the pool yourself, you must also remember to return it
-back to the pool when you're done: <code><a href='poolReturn.html'>poolReturn(conn)</a></code>
+back to the pool when you're done: <code>poolReturn(conn)</code>
 (otherwise, you have a leaked connection).</p>
 <p>For simple transactions, consider using
 <code><a href='poolWithTransaction.html'>poolWithTransaction()</a></code> instead,

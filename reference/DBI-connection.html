@@ -218,54 +218,54 @@ to return it to the pool using <code><a href='poolReturn.html'>poolReturn()</a><
 </div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>mtcars1</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>16</span><span class='op'>)</span>, <span class='op'>]</span> <span class='co'># first half of the mtcars dataset</span>
-  <span class='va'>mtcars2</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>16</span><span class='op'>)</span>, <span class='op'>]</span> <span class='co'># second half of the mtcars dataset</span>
-
-  <span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, dbname <span class='op'>=</span> <span class='st'>":memory:"</span><span class='op'>)</span>
-
-  <span class='co'># write the mtcars1 table into the database</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span>, <span class='va'>mtcars1</span>, row.names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-  <span class='co'># list the current tables in the database</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
-
-  <span class='co'># read the "mtcars" table from the database (only 16 rows)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span>
-
-  <span class='co'># append mtcars2 to the "mtcars" table already in the database</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span>, <span class='va'>mtcars2</span>, row.names <span class='op'>=</span> <span class='cn'>TRUE</span>, append <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-  <span class='co'># read the "mtcars" table from the database (all 32 rows)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span>
-
-  <span class='co'># get the names of the columns in the databases's table</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListFields.html'>dbListFields</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span>
-
-  <span class='co'># use dbExecute to change the "mpg" and "cyl" values of the 1st row</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>pool</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span>
-      <span class='st'>"UPDATE mtcars"</span>,
-      <span class='st'>"SET mpg = '22.0', cyl = '10'"</span>,
-      <span class='st'>"WHERE row_names = 'Mazda RX4'"</span>
-    <span class='op'>)</span>
-  <span class='op'>)</span>
-
-  <span class='co'># read the 1st row of "mtcars" table to confirm the previous change</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"SELECT * FROM mtcars WHERE row_names = 'Mazda RX4'"</span><span class='op'>)</span>
-
-  <span class='co'># drop the "mtcars" table from the database</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbRemoveTable.html'>dbRemoveTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span>
-
-  <span class='co'># list the current tables in the database</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
-
-  <span class='fu'><a href='Pool-class.html'>poolClose</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
-
-<span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span><span class='op'>(</span><span class='st'>"Please install the 'RSQLite' package to run this example"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='va'>mtcars1</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>16</span><span class='op'>)</span>, <span class='op'>]</span> <span class='co'># first half of the mtcars dataset</span></span>
+<span class='r-in'>  <span class='va'>mtcars2</span> <span class='op'>&lt;-</span> <span class='va'>mtcars</span><span class='op'>[</span><span class='op'>-</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>16</span><span class='op'>)</span>, <span class='op'>]</span> <span class='co'># second half of the mtcars dataset</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, dbname <span class='op'>=</span> <span class='st'>":memory:"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># write the mtcars1 table into the database</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span>, <span class='va'>mtcars1</span>, row.names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># list the current tables in the database</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># read the "mtcars" table from the database (only 16 rows)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># append mtcars2 to the "mtcars" table already in the database</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span>, <span class='va'>mtcars2</span>, row.names <span class='op'>=</span> <span class='cn'>TRUE</span>, append <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># read the "mtcars" table from the database (all 32 rows)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># get the names of the columns in the databases's table</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListFields.html'>dbListFields</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># use dbExecute to change the "mpg" and "cyl" values of the 1st row</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>pool</span>,</span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='op'>(</span></span>
+<span class='r-in'>      <span class='st'>"UPDATE mtcars"</span>,</span>
+<span class='r-in'>      <span class='st'>"SET mpg = '22.0', cyl = '10'"</span>,</span>
+<span class='r-in'>      <span class='st'>"WHERE row_names = 'Mazda RX4'"</span></span>
+<span class='r-in'>    <span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># read the 1st row of "mtcars" table to confirm the previous change</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"SELECT * FROM mtcars WHERE row_names = 'Mazda RX4'"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># drop the "mtcars" table from the database</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbRemoveTable.html'>dbRemoveTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"mtcars"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'># list the current tables in the database</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbListTables.html'>dbListTables</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='fu'><a href='Pool-class.html'>poolClose</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span><span class='op'>(</span><span class='st'>"Please install the 'RSQLite' package to run this example"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -175,46 +175,46 @@ function called <code>dbBreak()</code> that allows for an early, silent exit
 with rollback. It can be called only from inside <code>poolWithTransaction</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, dbname <span class='op'>=</span> <span class='st'>":memory:"</span><span class='op'>)</span>
-
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>cars</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># there are 3 rows</span>
-
-  <span class='co'>## successful transaction</span>
-  <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (2, 2);"</span><span class='op'>)</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span>
-  <span class='op'>}</span><span class='op'>)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># there are now 6 rows</span>
-
-  <span class='co'>## failed transaction -- note the missing comma</span>
-  <span class='kw'><a href='https://rdrr.io/r/base/conditions.html'>tryCatch</a></span><span class='op'>(</span>
-    <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span>
-      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span>
-      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed dist) VALUES (2, 2);"</span><span class='op'>)</span>
-      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span>
-    <span class='op'>}</span><span class='op'>)</span>,
-    error <span class='op'>=</span> <span class='va'>identity</span>
-  <span class='op'>)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># still 6 rows</span>
-
-  <span class='co'>## early exit, silently</span>
-  <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (2, 2);"</span><span class='op'>)</span>
-    <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"cars"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>7</span><span class='op'>)</span> <span class='fu'>dbBreak</span><span class='op'>(</span><span class='op'>)</span>
-    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span>
-  <span class='op'>}</span><span class='op'>)</span>
-  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># still 6 rows</span>
-
-  <span class='fu'><a href='Pool-class.html'>poolClose</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span>
-
-<span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span><span class='op'>(</span><span class='st'>"Please install the 'RSQLite' package to run this example"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='va'>pool</span> <span class='op'>&lt;-</span> <span class='fu'><a href='dbPool.html'>dbPool</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, dbname <span class='op'>=</span> <span class='st'>":memory:"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>cars</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># there are 3 rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'>## successful transaction</span></span>
+<span class='r-in'>  <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (2, 2);"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>}</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># there are now 6 rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'>## failed transaction -- note the missing comma</span></span>
+<span class='r-in'>  <span class='kw'><a href='https://rdrr.io/r/base/conditions.html'>tryCatch</a></span><span class='op'>(</span></span>
+<span class='r-in'>    <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span></span>
+<span class='r-in'>      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed dist) VALUES (2, 2);"</span><span class='op'>)</span></span>
+<span class='r-in'>      <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='op'>}</span><span class='op'>)</span>,</span>
+<span class='r-in'>    error <span class='op'>=</span> <span class='va'>identity</span></span>
+<span class='r-in'>  <span class='op'>)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># still 6 rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='co'>## early exit, silently</span></span>
+<span class='r-in'>  <span class='fu'>poolWithTransaction</span><span class='op'>(</span><span class='va'>pool</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>conn</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (2, 2);"</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"cars"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>7</span><span class='op'>)</span> <span class='fu'>dbBreak</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbExecute.html'>dbExecute</a></span><span class='op'>(</span><span class='va'>conn</span>, <span class='st'>"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='op'>}</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dbi.r-dbi.org/reference/dbReadTable.html'>dbReadTable</a></span><span class='op'>(</span><span class='va'>pool</span>, <span class='st'>"cars"</span><span class='op'>)</span>   <span class='co'># still 6 rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'>  <span class='fu'><a href='Pool-class.html'>poolClose</a></span><span class='op'>(</span><span class='va'>pool</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span> <span class='kw'>else</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/base/message.html'>message</a></span><span class='op'>(</span><span class='st'>"Please install the 'RSQLite' package to run this example"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

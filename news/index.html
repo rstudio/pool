@@ -143,7 +143,7 @@
 <a href="#pool-0143" class="anchor"></a>pool 0.1.4.3<small> 2019-10-03 </small>
 </h1>
 <ul>
-<li>Previously, pool would always set <code><a href="https://rdrr.io/r/base/options.html">options(warn=1)</a></code> when running tasks. It now ensures that the value of <code>warn</code> can be 1 or greater. This can be useful in debugging, so that <code><a href="https://rdrr.io/r/base/options.html">options(warn=2)</a></code> can be used. (<a href='https://github.com/rstudio/pool/issues/90'>#90</a>)</li>
+<li>Previously, pool would always set <code>options(warn=1)</code> when running tasks. It now ensures that the value of <code>warn</code> can be 1 or greater. This can be useful in debugging, so that <code>options(warn=2)</code> can be used. (<a href='https://github.com/rstudio/pool/issues/90'>#90</a>)</li>
 </ul>
 </div>
     <div id="pool-0142" class="section level1">
@@ -188,7 +188,7 @@
 <ul>
 <li><p>Included more examples in the documentation. (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
 <li><p>Fixed the “test-create-destroy.R” test. Previously, this test had to be run manually because it uses <code>later</code> and its async nature could not be captured by <code>testthat</code>. However, using <code><a href="https://rdrr.io/pkg/later/man/run_now.html">later::run_now()</a></code> immediately after the relevant code snippet (i.e. still inside the first argument of <code>expect_*</code>) solves the issue. (<a href='https://github.com/rstudio/pool/issues/50'>#50</a>)</p></li>
-<li><p>Use <code><a href="https://rdrr.io/r/base/difftime.html">difftime(t1, t0, units = "secs")</a></code> when calculating a time interval. Unlike the simpler <code>t1 - t0</code> method, this guarantees that the result will always be consistently the number of <em>seconds</em>. However, there’s no change when calculating a new time (<em>not</em> a time interval) using <code>t2 &lt;- t1 - interval</code>, since we want <code>t2</code> to be a time, rather than a time interval (which is always what is returned by <code>difftime</code>). (<a href='https://github.com/rstudio/pool/issues/50'>#50</a> and <a href='https://github.com/rstudio/pool/issues/48'>#48</a>, thank you <a href="https://github.com/caewok">@caewok</a>!)</p></li>
+<li><p>Use <code>difftime(t1, t0, units = "secs")</code> when calculating a time interval. Unlike the simpler <code>t1 - t0</code> method, this guarantees that the result will always be consistently the number of <em>seconds</em>. However, there’s no change when calculating a new time (<em>not</em> a time interval) using <code>t2 &lt;- t1 - interval</code>, since we want <code>t2</code> to be a time, rather than a time interval (which is always what is returned by <code>difftime</code>). (<a href='https://github.com/rstudio/pool/issues/50'>#50</a> and <a href='https://github.com/rstudio/pool/issues/48'>#48</a>, thank you <a href="https://github.com/caewok">@caewok</a>!)</p></li>
 </ul>
 </div>
 <div id="bug-fixes" class="section level3">
@@ -213,11 +213,11 @@
 <p>For <code>pool</code> users, the main change is that all the <code>src_*</code> functions are now gone (from <code>dplyr</code> and <code>pool</code>). Therefore, if you had something like:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">src_pool</span><span class="op">(</span><span class="va">pool</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></code></pre></div>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">src_pool</span><span class="op">(</span><span class="va">pool</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></code></pre></div>
 <p>You can just change it to the simpler:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">pool</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></code></pre></div>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="va">pool</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span></code></pre></div>
 <p>If you’re still on an old version of <code>dplyr</code> and want to use <code>pool</code> as well, please install the package using the tag created for that purpose:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
