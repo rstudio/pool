@@ -22,4 +22,4 @@ jobs:
   R-CMD-check-with-dont-test:
     uses: rstudio/shiny-workflows/.github/workflows/R-CMD-check.yaml@v1
     with:
-      run-dont-test: true
+      extra-check-args: '"--run-donttest"'
