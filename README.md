@@ -4,7 +4,7 @@ pool
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/pool)](https://CRAN.R-project.org/package=pool)
-[![R build status](https://github.com/rstudio/pool/workflows/R-CMD-check/badge.svg)](https://github.com/rstudio/pool/actions)
+[![R build status](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/pool/actions)
 [![Codecov test coverage](https://codecov.io/gh/rstudio/pool/branch/main/graph/badge.svg)](https://codecov.io/gh/rstudio/pool?branch=main)
 <!-- badges: end -->
 
