@@ -17,6 +17,7 @@ Here’s a simple example of using a pool within a Shiny app (feel free to try i
 library(shiny)
 library(dplyr)
 library(pool)
+loadNamespace("dbplyr")
 
 pool <- dbPool(
   drv = RMySQL::MySQL(),
@@ -50,6 +51,10 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 ```
+
+Note: the `loadNamespace("dbplyr")` line is there to help the [rsconnect](https://github.com/rstudio/rsconnect) package when deploying the application to [shinyapps.io](https://www.shinyapps.io/) or [Posit Connect](https://posit.co/products/enterprise/connect/). Without that line, rsconnect will not detect that the dbplyr package is needed, and the application will not work properly.
+
+
 ## Concept
 The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done.
 
@@ -65,6 +70,7 @@ Oversimplifying a bit, we can think of connection management in Shiny as a spect
 library(shiny)
 library(dplyr)
 library(DBI)
+loadNamespace("dbplyr")
 
 conn <- dbConnect(
     drv = RMySQL::MySQL(),
@@ -108,6 +114,7 @@ shinyApp(ui, server)
 library(shiny)
 library(dplyr)
 library(DBI)
+loadNamespace("dbplyr")
 
 args <- list(
   drv = RMySQL::MySQL(),
