@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>http://rstudio.github.io/pool/404.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>http://rstudio.github.io/pool/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>http://rstudio.github.io/pool/index.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>http://rstudio.github.io/pool/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-connection-interpolate.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-connection-interpolate.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-connection-quote.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-connection-quote.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-connection-sql.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-connection-sql.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-connection-transaction.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-connection-transaction.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-connection.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-connection.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-object-deprecated.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-object-deprecated.html</loc>
   </url>
   <url>
-    <loc>/reference/DBI-object.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/DBI-object.html</loc>
   </url>
   <url>
-    <loc>/reference/Pool-class.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/Pool-class.html</loc>
   </url>
   <url>
-    <loc>/reference/dbPool.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/dbPool.html</loc>
   </url>
   <url>
-    <loc>/reference/dplyr-db-methods.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/dplyr-db-methods.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/object.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/object.html</loc>
   </url>
   <url>
-    <loc>/reference/pool-package.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/pool-package.html</loc>
   </url>
   <url>
-    <loc>/reference/poolCheckout.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/poolCheckout.html</loc>
   </url>
   <url>
-    <loc>/reference/poolReturn.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/poolReturn.html</loc>
   </url>
   <url>
-    <loc>/reference/poolWithTransaction.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/poolWithTransaction.html</loc>
   </url>
   <url>
-    <loc>/reference/show-Pool-method.html</loc>
+    <loc>http://rstudio.github.io/pool/reference/show-Pool-method.html</loc>
   </url>
 </urlset>
