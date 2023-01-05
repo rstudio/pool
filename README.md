@@ -3,7 +3,7 @@ pool
 ##### *Database Connection Pooling in R*
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/pool)](https://CRAN.R-project.org/package=pool)
+[![R-CMD-check](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml)
 [![R build status](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/pool/actions)
 [![Codecov test coverage](https://codecov.io/gh/rstudio/pool/branch/main/graph/badge.svg)](https://codecov.io/gh/rstudio/pool?branch=main)
 <!-- badges: end -->

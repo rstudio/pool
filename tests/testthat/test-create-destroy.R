@@ -1,7 +1,5 @@
 source("utils.R")
 
-context("Pool's createObject and destroyObject methods")
-
 describe("createObject", {
 
   it("throws if `factory` throws or returns NULL", {

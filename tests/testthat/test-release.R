@@ -1,7 +1,5 @@
 source("utils.R")
 
-context("Pool's release method")
-
 describe("release", {
 
   pool <- poolCreate(MockPooledObj$new,
