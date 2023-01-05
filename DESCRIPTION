@@ -26,8 +26,9 @@ Suggests:
     dplyr,
     RMySQL,
     RSQLite,
-    testthat,
-    tibble
+    testthat (>= 3.0.0),
+    tibble,
+    withr
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
@@ -50,3 +51,4 @@ Collate:
     'DBI-pool.R'
     'dbplyr.R'
     'zzz-hooks.R'
+Config/testthat/edition: 3
