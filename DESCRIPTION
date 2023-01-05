@@ -2,20 +2,14 @@ Type: Package
 Package: pool
 Title: Object Pooling
 Version: 0.1.6.9000
-Authors@R: 
-    c(person(given = "Joe",
-             family = "Cheng",
-             role = c("aut", "cre"),
-             email = "joe@rstudio.com"),
-      person(given = "Barbara",
-             family = "Borges",
-             role = "aut",
-             email = "barb.b.ribeiro@gmail.com"),
-      person(family = "RStudio",
-             role = "cph"))
-Description: Enables the creation of object pools, which make it
-    less computationally expensive to fetch a new object. Currently the
-    only supported pooled objects are 'DBI' connections.
+Authors@R: c(
+    person("Joe", "Cheng", , "joe@rstudio.com", role = c("aut", "cre")),
+    person("Barbara", "Borges", , "barb.b.ribeiro@gmail.com", role = "aut"),
+    person(, "RStudio", role = "cph")
+  )
+Description: Enables the creation of object pools, which make it less
+    computationally expensive to fetch a new object. Currently the only
+    supported pooled objects are 'DBI' connections.
 License: GPL-3
 URL: https://github.com/rstudio/pool
 BugReports: https://github.com/rstudio/pool/issues
@@ -24,16 +18,16 @@ Depends:
     R (>= 3.0.0)
 Imports:
     DBI,
-    R6,
-    later (>= 1.0.0)
+    later (>= 1.0.0),
+    R6
 Suggests:
-    testthat,
-    tibble,
-    dplyr,
+    covr,
     dbplyr,
-    RSQLite,
+    dplyr,
     RMySQL,
-    covr
+    RSQLite,
+    testthat,
+    tibble
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
