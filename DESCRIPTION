@@ -26,6 +26,8 @@ Suggests:
     covr,
     dbplyr,
     dplyr,
+    knitr,
+    rmarkdown,
     RMySQL,
     RSQLite,
     testthat (>= 3.0.0),
@@ -55,3 +57,4 @@ Collate:
     'zzz-hooks.R'
 Config/testthat/edition: 3
 Config/Needs/website: tidyverse/tidytemplate
+VignetteBuilder: knitr
