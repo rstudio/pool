@@ -1,5 +1,9 @@
 # pool (development version)
 
+* If you `poolCheckout()` an object and forget to return it before it's deleted,
+  you now get a more informative message and the object is automatically 
+  cleaned up (#95).
+
 # pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).

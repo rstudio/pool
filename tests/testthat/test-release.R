@@ -64,6 +64,17 @@ describe("release", {
     expect_error(poolClose(pool),
       "The pool was already closed.")
   })
+
+  it("warns if object can't be returned", {
+    expect_snapshot({
+      pool <- poolCreate(function() 1)
+      obj <- poolCheckout(pool)
+      rm(obj)
+      . <- gc()
+      poolClose(pool)
+    })
+  })
+
 })
 
 

@@ -179,7 +179,9 @@ Pool <- R6::R6Class("Pool",
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
         if (pool_metadata$valid) {
-          warning("You have a leaked pooled object.")
+          cat("<pool> Checked-out object deleted before being returned.\n")
+          cat("<pool> Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`\n")
+          self$release(object)
         }
       }, onexit = TRUE)
 
