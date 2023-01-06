@@ -46,7 +46,7 @@ provides a shared pool of connections that can automatically reconnect
 to the database if needed.
 }
 \examples{
-# A pool object works identically to a standard DBI connection
+# You use a dbPool in the same way as a standard DBI connection
 pool <- dbPool(RSQLite::SQLite())
 DBI::dbWriteTable(pool, "mtcars", mtcars)
 dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
