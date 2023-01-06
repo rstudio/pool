@@ -36,11 +36,20 @@ setClass("Pool")
 #'  very small).
 #' @param  state A `pool` public variable to be used by
 #'  backend authors as necessary.
-poolCreate <- function(factory, minSize = 1, maxSize = Inf,
-                       idleTimeout = 60, validationInterval = 600,
+poolCreate <- function(factory,
+                       minSize = 1,
+                       maxSize = Inf,
+                       idleTimeout = 60,
+                       validationInterval = 600,
                        state = NULL) {
-  Pool$new(factory, minSize, maxSize,
-    idleTimeout, validationInterval, state)
+  Pool$new(
+    factory,
+    minSize,
+    maxSize,
+    idleTimeout,
+    validationInterval,
+    state
+  )
 }
 
 #' Checks out an object from the pool.
