@@ -3,13 +3,8 @@
 "_PACKAGE"
 
 #' @import DBI
-NULL
-
 #' @import methods
-NULL
-
 #' @importFrom R6 R6Class
-NULL
-
 #' @importFrom later later
+#' @import rlang
 NULL
