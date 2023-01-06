@@ -7,7 +7,7 @@
 \alias{poolCreate}
 \alias{poolClose}
 \alias{poolClose,Pool-method}
-\title{S4 class for compatibility with DBI methods}
+\title{Create a pool of reusable objects}
 \usage{
 poolCreate(
   factory,
@@ -53,4 +53,10 @@ backend authors as necessary.}
 }
 \description{
 A generic pool class that holds objects. These can be fetched
+from the pool and released back to it at will, with very
+little computational cost. The pool should be created only once
+and closed when it is no longer needed, to prevent leaks.
+
+See [dbPool() for an example of object pooling applied to DBI database
+connections.
 }

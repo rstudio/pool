@@ -1,14 +1,16 @@
 #' @include pool.R
 NULL
 
-#' S4 class for compatibility with DBI methods
+#' Create a pool of reusable objects
 #'
+#' @description
 #' A generic pool class that holds objects. These can be fetched
-# from the pool and released back to it at will, with very
-# little computational cost. The pool should be created only once
-# and closed when it is no longer needed, to prevent leaks. See
-# [dbPool() for an example of object pooling applied to DBI database
-# connections.
+#' from the pool and released back to it at will, with very
+#' little computational cost. The pool should be created only once
+#' and closed when it is no longer needed, to prevent leaks.
+#'
+#' See [dbPool() for an example of object pooling applied to DBI database
+#' connections.
 #'
 #' @export
 #' @aliases Pool
@@ -71,29 +73,6 @@ setMethod("poolCheckout", "Pool", function(pool) {
   pool$fetch()
 })
 
-#' Returns an object back to the pool.
-#'
-#' Should be called by the end user if they previously fetched
-#' an object directly using `object <- poolCheckout(pool)`
-#' and are now done with said object.
-#'
-#' @param object A pooled object.
-#' @export
-setGeneric("poolReturn", function(object) {
-  standardGeneric("poolReturn")
-})
-
-#' @export
-#' @rdname poolReturn
-setMethod("poolReturn", "ANY", function(object) {
-  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
-  if (is.null(pool_metadata) || !pool_metadata$valid) {
-    stop("Invalid object.")
-  }
-  pool <- pool_metadata$pool
-  pool$release(object)
-})
-
 #' @export
 #' @rdname Pool-class
 #' @param pool A Pool object previously created with `poolCreate`
@@ -115,4 +94,28 @@ setMethod("show", "Pool", function(object) {
   on.exit(poolReturn(pooledObj))
   cat("<Pool>\n", "  pooled object class: ",
       is(pooledObj)[1], sep = "")
+})
+
+
+#' Return an object back to the pool
+#'
+#' Should be called by the end user if they previously fetched
+#' an object directly using `object <- poolCheckout(pool)`
+#' and are now done with said object.
+#'
+#' @param object A pooled object.
+#' @export
+setGeneric("poolReturn", function(object) {
+  standardGeneric("poolReturn")
+})
+
+#' @export
+#' @rdname poolReturn
+setMethod("poolReturn", "ANY", function(object) {
+  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+  if (is.null(pool_metadata) || !pool_metadata$valid) {
+    stop("Invalid object.")
+  }
+  pool <- pool_metadata$pool
+  pool$release(object)
 })

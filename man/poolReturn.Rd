@@ -3,7 +3,7 @@
 \name{poolReturn}
 \alias{poolReturn}
 \alias{poolReturn,ANY-method}
-\title{Returns an object back to the pool.}
+\title{Return an object back to the pool}
 \usage{
 poolReturn(object)
 
