@@ -14,68 +14,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(pool)
-```
+When you're connecting to a database, it is important to manage your connections: when to open them, how to keep track of them, when to close them.
+Depending on your purpose, you might choose different connection management models.
+In any case, the most important thing is to not leak connections: i.e. leave a connection open once you no longer need it.
+Over time, leaked connections accumulate and can substantially slow down your app oroverwhelm the database server.
 
-When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertently opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.
+Below we describe the two extremes of connection opening (once per app vs once per query), and show why pool provides a happy middle ground that is safer, more robust and offers better overall performance.
 
-Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understanding the problems described below.
+### Only one connection per app
 
-<details>
-  <summary><code>oneConnectionPerApp.R</code></summary>
+Let's consider the case of opening only one connection per app, as below:
 
-```r
+```{r}
 library(shiny)
-library(dplyr)
 library(DBI)
-loadNamespace("dbplyr")
 
-conn <- dbConnect(
-    drv = RMySQL::MySQL(),
-    dbname = "shinydemo",
-    host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-    username = "guest",
-    password = "guest"
-  )
-onStop(function() {
-  dbDisconnect(conn)
-})
-
-ui <- fluidPage(
-  textInput("ID", "Enter your ID:", "5"),
-  tableOutput("tbl"),
-  numericInput("nrows", "How many cities to show?", 10),
-  plotOutput("popPlot")
-)
-
-server <- function(input, output, session) {
-  output$tbl <- renderTable({
-    conn %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
-  })
-  output$popPlot <- renderPlot({
-    df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
-    pop <- df$Population
-    names(pop) <- df$Name
-    barplot(pop)
-  })
-}
-
-shinyApp(ui, server)
-```
-
-</details>
-
-<details>
-  <summary><code>oneConnectionPerQuery.R</code></summary>
-
-```r
-library(shiny)
-library(dplyr)
-library(DBI)
-loadNamespace("dbplyr")
-
-args <- list(
+conn <- DBI::dbConnect(
   drv = RMySQL::MySQL(),
   dbname = "shinydemo",
   host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
@@ -92,35 +46,151 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   output$tbl <- renderTable({
-    conn <- do.call(dbConnect, args)
-    on.exit(dbDisconnect(conn))
-
-    conn %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
+    sql <- "SELECT * FROM City WHERE ID = ?id;"
+    query <- sqlInterpolate(conn, sql, id = input$ID)
+    dbGetQuery(conn, query)
   })
   output$popPlot <- renderPlot({
-    conn <- do.call(dbConnect, args)
-    on.exit(dbDisconnect(conn))
-
-    df <- conn %>% tbl("City") %>% head(input$nrows) %>% collect()
+    query <- paste0("SELECT * FROM City LIMIT ",
+                    as.integer(input$nrows)[1], ";")
+    df <- dbGetQuery(conn, query)
     pop <- df$Population
     names(pop) <- df$Name
     barplot(pop)
   })
 }
 
-shinyApp(ui, server)
+if (interactive())
+  shinyApp(ui, server)
 ```
 
-</details>
-<br>
+(In a multi-file app, you could create `conn` at the top of your `server.R` file or in `global.R`)
 
-Opening only one connection per app makes it fast (because, in the whole app, you only fetch one connection) and your code is kept as simple as possible. However:
+This approach is fast (because you only ever create one connection) but has some drawbacks:
 
-- it cannot handle simultaneous requests (e.g. two sessions open, both querying the database at the same time);
-- if the connection breaks at some point (maybe the database server crashed), you won’t get a new connection (you have to exit the app and re-run it);
-- finally, if you are not quite at this extreme, and you use more than one connection per app (but fewer than one connection per query), it can be difficult to keep track of all your connections, since you’ll be opening and closing them in potentially very different places.
+-   Since there is only one connection, it cannot handle simultaneous requests (i.e. multiple users of the same app).
+-   If the connection breaks at some point (maybe the database server crashed), you won't get a new connection (you have to exit the app and re-run it).
+-   Even if you're not making any queries at the moment (i.e. you leave the app running while you're gone), you'll have an idle connection sitting around for no reason.
 
-While the other extreme of opening (and closing) one connection for each query you make resolves all of these points, it is terribly slow (each time we need to access the database, we first have to fetch a connection), and
-you need a lot more (boilerplate) code to connect and disconnect the connection within each reactive/function.
+### One connection per query
 
-The `pool` package was created so you don't have to worry about this at all. Since `pool` abstracts away the logic of connection management, for the vast majority of cases, you never have to deal with connections directly. Since the pool “knows” when it should have more connections and how to manage them, you have all the advantages of the second approach (one connection per query), without the disadvantages. You are still using one connection per query, but that connection is always fetched and returned to the pool, rather than getting it from the database directly. This is a whole lot faster and more efficient. Finally, the code is kept just as simple as the code in the first approach (only one connection for the entire app). In fact, if you look back at the `pool` Shiny app example above, you will notice that the code structure is essentially the same that you'd use to open a connection at the start of an app and close it at the end.
+Let's now turn our attention to the other extreme: opening (and closing) a connection for each query we make:
+
+```{r}
+library(shiny)
+library(DBI)
+
+connect <- function() {
+  DBI::dbConnect(
+    drv = RMySQL::MySQL(),
+    dbname = "shinydemo",
+    host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+    username = "guest",
+    password = "guest"
+  )
+}
+
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
+
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    conn <- connect()
+    on.exit(DBI::dbDisconnect(conn))
+
+    sql <- "SELECT * FROM City WHERE ID = ?id;"
+    query <- sqlInterpolate(conn, sql, id = input$ID)
+    dbGetQuery(conn, query)
+  })
+
+  output$popPlot <- renderPlot({
+    conn <- connect()
+    on.exit(DBI::dbDisconnect(conn))
+
+    sql <- "SELECT * FROM City LIMIT ?id;"
+    query <- sqlInterpolate(conn, sql, id = input$nrows)
+    df <- dbGetQuery(conn, query)
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
+}
+
+if (interactive())
+  shinyApp(ui, server)
+```
+
+The advantages to this approach are the reverse of the disadvantages of the first approach:
+
+-   It can handle simultaneous requests, because these are always processed by different connections.
+-   If a connection breaks, it's no big deal because it'll just create a new one on the next reactive computation.
+-   Each connection is only open for the duration of the query it's making, so there are no idle connections sitting around.
+-   It's moderately easy to keep track of connections (as long as you pair each connect with a `dbDisconnect()`).
+
+On the other hand, it does less well on the things that the former approach excelled at:
+
+-   It's slow: each time we change an input, we have a fetch a connection to recalculate the reactive.
+-   You need a lot more boilerplate code to connect and disconnect the connection within each reactive.
+
+### The best of both worlds: using a pool
+
+Wouldn't it be nice if you could combine the advantages of the two approaches?
+That's exactly the goal of pool!
+The pool abstracts away the logic of connection management, so that, for the vast majority of cases, you never have to deal with connections directly.
+Since the pool "knows" when it should have more connections and how to manage them, you have all the advantages of the second approach (one connection per query), without the disadvantages.
+You are still using one connection per query, but that connection is always fetched and returned to the pool, rather than getting it from the database directly.
+
+Finally, the code is kept just as simple as the code in the first approach (only one connection for the entire app).
+In fact, if you look back at the `pool` Shiny app below you'll notice it's almost identical to the first case.
+
+```{r}
+library(shiny)
+library(DBI)
+library(pool)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "shinydemo",
+  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+  username = "guest",
+  password = "guest"
+)
+
+ui <- fluidPage(
+  textInput("ID", "Enter your ID:", "5"),
+  tableOutput("tbl"),
+  numericInput("nrows", "How many cities to show?", 10),
+  plotOutput("popPlot")
+)
+
+server <- function(input, output, session) {
+  output$tbl <- renderTable({
+    sql <- "SELECT * FROM City WHERE ID = ?id;"
+    query <- sqlInterpolate(pool, sql, id = input$ID)
+    dbGetQuery(pool, query)
+  })
+  
+  output$popPlot <- renderPlot({
+    sql <- "SELECT * FROM City LIMIT ?id;"
+    query <- sqlInterpolate(conn, sql, id = input$nrows)
+    df <- dbGetQuery(pool, query)
+    pop <- df$Population
+    names(pop) <- df$Name
+    barplot(pop)
+  })
+}
+
+if (interactive())
+  shinyApp(ui, server)
+```
+
+By default, on creation, the pool fetches and keeps around one idle connection.
+When you make a query to the pool, it will always use that connection, unless it happens to already be busy elsewhere.
+If it is, the pool will create a second connection; once that's finished, the pool with hold on to it.
+If that second connection is requested again in within a minute (by default), the countdown resets.
+Otherwise, the pool disconnects it.
+(See `vignette("advanced-pool")` to learn how to customize these features.) So basically, the pool "knows" when it needs to open and close connections.

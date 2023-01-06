@@ -13,6 +13,8 @@ The `pool` package adds a new level of abstraction when connecting to a database
 
 Learn more about why pool is needed in `vignette("why-pool")`.
 
+(The pool package is actually general enough to allow you to construct a pool of any kind of object, not just database connections, but database connections are currently it's primary claim to fame.)
+
 ## Usage
 
 Here’s a simple example of using a pool within a Shiny app (feel free to try it yourself):
