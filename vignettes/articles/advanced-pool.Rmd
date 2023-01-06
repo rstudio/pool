@@ -1,0 +1,107 @@
+---
+title: "Advanced pool usage"
+desc: >
+  This article discusses how to customize your pool and how to handle 
+  transactions.
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This article discusses some more advanced features of the pool package, namely customizing your pool and using pool with database transactions.
+
+```{r setup}
+library(pool)
+```
+
+Get started by installing the packages you need:
+
+```{r}
+#| eval: false
+install.packages(c("shiny", "DBI", "pool"))
+```
+
+## Customizing your pool
+
+First, let's get to know our Pool object:
+
+```{r}
+library(pool)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "shinydemo",
+  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+  username = "guest",
+  password = "guest"
+)
+pool
+```
+
+As you can see, printing gives you basic information about your pool. This can be useful to learn how many connections you have open (both free/idle and in use). 
+
+But for this section, let's turn our attention to other parameters that you can pass to `dbPool()`: `minSize`, `maxSize`, and `idleTimeout`.
+
+When created, the pool will initialize `minSize` connections, and keeps them around until they're requested. If all the idle connections are taken up when another request for a connection comes up, the pool will create a new connection. It'll keep doing this as needed until it gets to `maxSize` connections at which point it will error.
+
+Any connection that is created when we're over `minSize` will have a timer attached to it: from the moment it is returned back to the pool, a countdown of `idleTimeout` seconds will start. If that connection is not requested again during that period, it will be destroyed when the countdown finishes. If it *is* requested and checked out of the pool, the countdown will the reset when it is returned back to the pool.
+
+The optimal values of these three parameters depend on how you're using your pool, as they represent a tradeoff between how adaptable your pool is and how efficient it is. Large values for all three parameters would mean that your pool is highly adaptable (it can handle spikes in traffic easily), but potentially not very efficient (it might be creating and holding on to connections that aren't needed). On the other hand, small values for these parameters would mean that your pool is very strict about the number of connections it has (it will very rarely allow for idle connections) which will lead to an efficient pool if traffic is consistent. However, this type of pool won't be able to handle spikes in traffic easily: on one hand, it will often have to do the computationally expensive fetching of connections directly from the database, since it doesn't hold on to idle connections for long; on the other hand, once it hits the `maxSize` number of connections, it won't be able to scale up any further.
+
+Considering where your pool falls on this spectrum, you should choose the value for these arguments accordingly. For example, if you want a stable pool that will adapt and scale up easily (and you're not too worried about efficiency), you could do something like:
+
+```{r}
+library(DBI)
+library(pool)
+
+pool <- dbPool(
+  drv = RMySQL::MySQL(),
+  dbname = "shinydemo",
+  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
+  username = "guest",
+  password = "guest",
+  minSize = 10,
+  idleTimeout = 60 * 60
+)
+```
+
+## Transactions
+
+So far, we've recommended you always use the Pool object directly when you need to query the database. Given that the pool "knows" when to grow and shrink, for the vast majority of cases, this is a good approach (especially because it means you never have to worry about connection management and leaked connections - this is all taken care of for you). However, there is one type of situation for which this does not apply: transactions. From [Wikipedia](https://en.wikipedia.org/wiki/Database_transaction):
+
+> Transactions provide an "all-or-nothing" proposition, stating that each work-unit performed in a database must either complete in its entirety or have no effect whatsoever. Further, the system must isolate each transaction from other transactions, results must conform to existing constraints in the database, and transactions that complete successfully must get written to durable storage.
+
+In order for these conditions to be met, you need to have access to the same connection for longer than the duration of a query. For example, imagine you're transaction consists of two consecutive queries, A and B. You want to make sure that either both of these taken effect or neither does, and that nothing else is going on in the meantime. So the following will not work:
+
+```{r}
+#| eval: false
+dbGetQuery(pool, A)
+dbGetQuery(pool, B)
+```
+
+If you have a connection, you can do this with `DBI::dbWithTransaction()`:
+
+```{r}
+#| eval: false
+
+DBI::dbWithTransaction(con, {
+  dbGetQuery(con, A)
+  dbGetQuery(con, B)
+})
+```
+
+But this doesn't work with pooled objects. You can instead use `pool::poolWithTransaction()`:
+
+
+```{r}
+#| eval: false
+
+pool::poolWithTransaction(pool, function(con) {
+  dbGetQuery(con, A)
+  dbGetQuery(con, B)
+})
+```
