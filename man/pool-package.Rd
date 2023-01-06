@@ -12,6 +12,7 @@ Enables the creation of object pools, which make it less computationally expensi
 Useful links:
 \itemize{
   \item \url{https://github.com/rstudio/pool}
+  \item \url{http://rstudio.github.io/pool/}
   \item Report bugs at \url{https://github.com/rstudio/pool/issues}
 }
 

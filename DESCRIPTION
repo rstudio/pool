@@ -20,7 +20,8 @@ Depends:
 Imports:
     DBI,
     later (>= 1.0.0),
-    R6
+    R6,
+    rlang
 Suggests:
     covr,
     dbplyr,
