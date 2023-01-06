@@ -14,8 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-When you're connecting to a database, it is important to manage your connections: when to open them, how to keep track of them, when to close them.
+When you're connecting to a database, managing your connections (i.e. opening, tracking, and closing) is really important because you want to avoid leaking connections, leaving them only
+
 Depending on your purpose, you might choose different connection management models.
+
+it is important to manage your connections: when to open them, how to keep track of them, when to close them.
 In any case, the most important thing is to not leak connections: i.e. leave a connection open once you no longer need it.
 Over time, leaked connections accumulate and can substantially slow down your app oroverwhelm the database server.
 
@@ -36,6 +39,9 @@ conn <- DBI::dbConnect(
   username = "guest",
   password = "guest"
 )
+invisible(onStop(function() {
+  DBI::dbDisconnect(conn)
+}))
 
 ui <- fluidPage(
   textInput("ID", "Enter your ID:", "5"),
@@ -136,7 +142,7 @@ On the other hand, it does less well on the things that the former approach exce
 -   It's slow: each time we change an input, we have a fetch a connection to recalculate the reactive.
 -   You need a lot more boilerplate code to connect and disconnect the connection within each reactive.
 
-### The best of both worlds: using a pool
+### Pool: the best of both worlds
 
 Wouldn't it be nice if you could combine the advantages of the two approaches?
 That's exactly the goal of pool!
@@ -150,15 +156,17 @@ In fact, if you look back at the `pool` Shiny app below you'll notice it's almos
 ```{r}
 library(shiny)
 library(DBI)
-library(pool)
 
-pool <- dbPool(
+pool <- pool::dbPool(
   drv = RMySQL::MySQL(),
   dbname = "shinydemo",
   host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
   username = "guest",
   password = "guest"
 )
+invisible(onStop(function() {
+  pool::poolClose(pool)
+}))
 
 ui <- fluidPage(
   textInput("ID", "Enter your ID:", "5"),
