@@ -2,12 +2,12 @@
 % Please edit documentation in R/DBI-object-deprecated.R
 \name{DBI-object-deprecated}
 \alias{DBI-object-deprecated}
-\alias{make.db.names,Pool,character-method}
-\alias{isSQLKeyword,Pool,character-method}
+\alias{make.db.names,Pool,ANY-method}
+\alias{isSQLKeyword,Pool,ANY-method}
 \alias{SQLKeywords,Pool-method}
 \title{Make R identifiers into legal SQL identifiers.}
 \usage{
-\S4method{make.db.names}{Pool,character}(
+\S4method{make.db.names}{Pool,ANY}(
   dbObj,
   snames,
   keywords = .SQL92Keywords,
@@ -16,7 +16,7 @@
   ...
 )
 
-\S4method{isSQLKeyword}{Pool,character}(
+\S4method{isSQLKeyword}{Pool,ANY}(
   dbObj,
   name,
   keywords = .SQL92Keywords,

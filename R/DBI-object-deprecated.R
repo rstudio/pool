@@ -16,7 +16,7 @@ NULL
 #'   see [DBI::make.db.names()]
 #' @export
 #' @rdname DBI-object-deprecated
-setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
+setMethod("make.db.names", "Pool",
   definition = function(dbObj, snames, keywords, unique, allow.keywords, ...) {
     connection <- poolCheckout(dbObj)
     on.exit(poolReturn(connection))
@@ -26,7 +26,7 @@ setMethod("make.db.names", signature(dbObj="Pool", snames="character"),
 
 #' @export
 #' @rdname DBI-object-deprecated
-setMethod("isSQLKeyword", signature(dbObj="Pool", name="character"),
+setMethod("isSQLKeyword", "Pool",
   definition = function(dbObj, name, keywords, case, ...) {
     connection <- poolCheckout(dbObj)
     on.exit(poolReturn(connection))

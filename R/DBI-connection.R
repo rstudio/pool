@@ -107,7 +107,7 @@ setMethod("dbSendStatement", "Pool", function(conn, statement, ...) {
 ## cannot be dealt with using dbWithTransaction(...)
 #' @export
 #' @rdname DBI-connection
-setMethod("dbGetQuery", signature("Pool", "character"), function(conn, statement, ...) {
+setMethod("dbGetQuery", "Pool", function(conn, statement, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbGetQuery(connection, statement, ...)
@@ -116,7 +116,7 @@ setMethod("dbGetQuery", signature("Pool", "character"), function(conn, statement
 ## Analogous to dbGetQuery(), but for non-SELECT statements
 #' @export
 #' @rdname DBI-connection
-setMethod("dbExecute", signature("Pool", "character"), function(conn, statement, ...) {
+setMethod("dbExecute", "Pool", function(conn, statement, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbExecute(connection, statement, ...)
@@ -130,7 +130,7 @@ setMethod("dbListResults", "Pool", function(conn, ...) {
 
 #' @export
 #' @rdname DBI-connection
-setMethod("dbListFields", signature("Pool", "character"), function(conn, name, ...) {
+setMethod("dbListFields", "Pool", function(conn, name, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbListFields(connection, name, ...)
@@ -154,7 +154,7 @@ setMethod("dbListObjects", "Pool", function(conn, prefix = NULL, ...) {
 
 #' @export
 #' @rdname DBI-connection
-setMethod("dbReadTable", signature("Pool", "character"), function(conn, name, ...) {
+setMethod("dbReadTable", "Pool", function(conn, name, ...) {
   connection <- poolCheckout(conn)
   on.exit(poolReturn(connection))
   DBI::dbReadTable(connection, name, ...)

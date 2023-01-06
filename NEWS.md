@@ -1,5 +1,9 @@
 # pool (development version)
 
+* DBI methods should dispatch correctly in more cases; in particular 
+  `dbReadTable()` and friends will now work correctly when used with
+  `DBI::Id()` (#120).
+
 # pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).

@@ -4,13 +4,13 @@
 \alias{DBI-connection}
 \alias{dbSendQuery,Pool-method}
 \alias{dbSendStatement,Pool,ANY-method}
-\alias{dbGetQuery,Pool,character-method}
-\alias{dbExecute,Pool,character-method}
+\alias{dbGetQuery,Pool,ANY-method}
+\alias{dbExecute,Pool,ANY-method}
 \alias{dbListResults,Pool-method}
-\alias{dbListFields,Pool,character-method}
+\alias{dbListFields,Pool,ANY-method}
 \alias{dbListTables,Pool-method}
 \alias{dbListObjects,Pool-method}
-\alias{dbReadTable,Pool,character-method}
+\alias{dbReadTable,Pool,ANY-method}
 \alias{dbWriteTable,Pool,ANY-method}
 \alias{dbCreateTable,Pool-method}
 \alias{dbAppendTable,Pool-method}
@@ -23,19 +23,19 @@
 
 \S4method{dbSendStatement}{Pool,ANY}(conn, statement, ...)
 
-\S4method{dbGetQuery}{Pool,character}(conn, statement, ...)
+\S4method{dbGetQuery}{Pool,ANY}(conn, statement, ...)
 
-\S4method{dbExecute}{Pool,character}(conn, statement, ...)
+\S4method{dbExecute}{Pool,ANY}(conn, statement, ...)
 
 \S4method{dbListResults}{Pool}(conn, ...)
 
-\S4method{dbListFields}{Pool,character}(conn, name, ...)
+\S4method{dbListFields}{Pool,ANY}(conn, name, ...)
 
 \S4method{dbListTables}{Pool}(conn, ...)
 
 \S4method{dbListObjects}{Pool}(conn, prefix = NULL, ...)
 
-\S4method{dbReadTable}{Pool,character}(conn, name, ...)
+\S4method{dbReadTable}{Pool,ANY}(conn, name, ...)
 
 \S4method{dbWriteTable}{Pool,ANY}(conn, name, value, ...)
 
