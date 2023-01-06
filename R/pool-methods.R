@@ -83,17 +83,6 @@ setMethod("poolClose", "Pool", function(pool) {
   pool$close()
 })
 
-#' Show method
-#' @param object A Pool object.
-#' @export
-setMethod("show", "Pool", function(object) {
-  pooledObj <- poolCheckout(object)
-  on.exit(poolReturn(pooledObj))
-  cat("<Pool>\n", "  pooled object class: ",
-      is(pooledObj)[1], sep = "")
-})
-
-
 #' Return an object back to the pool
 #'
 #' Should be called by the end user if they previously fetched

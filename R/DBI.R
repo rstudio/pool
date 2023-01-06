@@ -20,6 +20,8 @@ NULL
 #' @examples
 #' # You use a dbPool in the same way as a standard DBI connection
 #' pool <- dbPool(RSQLite::SQLite())
+#' pool
+#'
 #' DBI::dbWriteTable(pool, "mtcars", mtcars)
 #' dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
 #'

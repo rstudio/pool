@@ -31,6 +31,8 @@ Pool <- R6::R6Class("Pool",
         self$validationInterval <- validationInterval
         self$state <- state
 
+        private$objClass <- NULL
+
         private$freeObjects <- new.env(parent = emptyenv())
 
         for (i in seq_len(self$minSize)) {
@@ -141,6 +143,15 @@ Pool <- R6::R6Class("Pool",
           "- they will be destroyed the next time the ",
           "garbage collector runs).", call. = FALSE)
       }
+    },
+
+    print = function(...) {
+      cat("<Pool> of ", private$objClass, " objects\n", sep = "")
+      cat("  Objects checked out: ", self$counters$taken, "\n", sep = "")
+      cat("  Available in pool: ", self$counters$free, "\n", sep = "")
+      cat("  Max size: ", self$maxSize, "\n", sep = "")
+      cat("  Valid: ", self$valid, "\n", sep = "")
+      invisible(self)
     }
   ),
 
@@ -149,6 +160,7 @@ Pool <- R6::R6Class("Pool",
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
+    objClass = NULL,
 
     ## creates an object, assigns it to the
     ## free environment and returns it
@@ -162,6 +174,10 @@ Pool <- R6::R6Class("Pool",
         stop("Object creation was not successful. The `factory` ",
           "argument must be a function that creates and ",
           "returns the object to be pooled.")
+      }
+
+      if (is.null(private$objClass)) {
+        private$objClass <- class(object)
       }
 
       ## attach metadata about the object
