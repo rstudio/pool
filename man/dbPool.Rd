@@ -21,11 +21,7 @@ dbPool(
 \item{...}{Arguments passed on to \code{\link[DBI:dbConnect]{DBI::dbConnect()}}. These are used to
 identify the database and provide needed authentication.}
 
-\item{minSize}{An optional number specifying the minimum
-number of objects that the pool should have at all times.}
-
-\item{maxSize}{An optional number specifying the maximum
-number of objects that the pool may have at any time.}
+\item{minSize, maxSize}{The minimum and maximum number of objects in the pool.}
 
 \item{idleTimeout}{The number of seconds that an idle
 object will be kept in the pool before it is destroyed (only

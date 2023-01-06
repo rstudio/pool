@@ -18,13 +18,10 @@ setClass("Pool")
 
 #' @export
 #' @rdname Pool-class
-#' @param factory A factory function responsible for the generation of
+#' @param factory A factory function used to create responsible for the generation of
 #'   the objects that the pool will hold (ex: for DBI database connections,
 #'   this function is `dbConnect`). It must take no arguments.
-#' @param minSize An optional number specifying the minimum
-#'   number of objects that the pool should have at all times.
-#' @param maxSize An optional number specifying the maximum
-#'   number of objects that the pool may have at any time.
+#' @param minSize,maxSize The minimum and maximum number of objects in the pool.
 #' @param idleTimeout The number of seconds that an idle
 #'   object will be kept in the pool before it is destroyed (only
 #'   applies if the number of objects is over the `minSize`).
