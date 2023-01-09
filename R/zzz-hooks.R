@@ -1,11 +1,9 @@
 .onLoad <- function(...) {
-  register_s3_method("dplyr", "copy_to", "Pool")
-
   register_s3_method("dplyr", "tbl", "Pool")
-  register_s3_method("dplyr", "copy_to", "Pool")
 
   register_s3_method("dbplyr", "db_collect", "Pool")
   register_s3_method("dbplyr", "db_compute", "Pool")
+  register_s3_method("dbplyr", "db_copy_to", "Pool")
   register_s3_method("dbplyr", "db_connection_describe", "Pool")
   register_s3_method("dbplyr", "db_sql_render", "Pool")
   register_s3_method("dbplyr", "dbplyr_edition", "Pool")

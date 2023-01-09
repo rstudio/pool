@@ -48,17 +48,30 @@ stopIfTemporary <- function(temporary) {
 
 dbplyr_edition.Pool <- function(con) 2L
 
-# --- These generics are set in dplyr (not database-specific)
 #' @rdname dplyr-db-methods
-copy_to.Pool <- function(dest, df, name = deparse(substitute(df)),
-  overwrite = FALSE, temporary = TRUE, ...) {
-    stopIfTemporary(temporary)
-    db_con <- poolCheckout(dest)
-    on.exit(poolReturn(db_con))
+db_copy_to.Pool <-  function(con, table, values,
+                        overwrite = FALSE, types = NULL, temporary = TRUE,
+                        unique_indexes = NULL, indexes = NULL,
+                        analyze = TRUE, ...,
+                        in_transaction = TRUE) {
+  stopIfTemporary(temporary)
 
-    dplyr::copy_to(db_con, df = df, name = name, overwrite = overwrite,
-      temporary = temporary, ...)
-    dplyr::tbl(dest, name, con = db_con)
+  db_con <- poolCheckout(dest)
+  on.exit(poolReturn(db_con))
+
+  dbplyr::db_copy_to(
+    db_con,
+    table = table,
+    values = values,
+    overwrite = overwrite,
+    types = types,
+    temporary = temporary,
+    unique_indexes = unique_indexes,
+    indexes = indexes,
+    analyze = analyze,
+    ...,
+    in_transaction = in_transaction
+  )
 }
 
 #' @rdname dplyr-db-methods
@@ -78,7 +91,6 @@ tbl.Pool <- function(src, from, ..., vars = NULL, con = NULL) {
   dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ..., vars = vars)
 }
 
-# --- These generics are set in dplyr (database-specific)
 #' @rdname dplyr-db-methods
 sql_table_analyze.Pool <- function(con, table, ...) {
   db_con <- poolCheckout(con)
@@ -170,7 +182,6 @@ sql_translation.Pool <- function(con) {
   dbplyr::sql_translation(db_con)
 }
 
-# --- These generics are set in dbplyr (database-specific)
 #' @rdname dplyr-db-methods
 db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
   db_con <- poolCheckout(con)
