@@ -96,11 +96,10 @@ sql_table_index.Pool <- function(con, table, columns, name = NULL,
 }
 
 #' @rdname dplyr-db-methods
-db_desc.Pool <- function(x) {
+db_connection_describe.Pool <- function(x) {
   db_con <- poolCheckout(x)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::db_desc(db_con)
+  dbplyr::db_connection_describe(db_con)
 }
 
 #' @rdname dplyr-db-methods
@@ -146,32 +145,29 @@ db_write_table.Pool <- function(con, table, types, values,
 }
 
 #' @rdname dplyr-db-methods
-sql_join.Pool <- function(con, x, y, vars, type = "inner", by = NULL, ...) {
+sql_query_join.Pool <- function(con, x, y, vars, type = "inner", by = NULL, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_join(db_con, x = x, y = y, vars = vars, type = type,
+  dbplyr::sql_query_join(db_con, x = x, y = y, vars = vars, type = type,
                   by = by, ...)
 }
 
 #' @rdname dplyr-db-methods
-sql_select.Pool <- function(con, select, from, where = NULL,
+sql_query_select.Pool <- function(con, select, from, where = NULL,
                             group_by = NULL, having = NULL, order_by = NULL, limit = NULL,
                             distinct = FALSE, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_select(db_con, select = select, from = from,
+  dbplyr::sql_select(db_con, select = select, from = from,
                     where = where, group_by = group_by, having = having,
                     order_by = order_by, limit = limit, distinct = distinct, ...)
 }
 
 #' @rdname dplyr-db-methods
-sql_semi_join.Pool <- function(con, x, y, anti = FALSE, by = NULL, ...) {
+sql_query_semi_join.Pool <- function(con, x, y, anti = FALSE, by = NULL, ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_semi_join(db_con, x = x, y = y, anti = anti, by = by, ...)
+  dbplyr::sql_query_semi_join(db_con, x = x, y = y, anti = anti, by = by, ...)
 }
 
 random_table_name <- function(n = 10) {
@@ -179,20 +175,18 @@ random_table_name <- function(n = 10) {
 }
 
 #' @rdname dplyr-db-methods
-sql_subquery.Pool <- function(con, from,
+sql_query_wrap.Pool <- function(con, from,
                               name = random_table_name(), ...) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_subquery(db_con, from = from, name = name, ...)
+  dbplyr::sql_query_wrap(db_con, from = from, name = name, ...)
 }
 
 #' @rdname dplyr-db-methods
-sql_translate_env.Pool <- function(con) {
+sql_translation.Pool <- function(con) {
   db_con <- poolCheckout(con)
   on.exit(poolReturn(db_con))
-  dplyr::check_dbplyr()
-  dplyr::sql_translate_env(db_con)
+  dbplyr::sql_translation(db_con)
 }
 
 # --- These generics are set in dbplyr (database-specific)
