@@ -24,7 +24,7 @@ Imports:
     rlang
 Suggests:
     covr,
-    dbplyr,
+    dbplyr (>= 2.0.0),
     dplyr,
     RMySQL,
     RSQLite,
