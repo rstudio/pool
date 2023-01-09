@@ -2,7 +2,7 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles: {}
-last_built: 2023-01-09T19:34Z
+last_built: 2023-01-09T20:11Z
 urls:
   reference: http://rstudio.github.io/pool/reference
   article: http://rstudio.github.io/pool/articles
