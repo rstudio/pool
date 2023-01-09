@@ -1,87 +1,33 @@
 #' @include DBI.R
 NULL
 
-#' DBIConnection methods from dplyr and dbplyr
+#' Use pool with dbplyr
 #'
-#' Pool object wrappers around DBIConnection methods, whose generics are
-#' defined either in `dplyr` or in `dbplyr`.
-#' For the original documentation, see
-#' [dplyr's reference page](https://dplyr.tidyverse.org/reference/index.html)
-#' and [dbplyr's reference page](https://dbplyr.tidyverse.org/reference/index.html).
+#' Wrappers for key dplyr (and dbplyr) methods so that pool works seemlessly
+#' with [dbplyr](https://dbplyr.tidyverse.org/).
 #'
-#' @param dest,df,name,overwrite,temporary,...,src,from,con,table,columns,unique,indexes,types,fields,x,force,sql,values,y,vars,type,by,select,where,group_by,having,order_by,limit,distinct,anti,n,warn_incomplete,unique_indexes See original documentation.
-#'
-#' @name dplyr-db-methods
-#'
+#' @inheritParams dplyr::tbl
+#' @param src,dest A [dbPool].
+#' @param from Name table or [dbplyr::sql()] string.
+#' @param vars A character vector of variable names in `src`.
+#'   For expert use only.
 #' @examples
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
-#'   library(dplyr)
+#' library(dplyr)
 #'
-#'   db <- tempfile()
-#'   pool <- dbPool(RSQLite::SQLite(), dbname = db)
+#' pool <- dbPool(RSQLite::SQLite())
+#' # copy a table into the database
+#' copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 #'
-#'   # copy a table into the database
-#'   copy_to(pool, mtcars, "mtcars", temporary = FALSE)
+#' # retrieve a table
+#' mtcars_db <- tbl(pool, "mtcars")
+#' mtcars_db
+#' mtcars_db %>% select(mpg, cyl, disp)
+#' mtcars_db %>% filter(cyl == 6) %>% collect()
 #'
-#'   # retrieve a table
-#'   mtcars_db <- tbl(pool, "mtcars")
-#'   mtcars_db
-#'   mtcars_db %>% select(mpg, cyl, disp)
-#'   mtcars_db %>% filter(cyl == 6) %>% collect()
-#'
-#'   poolClose(pool)
-#' } else {
-#'   message("Please install the 'RSQLite' package to run this example")
-#' }
-NULL
-
-stopIfTemporary <- function(temporary) {
-  temporaryErrorMessage <- paste0("You cannot use `temporary = TRUE` ",
-                                  "when using a Pool object, since temporary tables are local to a ",
-                                  "connection, and there's no guarantee you'll get the same ",
-                                  "connection back next time. You must either create a permanent ",
-                                  "table, or checkout a connection from `pool` directly with ",
-                                  "`con <- poolCheckout(pool)`, and then release the connection ",
-                                  "back to the pool when you're finished (`poolReturn(con)`).")
-  if (temporary) stop(temporaryErrorMessage)
-}
-
-dbplyr_edition.Pool <- function(con) 2L
-
-#' @rdname dplyr-db-methods
-db_copy_to.Pool <-  function(con, table, values,
-                        overwrite = FALSE, types = NULL, temporary = TRUE,
-                        unique_indexes = NULL, indexes = NULL,
-                        analyze = TRUE, ...,
-                        in_transaction = TRUE) {
-  stopIfTemporary(temporary)
-
-  db_con <- poolCheckout(dest)
-  on.exit(poolReturn(db_con))
-
-  dbplyr::db_copy_to(
-    db_con,
-    table = table,
-    values = values,
-    overwrite = overwrite,
-    types = types,
-    temporary = temporary,
-    unique_indexes = unique_indexes,
-    indexes = indexes,
-    analyze = analyze,
-    ...,
-    in_transaction = in_transaction
-  )
-}
-
-#' @rdname dplyr-db-methods
-tbl.Pool <- function(src, from, ..., vars = NULL, con = NULL) {
-  dplyr::check_dbplyr()
-
-  if (is.null(con)) {
-    con <- poolCheckout(src)
-    on.exit(poolReturn(con))
-  }
+#' poolClose(pool)
+tbl.Pool <- function(src, from, ..., vars = NULL) {
+  con <- poolCheckout(src)
+  on.exit(poolReturn(con))
 
   from <- dbplyr::as.sql(from, con)
   if (is.null(vars)) {
@@ -91,133 +37,140 @@ tbl.Pool <- function(src, from, ..., vars = NULL, con = NULL) {
   dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ..., vars = vars)
 }
 
-#' @rdname dplyr-db-methods
-sql_table_analyze.Pool <- function(con, table, ...) {
-  db_con <- poolCheckout(con)
+#' @rdname tbl.Pool
+#' @inheritParams dbplyr::copy_to.src_sql
+copy_to.Pool <- function(dest,
+                         df,
+                         name = deparse(substitute(df)),
+                         overwrite = FALSE,
+                         temporary = TRUE,
+                         ...) {
+  stop_if_temporary(temporary)
+
+  db_con <- poolCheckout(dest)
   on.exit(poolReturn(db_con))
-  dbplyr::sql_table_(db_con, table = table, ...)
+
+  dplyr::copy_to(
+    dest = db_con,
+    df = df,
+    name = name,
+    overwrite = overwrite,
+    temporary = temporary,
+    ...
+  )
 }
 
-#' @rdname dplyr-db-methods
-sql_table_index.Pool <- function(con, table, columns, name = NULL,
-                                 unique = FALSE, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_table_index(db_con, table = table, columns = columns,
-                         name = name, unique = unique, ...)
+# Lazily registered wrapped functions ------------------------------------------
+
+dbplyr_register_methods <- function() {
+  register_s3_method("dplyr", "tbl", "Pool")
+  register_s3_method("dplyr", "copy_to", "Pool")
+  register_s3_method("dbplyr", "dbplyr_edition", "Pool", function(con) 2L)
+
+  dbplyr_register_method("db_collect")
+  dbplyr_register_method("db_compute")
+  dbplyr_register_method("db_connection_describe")
+  dbplyr_register_method("db_sql_render")
+  dbplyr_register_method("sql_translation")
 }
 
-#' @rdname dplyr-db-methods
-db_connection_describe.Pool <- function(x) {
-  db_con <- poolCheckout(x)
-  on.exit(poolReturn(db_con))
-  dbplyr::db_connection_describe(db_con)
+dbplyr_register_method <- function(fun_name, fun = NULL) {
+  register_s3_method_lazy("dbplyr", fun_name, "Pool", fun %||% dbplyr_wrap(fun_name))
 }
 
-#' @rdname dplyr-db-methods
-sql_query_explain.Pool <- function(con, sql, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_explain(db_con, sql = sql, ...)
+dbplyr_wrap <- function(fun_name) {
+  force(fun_name)
+
+  function() {
+    fun <- utils::getFromNamespace(fun_name, "dbplyr")
+
+    args <- formals(fun)
+    if (!has_name(args, "con")) {
+      abort("`fun` must have `con` argument")
+    }
+
+    if ("temporary" %in% names(args)) {
+      temporary <- quote(stop_if_temporary(temporary))
+    } else {
+      temporary <- NULL
+    }
+
+    call_args <- syms(set_names(names(args)))
+    call_args[[1]] <- quote(db_con)
+    recall <- call2(call2("::", quote(dbplyr), sym(fun_name)), !!!call_args)
+
+    con <- NULL # quiet R CMD check note
+    body <- expr({
+      !!temporary
+
+      db_con <- poolCheckout(con)
+      on.exit(poolReturn(db_con))
+
+      !!recall
+    })
+
+    new_function(args, body, env = ns_env("pool"))
+  }
 }
 
-#' @rdname dplyr-db-method
-sql_query_fields.Pool <- function(con, sql, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_fields(db_con, sql = sql, ...)
+stop_if_temporary <- function(temporary) {
+  if (!temporary) {
+    return()
+  }
+
+  abort(
+    paste0(
+      "You cannot use `temporary = TRUE` ",
+      "when using a Pool object, since temporary tables are local to a ",
+      "connection, and there's no guarantee you'll get the same ",
+      "connection back next time. You must either create a permanent ",
+      "table, or checkout a connection from `pool` directly with ",
+      "`con <- poolCheckout(pool)`, and then release the connection ",
+      "back to the pool when you're finished (`poolReturn(con)`)."
+    ),
+    call = NULL
+  )
 }
 
-#' @rdname dplyr-db-methods
-sql_query_save.Pool <- function(con, sql, name, temporary = TRUE, ...) {
-  stopIfTemporary(temporary)
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_save(db_con, sql = sql, name = name,
-                       temporary = temporary, ...)
-}
+# Method registration helpers ---------------------------------------------
 
-#' @rdname dplyr-db-methods
-sql_query_join.Pool <- function(con, x, y, vars, type = "inner", by = NULL, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_join(db_con, x = x, y = y, vars = vars, type = type,
-                  by = by, ...)
-}
+register_s3_method <- function(pkg, generic, class, fun = NULL) {
+  stopifnot(is.character(pkg), length(pkg) == 1)
+  stopifnot(is.character(generic), length(generic) == 1)
+  stopifnot(is.character(class), length(class) == 1)
 
-#' @rdname dplyr-db-methods
-sql_query_select.Pool <- function(con, select, from, where = NULL,
-                            group_by = NULL, having = NULL, order_by = NULL, limit = NULL,
-                            distinct = FALSE, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_select(db_con, select = select, from = from,
-                    where = where, group_by = group_by, having = having,
-                    order_by = order_by, limit = limit, distinct = distinct, ...)
-}
+  if (is.null(fun)) {
+    fun <- get(paste0(generic, ".", class), envir = parent.frame())
+  } else {
+    stopifnot(is.function(fun))
+  }
 
-#' @rdname dplyr-db-methods
-sql_query_semi_join.Pool <- function(con, x, y, anti = FALSE, by = NULL, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_semi_join(db_con, x = x, y = y, anti = anti, by = by, ...)
-}
+  if (pkg %in% loadedNamespaces()) {
+    registerS3method(generic, class, fun, envir = asNamespace(pkg))
+  }
 
-random_table_name <- function(n = 10) {
-  paste0(sample(letters, n, replace = TRUE), collapse = "")
+  # Always register hook in case package is later unloaded & reloaded
+  setHook(
+    packageEvent(pkg, "onLoad"),
+    function(...) {
+      registerS3method(generic, class, fun, envir = asNamespace(pkg))
+    }
+  )
 }
+register_s3_method_lazy <- function(pkg, generic, class, fun) {
+  stopifnot(is.character(pkg), length(pkg) == 1)
+  stopifnot(is.character(generic), length(generic) == 1)
+  stopifnot(is.character(class), length(class) == 1)
 
-#' @rdname dplyr-db-methods
-sql_query_wrap.Pool <- function(con, from,
-                              name = random_table_name(), ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_query_wrap(db_con, from = from, name = name, ...)
-}
+  if (pkg %in% loadedNamespaces()) {
+    registerS3method(generic, class, fun(), envir = asNamespace(pkg))
+  }
 
-#' @rdname dplyr-db-methods
-sql_translation.Pool <- function(con) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_translation(db_con)
-}
-
-#' @rdname dplyr-db-methods
-db_collect.Pool <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::db_collect(db_con, sql = sql, n = n,
-                     warn_incomplete = warn_incomplete, ...)
-}
-
-#' @rdname dplyr-db-methods
-db_compute.Pool <- function(con, table, sql, temporary = TRUE,
-                            unique_indexes = list(), indexes = list(), ...) {
-  stopIfTemporary(temporary)
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::db_compute(db_con, table = table, sql = sql,
-                     temporary = temporary, unique_indexes = unique_indexes,
-                     indexes = indexes, ...)
-}
-
-#' @rdname dplyr-db-methods
-db_sql_render.Pool <- function(con, sql, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::db_sql_render(db_con, sql = sql, ...)
-}
-
-#' @rdname dplyr-db-methods
-sql_escape_logical.Pool <- function(con, x) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_escape_logical(db_con, x = x)
-}
-
-#' @rdname dplyr-db-methods
-sql_join_suffix.Pool <- function(con, ...) {
-  db_con <- poolCheckout(con)
-  on.exit(poolReturn(db_con))
-  dbplyr::sql_join_suffix(db_con, ...)
+  # Always register hook in case package is later unloaded & reloaded
+  setHook(
+    packageEvent(pkg, "onLoad"),
+    function(...) {
+      registerS3method(generic, class, fun(), envir = asNamespace(pkg))
+    }
+  )
 }
