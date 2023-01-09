@@ -9,6 +9,8 @@
 #' @keywords internal
 NULL
 
+setClass("Pool")
+
 # Wrapped methods ---------------------------------------------------------
 
 DBI_wrap <- function(fun_name) {

@@ -1,6 +1,3 @@
-#' @include DBI.R
-NULL
-
 #' DBI methods
 #'
 #' @description
@@ -70,6 +67,8 @@ NULL
 #'   message("Please install the 'RSQLite' package to run this example")
 #' }
 NULL
+
+setClass("Pool")
 
 ## Throw error here since this would require keeping a connection
 ## open and never releasing it back to the pool.

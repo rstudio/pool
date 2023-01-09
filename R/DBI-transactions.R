@@ -1,6 +1,3 @@
-#' @include DBI.R
-NULL
-
 #' Self-contained database transactions using pool
 #'
 #' This function allows you to use a pool object directly to execute a

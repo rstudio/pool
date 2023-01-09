@@ -7,23 +7,23 @@
 #'
 #' @keywords internal
 #' @param object A pooled object.
-#' @name hooks
+#' @name object
 NULL
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setGeneric("onActivate", function(object) {
   standardGeneric("onActivate")
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setGeneric("onPassivate", function(object) {
   standardGeneric("onPassivate")
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setGeneric("onDestroy", function(object) {
   standardGeneric("onDestroy")
 })
@@ -31,7 +31,7 @@ setGeneric("onDestroy", function(object) {
 #' @param query A simple query that can be used to verify that
 #' the `object` functions as expected.
 #' @export
-#' @rdname hooks
+#' @rdname object
 setGeneric("onValidate", function(object, query) {
   standardGeneric("onValidate")
 })
@@ -40,25 +40,25 @@ setGeneric("onValidate", function(object, query) {
 # Defaults ----------------------------------------------------------------
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onActivate", "ANY", function(object) {
   invisible()
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onPassivate", "ANY", function(object) {
   invisible()
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onDestroy", "ANY", function(object) {
   invisible()
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onValidate", "ANY", function(object, query) {
   invisible()
 })
@@ -74,19 +74,19 @@ setMethod("onValidate", "ANY", function(object, query) {
 ## checking out connections -- only necessary for pretty
 ## complicated transactions).
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onPassivate", "DBIConnection", function(object) {
   invisible()
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onDestroy", "DBIConnection", function(object) {
   DBI::dbDisconnect(object)
 })
 
 #' @export
-#' @rdname hooks
+#' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
   pool <- attr(object, "..metadata", exact = TRUE)$pool
   query <- pool$state$validateQuery

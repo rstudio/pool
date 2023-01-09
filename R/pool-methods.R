@@ -1,6 +1,3 @@
-#' @include pool.R
-NULL
-
 #' Create a pool of reusable objects
 #'
 #' @description
@@ -9,7 +6,7 @@ NULL
 #' little computational cost. The pool should be created only once
 #' and closed when it is no longer needed, to prevent leaks.
 #'
-#' See [dbPool() for an example of object pooling applied to DBI database
+#' See [dbPool()] for an example of object pooling applied to DBI database
 #' connections.
 #'
 #' @export
@@ -51,25 +48,6 @@ poolCreate <- function(factory,
   )
 }
 
-#' Checks out an object from the pool.
-#'
-#' Should be called by the end user if they need a persistent
-#' object, that is not returned to the pool automatically.
-#' When you don't longer need the object, be sure to return it
-#' to the pool using `poolReturn(object)`.
-#'
-#' @param pool The pool to get the object from.
-#' @export
-setGeneric("poolCheckout", function(pool) {
-  standardGeneric("poolCheckout")
-})
-
-#' @rdname poolCheckout
-#' @export
-setMethod("poolCheckout", "Pool", function(pool) {
-  pool$fetch()
-})
-
 #' @export
 #' @rdname Pool-class
 #' @param pool A Pool object previously created with `poolCreate`
@@ -83,6 +61,54 @@ setMethod("poolClose", "Pool", function(pool) {
   pool$close()
 })
 
+#' Check out and return object from the pool
+#'
+#' @description
+#' Use `poolCheckout()` to check out an object from the pool and
+#' `poolReturn()` to return it. You will receive a warning if all objects
+#' aren't returned before the pool is closed.
+#'
+#' Note that validation is only performed when the object is checked out,
+#' so you generally want to keep the checked out around for as little time as
+#' possible.
+#'
+#' @param pool The pool to get the object from.
+#' @export
+#' @examples
+#' pool <- dbPool(RSQLite::SQLite())
+#' con <- poolCheckout(pool)
+#' con
+#' poolReturn(con)
+#' poolClose(pool)
+setGeneric("poolCheckout", function(pool) {
+  standardGeneric("poolCheckout")
+})
+
+#' @rdname poolCheckout
+#' @export
+setMethod("poolCheckout", "Pool", function(pool) {
+  pool$fetch()
+})
+
+#' @rdname poolCheckout
+#' @param object Object to return
+#' @export
+setGeneric("poolReturn", function(object) {
+  standardGeneric("poolReturn")
+})
+
+#' @export
+#' @rdname poolCheckout
+setMethod("poolReturn", "ANY", function(object) {
+  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+  if (is.null(pool_metadata) || !pool_metadata$valid) {
+    stop("Invalid object.")
+  }
+  pool <- pool_metadata$pool
+  pool$release(object)
+})
+
+
 #' Show method
 #' @param object A Pool object.
 #' @export
@@ -94,25 +120,3 @@ setMethod("show", "Pool", function(object) {
 })
 
 
-#' Return an object back to the pool
-#'
-#' Should be called by the end user if they previously fetched
-#' an object directly using `object <- poolCheckout(pool)`
-#' and are now done with said object.
-#'
-#' @param object A pooled object.
-#' @export
-setGeneric("poolReturn", function(object) {
-  standardGeneric("poolReturn")
-})
-
-#' @export
-#' @rdname poolReturn
-setMethod("poolReturn", "ANY", function(object) {
-  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
-  if (is.null(pool_metadata) || !pool_metadata$valid) {
-    stop("Invalid object.")
-  }
-  pool <- pool_metadata$pool
-  pool$release(object)
-})
