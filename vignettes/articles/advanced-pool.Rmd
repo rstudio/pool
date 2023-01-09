@@ -67,35 +67,34 @@ pool <- dbPool(
   minSize = 10,
   idleTimeout = 60 * 60
 )
+
+poolClose(pool)
 ```
 
 ## Transactions
 
-So far, we've recommended you always use the Pool object directly when you need to query the database. Given that the pool "knows" when to grow and shrink, for the vast majority of cases, this is a good approach (especially because it means you never have to worry about connection management and leaked connections - this is all taken care of for you). However, there is one type of situation for which this does not apply: transactions. From [Wikipedia](https://en.wikipedia.org/wiki/Database_transaction):
-
-> Transactions provide an "all-or-nothing" proposition, stating that each work-unit performed in a database must either complete in its entirety or have no effect whatsoever. Further, the system must isolate each transaction from other transactions, results must conform to existing constraints in the database, and transactions that complete successfully must get written to durable storage.
-
-In order for these conditions to be met, you need to have access to the same connection for longer than the duration of a query. For example, imagine you're transaction consists of two consecutive queries, A and B. You want to make sure that either both of these taken effect or neither does, and that nothing else is going on in the meantime. So the following will not work:
+So far, we've recommended you always use the pool object directly when you need to query the database. There's one challenge where this is not possible: transactions. Because for a transaction, you need to have access to the same connection for longer than a single query. The following will not necessary work because the pool might give you a different connection for each 
 
 ```{r}
 #| eval: false
-dbGetQuery(pool, A)
+dbBegin(pool)
+dbExecute(pool, A)
 dbGetQuery(pool, B)
+dbCommit(pool)
 ```
 
-If you have a connection, you can do this with `DBI::dbWithTransaction()`:
+DBI provides a helper for this case, but it doesn't work either:
 
 ```{r}
 #| eval: false
 
-DBI::dbWithTransaction(con, {
-  dbGetQuery(con, A)
-  dbGetQuery(con, B)
+DBI::dbWithTransaction(pool, {
+  dbExecute(pool, A)
+  dbGetQuery(pool, B)
 })
 ```
 
-But this doesn't work with pooled objects. You can instead use `pool::poolWithTransaction()`:
-
+You can instead use `pool::poolWithTransaction()`:
 
 ```{r}
 #| eval: false

@@ -28,11 +28,10 @@ install.packages(c("shiny", "DBI", "dbplyr", "dplyr", "pool")
 
 ## Getting started
 
-For the purposes of this article I'm going to start by creating a very simple in-memory database with SQLite. This makes it easy to show you real code and the only difference from what you'll need is how you connect to the database.
+For the purposes of this article I'm going to start by creating a very simple in-memory SQLite database. This makes it easy to show you real code and the only difference from what you'll use is details of the database connection.
 
 ```{r}
 path <- tempfile()
-
 con <- DBI::dbConnect(RSQLite::SQLite(), dbname = path)
 DBI::dbWriteTable(con, "mtcars", mtcars)
 ```
@@ -61,17 +60,20 @@ mtcars_db %>%
   head()
 ```
 
-All you need to do is change `DBI::dbConnect()` to `pool::dbPool()`, and pool takes care of the rest!
+As usually, all you need to do is change `DBI::dbConnect()` to `pool::dbPool()`, and pool will take care of the rest!
 
 ### Shiny apps
 
-Why use pool with dplyr, instead of using the database connection directly? As usual the reason is shiny. Here's a simple app demonstrating how you might use dplyr, pool, and shiny together:
+Now lets show it in action in a shiny app:
 
 ```{r}
 library(shiny)
 library(dplyr, warn.conflicts = FALSE)
 
-con <- pool::dbPool(RSQLite::SQLite(), dbname = path)
+pool <- pool::dbPool(RSQLite::SQLite(), dbname = path)
+onStop(function() {
+  pool::poolClose(pool)
+})
 
 ui <- fluidPage(
   textInput("cyl", "Enter number of cylinders:", "6"),
@@ -92,6 +94,6 @@ if (interactive())
   shinyApp(ui, server)
 ```
 
-There's one other important tool to note: `local()`. This tells dbplyr to run `input$cyl` locally (retrieving the value the user input), rather than trying to convert it to SQL.
+There's one other important tool to note: `local()`. This tells dbplyr to run `input$cyl` locally (retrieving the value the user typed), rather than trying to convert it to SQL.
 
-Note that there is no need to do your own input sanitizing for SQL injection prevention (i.e. no need to call a function like `DBI::sqlInterpolate()`). This is because dplyr acts a middleman between you and the actual SQL query sent to the database; as that middleman, it also sanitizes your inputs for you.
+Note that there is no need to do your own input sanitizing for SQL injection prevention (i.e. no need to call a function like `DBI::sqlInterpolate()`) because dbplyr takes care of that for you.
