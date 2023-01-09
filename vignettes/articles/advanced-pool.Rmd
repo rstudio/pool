@@ -1,5 +1,5 @@
 ---
-title: "Advanced pool usage"
+title: "Advanced usage"
 desc: >
   This article discusses how to customize your pool and how to handle 
   transactions.

@@ -2,3 +2,10 @@ url: http://rstudio.github.io/pool/
 template:
   bootstrap: 5
 
+articles:
+- title: ~
+  navbar: ~
+  contents:
+  - why-pool
+  - articles/pool-dplyr
+  - articles/advanced-pool
