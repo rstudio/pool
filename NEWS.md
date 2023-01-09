@@ -1,5 +1,7 @@
 # pool (development version)
 
+* Pools now get a useful print method (#140).
+
 # pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).
