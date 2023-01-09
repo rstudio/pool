@@ -1,4 +1,4 @@
-#' @include DBI.R
+#' @include object.R
 NULL
 
 ## This method used to attempt to clean up for you if it

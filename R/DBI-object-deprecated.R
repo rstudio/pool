@@ -1,4 +1,4 @@
-#' @include DBI.R
+#' @include pool-methods.R
 NULL
 
 #' Make R identifiers into legal SQL identifiers.
