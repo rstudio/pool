@@ -28,6 +28,7 @@ Suggests:
     dplyr,
     knitr,
     rmarkdown,
+    shiny,
     RMySQL,
     RSQLite,
     testthat (>= 3.0.0),
