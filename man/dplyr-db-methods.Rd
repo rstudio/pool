@@ -6,16 +6,16 @@
 \alias{tbl.Pool}
 \alias{sql_table_analyze.Pool}
 \alias{sql_table_index.Pool}
-\alias{db_desc.Pool}
+\alias{db_connection_describe.Pool}
 \alias{sql_query_explain.Pool}
 \alias{db_insert_into.Pool}
 \alias{sql_query_save.Pool}
 \alias{db_write_table.Pool}
-\alias{sql_join.Pool}
-\alias{sql_select.Pool}
-\alias{sql_semi_join.Pool}
-\alias{sql_subquery.Pool}
-\alias{sql_translate_env.Pool}
+\alias{sql_query_join.Pool}
+\alias{sql_query_select.Pool}
+\alias{sql_query_semi_join.Pool}
+\alias{sql_query_wrap.Pool}
+\alias{sql_translation.Pool}
 \alias{db_collect.Pool}
 \alias{db_compute.Pool}
 \alias{db_sql_render.Pool}
@@ -38,7 +38,7 @@ sql_table_analyze.Pool(con, table, ...)
 
 sql_table_index.Pool(con, table, columns, name = NULL, unique = FALSE, ...)
 
-db_desc.Pool(x)
+db_connection_describe.Pool(x)
 
 sql_query_explain.Pool(con, sql, ...)
 
@@ -48,9 +48,9 @@ sql_query_save.Pool(con, sql, name, temporary = TRUE, ...)
 
 db_write_table.Pool(con, table, types, values, temporary = FALSE, ...)
 
-sql_join.Pool(con, x, y, vars, type = "inner", by = NULL, ...)
+sql_query_join.Pool(con, x, y, vars, type = "inner", by = NULL, ...)
 
-sql_select.Pool(
+sql_query_select.Pool(
   con,
   select,
   from,
@@ -63,11 +63,11 @@ sql_select.Pool(
   ...
 )
 
-sql_semi_join.Pool(con, x, y, anti = FALSE, by = NULL, ...)
+sql_query_semi_join.Pool(con, x, y, anti = FALSE, by = NULL, ...)
 
-sql_subquery.Pool(con, from, name = random_table_name(), ...)
+sql_query_wrap.Pool(con, from, name = random_table_name(), ...)
 
-sql_translate_env.Pool(con)
+sql_translation.Pool(con)
 
 db_collect.Pool(con, sql, n = -1, warn_incomplete = TRUE, ...)
 

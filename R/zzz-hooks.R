@@ -1,7 +1,5 @@
 .onLoad <- function(...) {
   register_s3_method("dplyr", "copy_to", "Pool")
-  register_s3_method("dplyr", "db_insert_into", "Pool")
-  register_s3_method("dplyr", "db_write_table", "Pool")
 
   register_s3_method("dplyr", "tbl", "Pool")
   register_s3_method("dplyr", "copy_to", "Pool")
