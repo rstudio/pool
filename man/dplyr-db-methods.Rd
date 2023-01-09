@@ -4,25 +4,13 @@
 \alias{dplyr-db-methods}
 \alias{copy_to.Pool}
 \alias{tbl.Pool}
-\alias{db_analyze.Pool}
-\alias{db_begin.Pool}
-\alias{db_commit.Pool}
-\alias{db_create_index.Pool}
-\alias{db_create_indexes.Pool}
-\alias{db_create_table.Pool}
-\alias{db_data_type.Pool}
+\alias{sql_table_analyze.Pool}
+\alias{sql_table_index.Pool}
 \alias{db_desc.Pool}
-\alias{db_drop_table.Pool}
-\alias{db_explain.Pool}
-\alias{db_has_table.Pool}
+\alias{sql_query_explain.Pool}
 \alias{db_insert_into.Pool}
-\alias{db_list_tables.Pool}
-\alias{db_query_fields.Pool}
-\alias{db_query_rows.Pool}
-\alias{db_rollback.Pool}
-\alias{db_save_query.Pool}
+\alias{sql_query_save.Pool}
 \alias{db_write_table.Pool}
-\alias{sql_escape_string.Pool}
 \alias{sql_join.Pool}
 \alias{sql_select.Pool}
 \alias{sql_semi_join.Pool}
@@ -46,43 +34,19 @@ copy_to.Pool(
 
 tbl.Pool(src, from, ..., vars = NULL, con = NULL)
 
-db_analyze.Pool(con, table, ...)
+sql_table_analyze.Pool(con, table, ...)
 
-db_begin.Pool(con, ...)
-
-db_commit.Pool(con, ...)
-
-db_create_index.Pool(con, table, columns, name = NULL, unique = FALSE, ...)
-
-db_create_indexes.Pool(con, table, indexes = NULL, unique = FALSE, ...)
-
-db_create_table.Pool(con, table, types, temporary = FALSE, ...)
-
-db_data_type.Pool(con, fields)
+sql_table_index.Pool(con, table, columns, name = NULL, unique = FALSE, ...)
 
 db_desc.Pool(x)
 
-db_drop_table.Pool(con, table, force = FALSE, ...)
-
-db_explain.Pool(con, sql, ...)
-
-db_has_table.Pool(con, table)
+sql_query_explain.Pool(con, sql, ...)
 
 db_insert_into.Pool(con, table, values, ...)
 
-db_list_tables.Pool(con)
-
-db_query_fields.Pool(con, sql, ...)
-
-db_query_rows.Pool(con, sql, ...)
-
-db_rollback.Pool(con, ...)
-
-db_save_query.Pool(con, sql, name, temporary = TRUE, ...)
+sql_query_save.Pool(con, sql, name, temporary = TRUE, ...)
 
 db_write_table.Pool(con, table, types, values, temporary = FALSE, ...)
-
-sql_escape_string.Pool(con, x)
 
 sql_join.Pool(con, x, y, vars, type = "inner", by = NULL, ...)
 
