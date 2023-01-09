@@ -1,6 +1,3 @@
-#' @include pool.R
-NULL
-
 #' Create a pool of reusable objects
 #'
 #' @description
@@ -9,7 +6,7 @@ NULL
 #' little computational cost. The pool should be created only once
 #' and closed when it is no longer needed, to prevent leaks.
 #'
-#' See [dbPool() for an example of object pooling applied to DBI database
+#' See [dbPool()] for an example of object pooling applied to DBI database
 #' connections.
 #'
 #' @export
