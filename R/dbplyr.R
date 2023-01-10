@@ -63,20 +63,20 @@ copy_to.Pool <- function(dest,
 # Lazily registered wrapped functions ------------------------------------------
 
 dbplyr_register_methods <- function() {
-  register_s3_method("dplyr", "tbl", "Pool")
-  register_s3_method("dplyr", "copy_to", "Pool")
-  register_s3_method("dbplyr", "dbplyr_edition", "Pool", function(con) 2L)
+  s3_register("dplyr::tbl", "Pool")
+  s3_register("dplyr::copy_to", "Pool")
+  s3_register("dbplyr::dbplyr_edition", "Pool", function(con) 2L)
 
   # Wrappers inspect formals so can only be executed if dbplyr is available
   on_package_load("dbplyr", {
-    register_dbplyr_s3_method <- function(fun_name) {
-      register_s3_method("dbplyr", fun_name, "Pool", dbplyr_wrap(fun_name))
+    dbplyr_s3_register <- function(fun_name) {
+      s3_register(paste0("dbplyr::", fun_name), "Pool", dbplyr_wrap(fun_name))
     }
-    register_dbplyr_s3_method("db_collect")
-    register_dbplyr_s3_method("db_compute")
-    register_dbplyr_s3_method("db_connection_describe")
-    register_dbplyr_s3_method("db_sql_render")
-    register_dbplyr_s3_method("sql_translation")
+    dbplyr_s3_register("db_collect")
+    dbplyr_s3_register("db_compute")
+    dbplyr_s3_register("db_connection_describe")
+    dbplyr_s3_register("db_sql_render")
+    dbplyr_s3_register("sql_translation")
   })
 }
 
@@ -127,31 +127,5 @@ stop_if_temporary <- function(temporary) {
       "back to the pool when you're finished (`poolReturn(con)`)."
     ),
     call = NULL
-  )
-}
-
-# Method registration helpers ---------------------------------------------
-
-register_s3_method <- function(pkg, generic, class, fun = NULL) {
-  stopifnot(is.character(pkg), length(pkg) == 1)
-  stopifnot(is.character(generic), length(generic) == 1)
-  stopifnot(is.character(class), length(class) == 1)
-
-  if (is.null(fun)) {
-    fun <- get(paste0(generic, ".", class), envir = parent.frame())
-  } else {
-    stopifnot(is.function(fun))
-  }
-
-  if (pkg %in% loadedNamespaces()) {
-    registerS3method(generic, class, fun, envir = asNamespace(pkg))
-  }
-
-  # Always register hook in case package is later unloaded & reloaded
-  setHook(
-    packageEvent(pkg, "onLoad"),
-    function(...) {
-      registerS3method(generic, class, fun, envir = asNamespace(pkg))
-    }
   )
 }

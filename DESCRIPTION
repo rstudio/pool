@@ -51,6 +51,7 @@ Collate:
     'DBI-object-deprecated.R'
     'DBI-object.R'
     'DBI-pool.R'
+    'compat-s3-register.R'
     'dbplyr.R'
     'zzz-hooks.R'
 Config/testthat/edition: 3
