@@ -1,7 +1,5 @@
 source("utils.R")
 
-context("Pool's fetch method")
-
 describe("fetch", {
 
   pool <- poolCreate(MockPooledObj$new, minSize = 1, maxSize = 3,

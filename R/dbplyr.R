@@ -1,6 +1,3 @@
-#' @include DBI.R
-NULL
-
 #' DBIConnection methods from dplyr and dbplyr
 #'
 #' Pool object wrappers around DBIConnection methods, whose generics are

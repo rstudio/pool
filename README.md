@@ -3,9 +3,9 @@ pool
 ##### *Database Connection Pooling in R*
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/pool)](https://CRAN.R-project.org/package=pool)
-[![R build status](https://github.com/rstudio/pool/workflows/R-CMD-check/badge.svg)](https://github.com/rstudio/pool/actions)
-[![Codecov test coverage](https://codecov.io/gh/rstudio/pool/branch/master/graph/badge.svg)](https://codecov.io/gh/rstudio/pool?branch=master)
+[![R-CMD-check](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml)
+[![R build status](https://github.com/rstudio/pool/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rstudio/pool/actions)
+[![Codecov test coverage](https://codecov.io/gh/rstudio/pool/branch/main/graph/badge.svg)](https://codecov.io/gh/rstudio/pool?branch=main)
 <!-- badges: end -->
 
 The goal of the `pool` package is to abstract away the logic of connection management and the performance cost of fetching a new connection from a remote database. These concerns are especially prominent in interactive contexts, like Shiny apps (which connect to a remote database) or even at the R console. So, while this package is of most practical value to Shiny developers, there is no harm if it is used in other contexts. Since `pool` integrates with both `DBI` and `dplyr`, there are very few things that will be new to you, if you're already using either of those packages. Essentially, you shouldn't feel the difference, with the exception of creating and closing a Pool object (as opposed to connecting and disconnecting a DBIConnection object).
@@ -17,6 +17,7 @@ Here’s a simple example of using a pool within a Shiny app (feel free to try i
 library(shiny)
 library(dplyr)
 library(pool)
+loadNamespace("dbplyr")
 
 pool <- dbPool(
   drv = RMySQL::MySQL(),
@@ -50,11 +51,15 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 ```
+
+Note: the `loadNamespace("dbplyr")` line is there to help the [rsconnect](https://github.com/rstudio/rsconnect) package when deploying the application to [shinyapps.io](https://www.shinyapps.io/) or [Posit Connect](https://posit.co/products/enterprise/connect/). Without that line, rsconnect will not detect that the dbplyr package is needed, and the application will not work properly.
+
+
 ## Concept
 The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done.
 
 ## Context and motivation
-When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertently opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.  
+When you’re connecting to a database, it is important to manage your connections: when to open them (taking into account that this is a potentially long process for remote databases), how to keep track of them, and when to close them. This is always true, but it becomes especially relevant for Shiny apps, where not following best practices can lead to _many_ slowdowns (from inadvertently opening too many connections) and/or _many_ leaked connections (i.e. forgetting to close connections once you no longer need them). Over time, leaked connections could accumulate and substantially slow down your app, as well as overwhelming the database itself.
 
 Oversimplifying a bit, we can think of connection management in Shiny as a spectrum from the extreme of just having one connection per app (potentially serving several sessions of the app) to the extreme of opening (and closing) one connection for each query you make. Neither of these approaches is great. You can expand either of the arrows below to see the source code for each extreme, but that is not essential to understanding the problems described below.
 
@@ -65,6 +70,7 @@ Oversimplifying a bit, we can think of connection management in Shiny as a spect
 library(shiny)
 library(dplyr)
 library(DBI)
+loadNamespace("dbplyr")
 
 conn <- dbConnect(
     drv = RMySQL::MySQL(),
@@ -108,6 +114,7 @@ shinyApp(ui, server)
 library(shiny)
 library(dplyr)
 library(DBI)
+loadNamespace("dbplyr")
 
 args <- list(
   drv = RMySQL::MySQL(),

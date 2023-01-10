@@ -7,7 +7,7 @@
 \alias{poolCreate}
 \alias{poolClose}
 \alias{poolClose,Pool-method}
-\title{S4 class for compatibility with DBI methods}
+\title{Create a pool of reusable objects}
 \usage{
 poolCreate(
   factory,
@@ -23,15 +23,11 @@ poolClose(pool)
 \S4method{poolClose}{Pool}(pool)
 }
 \arguments{
-\item{factory}{A factory function responsible for the generation of
+\item{factory}{A factory function used to create responsible for the generation of
 the objects that the pool will hold (ex: for DBI database connections,
 this function is \code{dbConnect}). It must take no arguments.}
 
-\item{minSize}{An optional number specifying the minimum
-number of objects that the pool should have at all times.}
-
-\item{maxSize}{An optional number specifying the maximum
-number of objects that the pool may have at any time.}
+\item{minSize, maxSize}{The minimum and maximum number of objects in the pool.}
 
 \item{idleTimeout}{The number of seconds that an idle
 object will be kept in the pool before it is destroyed (only
@@ -53,4 +49,10 @@ backend authors as necessary.}
 }
 \description{
 A generic pool class that holds objects. These can be fetched
+from the pool and released back to it at will, with very
+little computational cost. The pool should be created only once
+and closed when it is no longer needed, to prevent leaks.
+
+See \code{\link[=dbPool]{dbPool()}} for an example of object pooling applied to DBI database
+connections.
 }

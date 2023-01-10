@@ -1,7 +1,5 @@
 source("utils.R")
 
-context("Pool basics")
-
 describe("pool", {
 
   describe("basic mechanics", {
@@ -9,8 +7,8 @@ describe("pool", {
       minSize = 1, maxSize = 3, idleTimeout = 1)
 
     it("can be created", {
-      expect_is(pool, "Pool")
-      expect_is(pool, "R6")
+      expect_s3_class(pool, "Pool")
+      expect_s3_class(pool, "R6")
     })
 
     it("respects validity", {
@@ -39,7 +37,7 @@ describe("pool", {
 
       obj <- poolCheckout(pool)
       checkCounts(pool, free = 0, taken = 1)
-      expect_is(obj, "MockPooledObj")
+      expect_s3_class(obj, "MockPooledObj")
 
       poolReturn(obj)
       checkCounts(pool, free = 1, taken = 0)
