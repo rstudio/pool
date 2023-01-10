@@ -67,50 +67,48 @@ dbplyr_register_methods <- function() {
   register_s3_method("dplyr", "copy_to", "Pool")
   register_s3_method("dbplyr", "dbplyr_edition", "Pool", function(con) 2L)
 
-  dbplyr_register_method("db_collect")
-  dbplyr_register_method("db_compute")
-  dbplyr_register_method("db_connection_describe")
-  dbplyr_register_method("db_sql_render")
-  dbplyr_register_method("sql_translation")
-}
-
-dbplyr_register_method <- function(fun_name, fun = NULL) {
-  register_s3_method_lazy("dbplyr", fun_name, "Pool", fun %||% dbplyr_wrap(fun_name))
+  # Wrappers inspect formals so can only be executed if dbplyr is available
+  on_package_load("dbplyr", {
+    register_dbplyr_s3_method <- function(fun_name) {
+      register_s3_method("dbplyr", fun_name, "Pool", dbplyr_wrap(fun_name))
+    }
+    register_dbplyr_s3_method("db_collect")
+    register_dbplyr_s3_method("db_compute")
+    register_dbplyr_s3_method("db_connection_describe")
+    register_dbplyr_s3_method("db_sql_render")
+    register_dbplyr_s3_method("sql_translation")
+  })
 }
 
 dbplyr_wrap <- function(fun_name) {
-  force(fun_name)
+  fun <- utils::getFromNamespace(fun_name, "dbplyr")
 
-  function() {
-    fun <- utils::getFromNamespace(fun_name, "dbplyr")
-
-    args <- formals(fun)
-    if (!has_name(args, "con")) {
-      abort("`fun` must have `con` argument")
-    }
-
-    if ("temporary" %in% names(args)) {
-      temporary <- quote(stop_if_temporary(temporary))
-    } else {
-      temporary <- NULL
-    }
-
-    call_args <- syms(set_names(names(args)))
-    call_args[[1]] <- quote(db_con)
-    recall <- call2(call2("::", quote(dbplyr), sym(fun_name)), !!!call_args)
-
-    con <- NULL # quiet R CMD check note
-    body <- expr({
-      !!temporary
-
-      db_con <- poolCheckout(con)
-      on.exit(poolReturn(db_con))
-
-      !!recall
-    })
-
-    new_function(args, body, env = ns_env("pool"))
+  args <- formals(fun)
+  if (!has_name(args, "con")) {
+    abort("`fun` must have `con` argument")
   }
+
+  if ("temporary" %in% names(args)) {
+    temporary <- quote(stop_if_temporary(temporary))
+  } else {
+    temporary <- NULL
+  }
+
+  call_args <- syms(set_names(names(args)))
+  call_args[[1]] <- quote(db_con)
+  recall <- call2(call2("::", quote(dbplyr), sym(fun_name)), !!!call_args)
+
+  con <- NULL # quiet R CMD check note
+  body <- expr({
+    !!temporary
+
+    db_con <- poolCheckout(con)
+    on.exit(poolReturn(db_con))
+
+    !!recall
+  })
+
+  new_function(args, body, env = ns_env("pool"))
 }
 
 stop_if_temporary <- function(temporary) {
@@ -154,23 +152,6 @@ register_s3_method <- function(pkg, generic, class, fun = NULL) {
     packageEvent(pkg, "onLoad"),
     function(...) {
       registerS3method(generic, class, fun, envir = asNamespace(pkg))
-    }
-  )
-}
-register_s3_method_lazy <- function(pkg, generic, class, fun) {
-  stopifnot(is.character(pkg), length(pkg) == 1)
-  stopifnot(is.character(generic), length(generic) == 1)
-  stopifnot(is.character(class), length(class) == 1)
-
-  if (pkg %in% loadedNamespaces()) {
-    registerS3method(generic, class, fun(), envir = asNamespace(pkg))
-  }
-
-  # Always register hook in case package is later unloaded & reloaded
-  setHook(
-    packageEvent(pkg, "onLoad"),
-    function(...) {
-      registerS3method(generic, class, fun(), envir = asNamespace(pkg))
     }
   )
 }
