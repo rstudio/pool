@@ -62,3 +62,11 @@ test_that("can use schemas with pool", {
   tbl <- dplyr::tbl(pool, dbplyr::in_schema("main", "df"))
   expect_equal(dplyr::collect(tbl), df)
 })
+
+test_that("wrapper looks good", {
+  expect_snapshot({
+    dbplyr_wrap("db_collect")
+    "with temporary argument"
+    dbplyr_wrap("db_compute")
+  })
+})

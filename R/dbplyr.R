@@ -82,25 +82,22 @@ dbplyr_register_methods <- function() {
 
 dbplyr_wrap <- function(fun_name) {
   fun <- utils::getFromNamespace(fun_name, "dbplyr")
-
   args <- formals(fun)
-  if (!has_name(args, "con")) {
-    abort("`fun` must have `con` argument")
-  }
 
   if ("temporary" %in% names(args)) {
-    temporary <- quote(stop_if_temporary(temporary))
+    temporary <- list(quote(stop_if_temporary(temporary)))
   } else {
-    temporary <- NULL
+    temporary <- list()
   }
 
   call_args <- syms(set_names(names(args)))
   call_args[[1]] <- quote(db_con)
-  recall <- call2(call2("::", quote(dbplyr), sym(fun_name)), !!!call_args)
+  fun_expr <- call2("::", quote(dbplyr), sym(fun_name))
+  recall <- call2(fun_expr, !!!call_args)
 
   con <- NULL # quiet R CMD check note
   body <- expr({
-    !!temporary
+    !!!temporary
 
     db_con <- poolCheckout(con)
     on.exit(poolReturn(db_con))
