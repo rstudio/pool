@@ -92,8 +92,8 @@ dbplyr_wrap <- function(fun_name) {
 
   call_args <- syms(set_names(names(args)))
   call_args[[1]] <- quote(db_con)
-  fun_expr <- call2("::", quote(dbplyr), sym(fun_name))
-  recall <- call2(fun_expr, !!!call_args)
+  ns_fun <- call2("::", quote(dbplyr), sym(fun_name))
+  recall <- call2(ns_fun, !!!call_args)
 
   con <- NULL # quiet R CMD check note
   body <- expr({
