@@ -4,7 +4,7 @@ test_that("onValidate() caches query", {
   pool$state$validateQuery <- NULL
 
   con <- poolCheckout(pool)
-  on.exit(poolReturn(con))
+  withr::defer(poolReturn(con))
   onValidate(con)
   expect_equal(pool$state$validateQuery, "SELECT 1")
 })
