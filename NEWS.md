@@ -1,5 +1,10 @@
 # pool (development version)
 
+* `dbPool()`'s `validateQuery` is now actually used (#153).
+
+* Connections are now validated once on first checkout to ensure that the
+  connection and validation strategy are both ok.
+
 * Added support for SAP HANA databases (@marcosci, #103).
 
 # pool 0.1.6
