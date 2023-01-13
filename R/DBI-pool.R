@@ -40,12 +40,12 @@ setMethod("onValidate", "DBIConnection", function(object) {
       "SELECT 1",
       "SELECT 1 FROM DUAL",
       "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS",
-      "SELECT * FROM INFORMATION_SCHEMA.TABLES",
+      "SELECT 1 FROM INFORMATION_SCHEMA.TABLES",
       "VALUES 1",
       "SELECT 1 FROM SYSIBM.SYSDUMMY1",
-      "select count(*) from systables",
-      "select count(*) from SYS_TABLES",
-      "select count(*) from SYS.TABLES"
+      "SELECT 1 FROM systables",
+      "SELECT 1 FROM SYS_TABLES",
+      "SELECT 1 FROM SYS.TABLES"
     )
 
     ## Iterates through the possible validation queries:
