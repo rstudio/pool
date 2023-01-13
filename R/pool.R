@@ -171,12 +171,8 @@ Pool <- R6::R6Class("Pool",
       pool_metadata$pool <- self
       pool_metadata$valid <- TRUE
       pool_metadata$state <- NULL
-      pool_metadata$lastValidated <- Sys.time()
-
-      # Now that metadata has been setup we can validate it
-      # This ensures that any problems bubble up immediately, not after
-      # validationInterval seconds
-      onValidate(object)
+      # force validation to happen immediately to surface any issues
+      pool_metadata$lastValidated <- Sys.time() - self$validationInterval - 1
 
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
