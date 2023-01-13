@@ -50,6 +50,7 @@ Collate:
     'pool-package.R'
     'pool.R'
     'scheduler.R'
+    'utils.R'
     'zzz.R'
 Config/testthat/edition: 3
 Config/Needs/website: tidyverse/tidytemplate
