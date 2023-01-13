@@ -36,11 +36,6 @@ describe("release", {
     checkCounts(pool, free = 1, taken = 0)
   })
 
-  it("throws if object is not valid", {
-    obj <- "a"
-    expect_error(poolReturn(obj), "Invalid object.")
-  })
-
   it("warns if onPassivate fails", {
     checkCounts(pool, free = 1, taken = 0)
     obj <- poolCheckout(pool)
@@ -66,5 +61,6 @@ describe("release", {
   })
 })
 
-
-
+test_that("poolReturn() errors if object is not valid", {
+  expect_snapshot(poolReturn("x"), error = TRUE)
+})

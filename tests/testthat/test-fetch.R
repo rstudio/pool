@@ -33,14 +33,14 @@ describe("fetch", {
   it("only validates after validationInterval", {
     obj <- poolCheckout(pool)
     t0 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t0 <- pool_metadata$lastValidated
 
     poolReturn(obj)
 
     obj <- poolCheckout(pool)
     t1 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t1 <- pool_metadata$lastValidated
 
     if (difftime(t1, t0, units = "secs") < pool$validationInterval) {
@@ -54,7 +54,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t2 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t2 <- pool_metadata$lastValidated
 
     if (difftime(t2, t0, units = "secs") < pool$validationInterval) {
@@ -70,7 +70,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t3 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t3 <- pool_metadata$lastValidated
 
     if (difftime(t3, t0, units = "secs") > pool$validationInterval) {
@@ -84,7 +84,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t4 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t4 <- pool_metadata$lastValidated
 
     if (difftime(t4, t3, units = "secs") < pool$validationInterval) {

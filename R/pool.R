@@ -67,12 +67,9 @@ Pool <- R6::R6Class("Pool",
     ## (sets up task to destroy the object if the number of
     ## total objects exceeds the minimum)
     release = function(object) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object)
       if (pool_metadata$state == "free") {
         stop("This object was already returned to the pool.")
-      }
-      if (is.null(pool_metadata) || !pool_metadata$valid) {
-        stop("Invalid object.")
       }
       ## immediately destroy object if pool has already been closed
       if (!self$valid) {
@@ -176,8 +173,8 @@ Pool <- R6::R6Class("Pool",
 
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
-        if (pool_metadata$valid) {
-          warning("You have a leaked pooled object.")
+        if (e$valid) {
+          warning("You have a leaked pooled object.", call. = FALSE)
         }
       }, onexit = TRUE)
 
@@ -188,7 +185,7 @@ Pool <- R6::R6Class("Pool",
     ## tries to run onDestroy
     destroyObject = function(object) {
       tryCatch({
-        pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+        pool_metadata <- pool_metadata(object, check_valid = FALSE)
         if (!pool_metadata$valid) {
           warning("Object was destroyed twice.")
           return()
@@ -210,7 +207,7 @@ Pool <- R6::R6Class("Pool",
     ## gets taken and vice versa. Valid values for `from`
     ## and `to` are: NULL, "free", "taken"
     changeObjectStatus = function(object, to) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object)
       id <- pool_metadata$id
       from <- pool_metadata$state
 
@@ -249,7 +246,7 @@ Pool <- R6::R6Class("Pool",
     },
 
     cancelScheduledTask = function(object, task) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object, check_valid = FALSE)
       taskHandle <- pool_metadata[[task]]
       if (!is.null(taskHandle)) {
         pool_metadata[[task]] <- NULL
@@ -297,7 +294,7 @@ Pool <- R6::R6Class("Pool",
     ## secs have passed since the last validation (this allows
     ## us some performance gains)
     validate = function(object) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object)
       lastValidated <- pool_metadata$lastValidated
       ## if the object has never been validated, set `lastValidated`
       ## to guarantee that it will be validated now

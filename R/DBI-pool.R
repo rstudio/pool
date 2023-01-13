@@ -24,7 +24,7 @@ setMethod("onDestroy", "DBIConnection", function(object) {
 #' @export
 #' @rdname object
 setMethod("onValidate", "DBIConnection", function(object) {
-  pool <- attr(object, "pool_metadata", exact = TRUE)$pool
+  pool <- pool_metadata(object)$pool
   query <- pool$state$validateQuery
 
   if (!is.null(query)) {
