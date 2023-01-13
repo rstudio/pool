@@ -37,13 +37,18 @@ setMethod("onValidate", "DBIConnection", function(object) {
     ## options mostly gathered from here:
     ## http://stackoverflow.com/a/3670000/6174455
     options <- c(
+      # Most modern databases
       "SELECT 1",
+      # Oracle: https://en.wikipedia.org/wiki/DUAL_table
       "SELECT 1 FROM DUAL",
+      # HSQLDB
       "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS WHERE 0=1",
       "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE 0=1",
-      "VALUES 1",
-      "SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE 0=1",
+      # DB2: https://www.ibm.com/docs/en/db2-for-zos/12?topic=tables-sysdummy1
+      "SELECT 1 FROM SYSIBM.SYSDUMMY1",
+      # informix
       "SELECT 1 FROM systables WHERE 0=1",
+      # SAP HANA
       "SELECT 1 FROM SYS_TABLES WHERE 0=1",
       "SELECT 1 FROM SYS.TABLES WHERE 0=1"
     )
