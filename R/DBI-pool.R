@@ -39,13 +39,13 @@ setMethod("onValidate", "DBIConnection", function(object) {
     options <- c(
       "SELECT 1",
       "SELECT 1 FROM DUAL",
-      "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS",
-      "SELECT 1 FROM INFORMATION_SCHEMA.TABLES",
+      "SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS WHERE 0=1",
+      "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE 0=1",
       "VALUES 1",
-      "SELECT 1 FROM SYSIBM.SYSDUMMY1",
-      "SELECT 1 FROM systables",
-      "SELECT 1 FROM SYS_TABLES",
-      "SELECT 1 FROM SYS.TABLES"
+      "SELECT 1 FROM SYSIBM.SYSDUMMY1 WHERE 0=1",
+      "SELECT 1 FROM systables WHERE 0=1",
+      "SELECT 1 FROM SYS_TABLES WHERE 0=1",
+      "SELECT 1 FROM SYS.TABLES WHERE 0=1"
     )
 
     ## Iterates through the possible validation queries:
