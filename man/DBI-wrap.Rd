@@ -2,9 +2,9 @@
 % Please edit documentation in R/DBI-wrap.R
 \name{DBI-wrap}
 \alias{DBI-wrap}
+\alias{dbDataType,Pool-method}
 \alias{dbGetQuery,Pool,ANY-method}
 \alias{dbExecute,Pool,ANY-method}
-\alias{dbListResults,Pool-method}
 \alias{dbListFields,Pool,ANY-method}
 \alias{dbListTables,Pool-method}
 \alias{dbListObjects,Pool-method}
@@ -29,11 +29,11 @@
 \alias{dbQuoteString,Pool,ANY-method}
 \title{Custom DBI methods for Pool}
 \usage{
+\S4method{dbDataType}{Pool}(dbObj, obj, ...)
+
 \S4method{dbGetQuery}{Pool,ANY}(conn, statement, ...)
 
 \S4method{dbExecute}{Pool,ANY}(conn, statement, ...)
-
-\S4method{dbListResults}{Pool}(conn, ...)
 
 \S4method{dbListFields}{Pool,ANY}(conn, name, ...)
 

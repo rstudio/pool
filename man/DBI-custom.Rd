@@ -4,7 +4,9 @@
 \alias{DBI-custom}
 \alias{dbSendQuery,Pool-method}
 \alias{dbSendStatement,Pool,ANY-method}
+\alias{dbListResults,Pool-method}
 \alias{dbGetInfo,Pool-method}
+\alias{dbIsValid,Pool-method}
 \alias{dbBegin,Pool-method}
 \alias{dbCommit,Pool-method}
 \alias{dbRollback,Pool-method}
@@ -15,7 +17,11 @@
 
 \S4method{dbSendStatement}{Pool,ANY}(conn, statement, ...)
 
+\S4method{dbListResults}{Pool}(conn, ...)
+
 \S4method{dbGetInfo}{Pool}(dbObj, ...)
+
+\S4method{dbIsValid}{Pool}(dbObj, ...)
 
 \S4method{dbBegin}{Pool}(conn, ...)
 

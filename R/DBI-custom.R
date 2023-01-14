@@ -86,6 +86,12 @@ setMethod("dbSendStatement", "Pool", function(conn, statement, ...) {
 
 #' @export
 #' @rdname DBI-custom
+setMethod("dbListResults", "Pool", function(conn, ...) {
+  list()
+})
+
+#' @export
+#' @rdname DBI-custom
 setMethod("dbGetInfo", "Pool", function(dbObj, ...) {
   pooledObj <- poolCheckout(dbObj)
   on.exit(poolReturn(pooledObj))
@@ -99,6 +105,11 @@ setMethod("dbGetInfo", "Pool", function(dbObj, ...) {
        numberTakenObjects = dbObj$counters$taken)
 })
 
+#' @export
+#' @rdname DBI-custom
+setMethod("dbIsValid", "Pool", function(dbObj, ...) {
+  dbObj$valid
+})
 
 #' @export
 #' @rdname DBI-custom

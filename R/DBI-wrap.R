@@ -37,17 +37,15 @@ DBI_wrap <- function(fun_name) {
 
 #' @export
 #' @rdname DBI-wrap
+setMethod("dbDataType", "Pool", DBI_wrap("dbDataType"))
+
+#' @export
+#' @rdname DBI-wrap
 setMethod("dbGetQuery", "Pool", DBI_wrap("dbGetQuery"))
 
 #' @export
 #' @rdname DBI-wrap
 setMethod("dbExecute", "Pool", DBI_wrap("dbExecute"))
-
-#' @export
-#' @rdname DBI-wrap
-setMethod("dbListResults", "Pool", function(conn, ...) {
-  list()
-})
 
 #' @export
 #' @rdname DBI-wrap
