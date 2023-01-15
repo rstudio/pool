@@ -24,7 +24,6 @@ DBI_wrap <- function(fun_name) {
   ns_fun <- call2("::", quote(DBI), sym(fun_name))
   recall <- call2(ns_fun, !!!call_args)
 
-  con <- NULL # quiet R CMD check note
   body <- expr({
     db_con <- poolCheckout(!!con_arg)
     on.exit(poolReturn(db_con))
