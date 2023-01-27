@@ -1,4 +1,4 @@
-#' @include DBI.R
+#' @include pool-methods.R
 NULL
 
 #' DBIConnection transaction methods are not supported for

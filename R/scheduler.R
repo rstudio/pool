@@ -1,6 +1,3 @@
-#' @include utils.R
-NULL
-
 ## Used in the Pool class to schedule and cancel tasks (based on `later`)
 scheduleTask <- function(func, delay) {
   force(func)

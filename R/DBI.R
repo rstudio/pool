@@ -1,6 +1,3 @@
-#' @include object.R
-NULL
-
 #' Create a pool of database connections
 #'
 #' `dbPool()` is a drop-in replacement for [DBI::dbConnect()] that
