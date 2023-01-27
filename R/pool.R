@@ -135,11 +135,10 @@ Pool <- R6::R6Class("Pool",
 
       # check if there are taken objects
       if (self$counters$taken > 0) {
-        warning("You still have checked out objects. Return ",
-          "them to the pool so they can be destroyed. ",
-          "(If these are leaked objects - no reference ",
-          "- they will be destroyed the next time the ",
-          "garbage collector runs).", call. = FALSE)
+        pool_warn(c(
+          "You still have checked out objects.",
+          "Use `poolReturn()` them to the pool so they can be destroyed."
+        ))
       }
     }
   ),
@@ -179,8 +178,10 @@ Pool <- R6::R6Class("Pool",
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
         if (pool_metadata$valid) {
-          cat("<pool> Checked-out object deleted before being returned.\n")
-          cat("<pool> Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`\n")
+          pool_warn(c(
+            "Checked-out object deleted before being returned.",
+            "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
+          ))
           self$release(object)
         }
       }, onexit = TRUE)
@@ -194,7 +195,7 @@ Pool <- R6::R6Class("Pool",
       tryCatch({
         pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
         if (!pool_metadata$valid) {
-          warning("Object was destroyed twice.")
+          pool_warn("object was destroyed twice.")
           return()
         }
         pool_metadata$valid <- FALSE
@@ -202,11 +203,11 @@ Pool <- R6::R6Class("Pool",
         private$cancelScheduledTask(object, "destroyHandle")
         onDestroy(object)
       }, error = function(e) {
-        warning("Object of class ", is(object)[1],
-          " could not be destroyed properly, ",
-          "but was successfully removed from pool. ",
-          "Error message: ", conditionMessage(e))
-
+        pool_warn(c(
+          "Object could not be destroyed, but was removed from the pool.",
+          "Error message:",
+          prefix(conditionMessage(e), "  ")
+        ))
       })
     },
 
@@ -283,15 +284,19 @@ Pool <- R6::R6Class("Pool",
     checkValid = function(object) {
       object <- private$checkValidTemplate(object,
         function(e) {
-          warning("It wasn't possible to activate and/or validate ",
-            "the object. Trying again with a new object.",
-            call. = FALSE)
+          pool_warn(c(
+            "Failed to activate and/or validate existing object.",
+            "Trying again with a new object"
+          ))
 
           private$checkValidTemplate(private$createObject(),
             function(e) {
-              stop("Object does not appear to be valid. ",
-                "Error message: ", conditionMessage(e),
-                call. = FALSE)
+              stop(
+                "Object does not appear to be valid.\n",
+                "Error message:\n",
+                prefix(conditionMessage(e), "  "),
+                call. = FALSE
+              )
             })
         })
       return(object)
@@ -317,3 +322,17 @@ Pool <- R6::R6Class("Pool",
     }
   )
 )
+
+
+pool_warn <- function(messages) {
+  file <- if (is_testing()) stdout() else stderr()
+
+  out <- paste0(messages, "\n", collapse = "")
+  cat(prefix(out, "<pool> "), file = file)
+}
+prefix <- function(x, prefix) {
+  gsub("(?m)^", prefix, x, perl = TRUE)
+}
+is_testing <- function() {
+  identical(Sys.getenv("TESTTHAT"), "true")
+}

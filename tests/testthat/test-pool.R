@@ -48,8 +48,7 @@ describe("pool", {
       a <- poolCheckout(pool)
       b <- poolCheckout(pool)
       c <- poolCheckout(pool)
-      expect_error(poolCheckout(pool),
-        "Maximum number of objects in pool has been reached")
+      expect_snapshot(poolCheckout(pool), error = TRUE)
       objs <- list(a, b, c)
       lapply(objs, poolReturn)
     })
