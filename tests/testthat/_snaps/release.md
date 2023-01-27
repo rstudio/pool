@@ -3,7 +3,7 @@
     Code
       poolCheckout(pool)
     Condition
-      Error in `pool$fetch()`:
+      Error in `poolCheckout()`:
       ! Maximum number of objects in pool has been reached
 
 # release: throws if object was already released
@@ -11,7 +11,7 @@
     Code
       poolReturn(obj)
     Condition
-      Error in `pool$release()`:
+      Error in `poolReturn()`:
       ! This object was already returned to the pool.
 
 # release: throws if object is not valid
@@ -27,7 +27,7 @@
     Code
       poolReturn(obj)
     Condition
-      Error in `pool$release()`:
+      Error in `poolReturn()`:
       ! Object could not be returned back to the pool.
       * It was destroyed instead
       Caused by error in `onPassivate()`:

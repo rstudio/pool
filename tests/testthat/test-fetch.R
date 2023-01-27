@@ -128,6 +128,7 @@ describe("fetch", {
     ## in the pool
     checkCounts(pool, free = 0, taken = 0)
   })
+  poolClose(pool)
 
   it("throws if the pool was closed", {
     pool <- poolCreate(function() 1)
@@ -135,4 +136,5 @@ describe("fetch", {
 
     expect_snapshot(poolCheckout(pool), error = TRUE)
   })
+
 })

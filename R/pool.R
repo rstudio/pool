@@ -75,13 +75,13 @@ Pool <- R6::R6Class("Pool",
     ## passivates the object and returns it back to the pool
     ## (sets up task to destroy the object if the number of
     ## total objects exceeds the minimum)
-    release = function(object) {
+    release = function(object, error_call = caller_env()) {
       pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
       if (pool_metadata$state == "free") {
-        abort("This object was already returned to the pool.")
+        abort("This object was already returned to the pool.", call = error_call)
       }
       if (is.null(pool_metadata) || !pool_metadata$valid) {
-        abort("Invalid object.")
+        abort("Invalid object.", call = error_call)
       }
       ## immediately destroy object if pool has already been closed
       if (!self$valid) {
@@ -99,6 +99,7 @@ Pool <- R6::R6Class("Pool",
             "Object could not be returned back to the pool.",
             "It was destroyed instead"
           ),
+          call = error_call,
           parent = e
         )
       })
@@ -196,7 +197,7 @@ Pool <- R6::R6Class("Pool",
             "Checked-out object deleted before being returned.",
             "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
           ))
-          self$release(object)
+          self$release(object, error_call = error_call)
         }
       }, onexit = TRUE)
 

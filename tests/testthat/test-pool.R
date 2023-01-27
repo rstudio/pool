@@ -54,6 +54,8 @@ describe("pool", {
       expect_snapshot(poolCheckout(pool), error = TRUE)
       objs <- list(a, b, c)
       lapply(objs, poolReturn)
+
+      poolClose(pool)
     })
 
     poolClose(pool)
