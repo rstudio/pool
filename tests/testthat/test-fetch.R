@@ -1,6 +1,7 @@
 source("utils.R")
 
 describe("fetch", {
+  local_reproducible_output()
 
   pool <- poolCreate(MockPooledObj$new, minSize = 1, maxSize = 3,
     validationInterval = 1)

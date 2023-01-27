@@ -2,29 +2,36 @@
 
     Code
       poolCheckout(pool)
-    Error <simpleError>
-      Maximum number of objects in pool has been reached
+    Condition
+      Error in `private$createObject()`:
+      ! Maximum number of objects in pool has been reached
 
 # release: throws if object was already released
 
     Code
       poolReturn(obj)
-    Error <simpleError>
-      This object was already returned to the pool.
+    Condition
+      Error in `pool$release()`:
+      ! This object was already returned to the pool.
 
 # release: throws if object is not valid
 
     Code
       poolReturn(obj)
-    Error <simpleError>
-      Invalid object.
+    Condition
+      Error in `poolReturn()`:
+      ! Invalid object.
 
 # release: warns if onPassivate fails
 
     Code
       poolReturn(obj)
-    Error <simpleError>
-      Object could not be returned back to the pool. It was destroyed instead. Error message: Passivation failed...
+    Condition
+      Error in `pool$release()`:
+      ! Object could not be returned back to the pool.
+      * It was destroyed instead
+      Caused by error in `onPassivate()`:
+      ! Passivation failed...
 
 # release: is allowed after the pool is closed
 
@@ -38,8 +45,9 @@
 
     Code
       poolClose(pool)
-    Error <simpleError>
-      The pool was already closed.
+    Condition
+      Error in `pool$close()`:
+      ! The pool was already closed.
 
 # release: warns if object can't be returned
 

@@ -2,12 +2,15 @@
 
     Code
       poolCreate(MockPooledObj)
-    Error <simpleError>
-      attempt to apply non-function
+    Condition
+      Error in `private$createObject()`:
+      ! attempt to apply non-function
     Code
       poolCreate(function(x) NULL)
-    Error <simpleError>
-      Object creation was not successful. The `factory` argument must be a function that creates and returns the object to be pooled.
+    Condition
+      Error in `private$createObject()`:
+      ! Object creation failed.
+      * The `factory` must not return `NULL`
 
 # destroyObject: throws if onDestroy fails
 

@@ -5,10 +5,11 @@
     Output
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object
-    Error <simpleError>
-      Object does not appear to be valid.
-      Error message:
-        Activation failed...
+    Condition
+      Error:
+      ! Object does not appear to be valid.
+      Caused by error in `onActivate()`:
+      ! Activation failed...
 
 # fetch: throws if onValidate fails
 
@@ -17,10 +18,11 @@
     Output
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object
-    Error <simpleError>
-      Object does not appear to be valid.
-      Error message:
-        Validation failed...
+    Condition
+      Error:
+      ! Object does not appear to be valid.
+      Caused by error in `onValidate()`:
+      ! Validation failed...
 
 # fetch: warns if validation fails once, creates new object and tries again
 
@@ -37,15 +39,17 @@
     Output
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object
-    Error <simpleError>
-      Object does not appear to be valid.
-      Error message:
-        Validation failed...
+    Condition
+      Error:
+      ! Object does not appear to be valid.
+      Caused by error in `onValidate()`:
+      ! Validation failed...
 
 # fetch: throws if the pool was closed
 
     Code
       poolCheckout(pool)
-    Error <simpleError>
-      This pool is no longer valid. Cannot fetch new objects.
+    Condition
+      Error in `pool$fetch()`:
+      ! This pool is no longer valid. Cannot fetch new objects.
 

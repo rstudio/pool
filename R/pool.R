@@ -41,7 +41,7 @@ Pool <- R6::R6Class("Pool",
     ## calls activate and returns an object
     fetch = function() {
       if (!self$valid) {
-        stop("This pool is no longer valid. Cannot fetch new objects.")
+        abort("This pool is no longer valid. Cannot fetch new objects.")
       }
 
       ## see if there's any free objects
@@ -72,10 +72,10 @@ Pool <- R6::R6Class("Pool",
     release = function(object) {
       pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
       if (pool_metadata$state == "free") {
-        stop("This object was already returned to the pool.")
+        abort("This object was already returned to the pool.")
       }
       if (is.null(pool_metadata) || !pool_metadata$valid) {
-        stop("Invalid object.")
+        abort("Invalid object.")
       }
       ## immediately destroy object if pool has already been closed
       if (!self$valid) {
@@ -88,9 +88,13 @@ Pool <- R6::R6Class("Pool",
         onPassivate(object)
       }, error = function(e) {
         private$changeObjectStatus(object, NULL)
-        stop("Object could not be returned back to the pool. ",
-          "It was destroyed instead. Error message: ",
-          conditionMessage(e))
+        abort(
+          c(
+            "Object could not be returned back to the pool.",
+            "It was destroyed instead"
+          ),
+          parent = e
+        )
       })
 
       ## set up a task to destroy the object after `idleTimeout`
@@ -122,7 +126,7 @@ Pool <- R6::R6Class("Pool",
     ## immediately destroy them). Objects can no longer be
     ## checked out from the pool.
     close = function() {
-      if (!self$valid) stop("The pool was already closed.")
+      if (!self$valid) abort("The pool was already closed.")
 
       self$valid <- FALSE
       freeEnv <- private$freeObjects
@@ -153,14 +157,15 @@ Pool <- R6::R6Class("Pool",
     ## free environment and returns it
     createObject = function() {
       if (self$counters$free + self$counters$taken >= self$maxSize) {
-        stop("Maximum number of objects in pool has been reached")
+        abort("Maximum number of objects in pool has been reached")
       }
 
       object <- private$factory()
       if (is.null(object)) {
-        stop("Object creation was not successful. The `factory` ",
-          "argument must be a function that creates and ",
-          "returns the object to be pooled.")
+        abort(c(
+          "Object creation failed.",
+          "The `factory` must not return `NULL`"
+        ))
       }
 
       ## attach metadata about the object
@@ -230,7 +235,7 @@ Pool <- R6::R6Class("Pool",
           if (exists(id, envir = removeFrom)) {
             rm(list = id, envir = removeFrom)
           } else {
-            stop("The object could not be found.")
+            abort("Object could not be found.")
           }
         }
         self$counters[[from]] <- self$counters[[from]] - 1
@@ -291,12 +296,7 @@ Pool <- R6::R6Class("Pool",
 
           private$checkValidTemplate(private$createObject(),
             function(e) {
-              stop(
-                "Object does not appear to be valid.\n",
-                "Error message:\n",
-                prefix(conditionMessage(e), "  "),
-                call. = FALSE
-              )
+              abort("Object does not appear to be valid.", parent = e)
             })
         })
       return(object)

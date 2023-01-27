@@ -2,6 +2,7 @@
 
     Code
       poolCheckout(pool)
-    Error <simpleError>
-      Maximum number of objects in pool has been reached
+    Condition
+      Error in `private$createObject()`:
+      ! Maximum number of objects in pool has been reached
 

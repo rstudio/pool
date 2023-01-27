@@ -1,6 +1,7 @@
 source("utils.R")
 
 describe("release", {
+  local_reproducible_output()
 
   pool <- poolCreate(MockPooledObj$new,
     minSize = 1, maxSize = 3, idleTimeout = 0)
