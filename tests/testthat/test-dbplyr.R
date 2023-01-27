@@ -64,7 +64,11 @@ test_that("can use schemas with pool", {
 })
 
 test_that("wrapper looks good", {
-  expect_snapshot({
+  # Skip in test coverage runs because covr instrumentation is injected
+   # into function body
+   skip_if_not(is.null(getOption("covr.flags")))
+
+   expect_snapshot({
     dbplyr_wrap("db_collect")
     "with temporary argument"
     dbplyr_wrap("db_compute")
