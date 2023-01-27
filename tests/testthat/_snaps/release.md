@@ -3,7 +3,7 @@
     Code
       poolCheckout(pool)
     Condition
-      Error in `private$createObject()`:
+      Error in `pool$fetch()`:
       ! Maximum number of objects in pool has been reached
 
 # release: throws if object was already released

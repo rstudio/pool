@@ -3,12 +3,12 @@
     Code
       poolCreate(MockPooledObj)
     Condition
-      Error in `private$createObject()`:
-      ! attempt to apply non-function
+      Error in `poolCreate()`:
+      ! `factory` must be a function.
     Code
       poolCreate(function(x) NULL)
     Condition
-      Error in `private$createObject()`:
+      Error in `poolCreate()`:
       ! Object creation failed.
       * The `factory` must not return `NULL`
 

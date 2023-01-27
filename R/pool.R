@@ -15,7 +15,7 @@ Pool <- R6::R6Class("Pool",
 
     ## initialize the pool with min number of objects
     initialize = function(factory, minSize, maxSize,
-      idleTimeout, validationInterval, state) {
+      idleTimeout, validationInterval, state, error_call = caller_env()) {
         self$valid <- TRUE
 
         self$counters <- new.env(parent = emptyenv())
@@ -23,6 +23,9 @@ Pool <- R6::R6Class("Pool",
         self$counters$taken <- 0
         private$idCounter <- 1
 
+        if (!is.function(factory)) {
+          abort("`factory` must be a function.", call = error_call)
+        }
         private$factory <- factory
         self$minSize <- minSize
         self$maxSize <- maxSize
@@ -34,7 +37,7 @@ Pool <- R6::R6Class("Pool",
         private$freeObjects <- new.env(parent = emptyenv())
 
         for (i in seq_len(self$minSize)) {
-          private$createObject()
+          private$createObject(error_call = error_call)
         }
     },
 
@@ -155,17 +158,20 @@ Pool <- R6::R6Class("Pool",
 
     ## creates an object, assigns it to the
     ## free environment and returns it
-    createObject = function() {
+    createObject = function(error_call = parent.frame()) {
       if (self$counters$free + self$counters$taken >= self$maxSize) {
-        abort("Maximum number of objects in pool has been reached")
+        abort("Maximum number of objects in pool has been reached", call = error_call)
       }
 
       object <- private$factory()
       if (is.null(object)) {
-        abort(c(
-          "Object creation failed.",
-          "The `factory` must not return `NULL`"
-        ))
+        abort(
+          c(
+            "Object creation failed.",
+            "The `factory` must not return `NULL`"
+          ),
+          call = error_call
+        )
       }
 
       ## attach metadata about the object
