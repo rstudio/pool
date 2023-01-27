@@ -1,5 +1,7 @@
 # pool (development version)
 
+* Added support for SAP HANA databases (@marcosci, #103).
+
 # pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).

@@ -1,4 +1,4 @@
-#' @include DBI.R
+#' @include pool-methods.R
 NULL
 
 #' Safely interpolate values into an SQL string and parse them back.

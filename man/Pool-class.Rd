@@ -53,6 +53,6 @@ from the pool and released back to it at will, with very
 little computational cost. The pool should be created only once
 and closed when it is no longer needed, to prevent leaks.
 
-See [dbPool() for an example of object pooling applied to DBI database
+See \code{\link[=dbPool]{dbPool()}} for an example of object pooling applied to DBI database
 connections.
 }
