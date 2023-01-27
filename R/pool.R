@@ -92,7 +92,7 @@ Pool <- R6::R6Class("Pool",
 
       ## set up a task to destroy the object after `idleTimeout`
       ## secs, if we're over the minimum number of objects
-      taskHandle <- scheduleTask(
+      taskHandle <- later::later(
         function() {
           if (self$counters$free + self$counters$taken > self$minSize) {
             private$changeObjectStatus(object, NULL)
@@ -136,7 +136,7 @@ Pool <- R6::R6Class("Pool",
           "them to the pool so they can be destroyed. ",
           "(If these are leaked objects - no reference ",
           "- they will be destroyed the next time the ",
-          "garbage collector runs).", call. = FALSE)
+          "garbage collector runs).", call. = FALSE, immediate. = TRUE)
       }
     }
   ),
@@ -176,7 +176,7 @@ Pool <- R6::R6Class("Pool",
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
         if (pool_metadata$valid) {
-          warning("You have a leaked pooled object.")
+          warning("You have a leaked pooled object.", immediate. = TRUE)
         }
       }, onexit = TRUE)
 
@@ -189,7 +189,7 @@ Pool <- R6::R6Class("Pool",
       tryCatch({
         pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
         if (!pool_metadata$valid) {
-          warning("Object was destroyed twice.")
+          warning("Object was destroyed twice.", immediate. = TRUE)
           return()
         }
         pool_metadata$valid <- FALSE
@@ -200,7 +200,7 @@ Pool <- R6::R6Class("Pool",
         warning("Object of class ", is(object)[1],
           " could not be destroyed properly, ",
           "but was successfully removed from pool. ",
-          "Error message: ", conditionMessage(e))
+          "Error message: ", conditionMessage(e), immediate. = TRUE)
 
       })
     },
@@ -280,7 +280,7 @@ Pool <- R6::R6Class("Pool",
         function(e) {
           warning("It wasn't possible to activate and/or validate ",
             "the object. Trying again with a new object.",
-            call. = FALSE)
+            call. = FALSE, immediate. = TRUE)
 
           private$checkValidTemplate(private$createObject(),
             function(e) {
