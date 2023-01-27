@@ -3,6 +3,6 @@
     Code
       poolCheckout(pool)
     Condition
-      Error in `pool$fetch()`:
+      Error in `poolCheckout()`:
       ! Maximum number of objects in pool has been reached
 

@@ -46,6 +46,8 @@ describe("pool", {
     })
 
     it("enforces maxSize", {
+      pool <- poolCreate(function() 1, maxSize = 3)
+
       a <- poolCheckout(pool)
       b <- poolCheckout(pool)
       c <- poolCheckout(pool)

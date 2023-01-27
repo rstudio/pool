@@ -61,7 +61,7 @@ Pool <- R6::R6Class("Pool",
       } else {
         ## if we get here, there are no free objects
         ## and we must create a new one
-        object <- private$createObject()
+        object <- private$createObject(error_call = error_call)
       }
 
       private$cancelScheduledTask(object, "validateHandle")
