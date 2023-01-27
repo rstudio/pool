@@ -15,9 +15,6 @@
 \alias{dbExistsTable,Pool,ANY-method}
 \alias{dbRemoveTable,Pool,ANY-method}
 \alias{dbIsReadOnly,Pool-method}
-\alias{make.db.names,Pool,ANY-method}
-\alias{isSQLKeyword,Pool,ANY-method}
-\alias{SQLKeywords,Pool-method}
 \alias{sqlData,Pool-method}
 \alias{sqlCreateTable,Pool-method}
 \alias{sqlAppendTable,Pool-method}
@@ -54,25 +51,6 @@
 \S4method{dbRemoveTable}{Pool,ANY}(conn, name, ...)
 
 \S4method{dbIsReadOnly}{Pool}(dbObj, ...)
-
-\S4method{make.db.names}{Pool,ANY}(
-  dbObj,
-  snames,
-  keywords = .SQL92Keywords,
-  unique = TRUE,
-  allow.keywords = TRUE,
-  ...
-)
-
-\S4method{isSQLKeyword}{Pool,ANY}(
-  dbObj,
-  name,
-  keywords = .SQL92Keywords,
-  case = c("lower", "upper", "any")[3],
-  ...
-)
-
-\S4method{SQLKeywords}{Pool}(dbObj, ...)
 
 \S4method{sqlData}{Pool}(con, value, row.names = NA, ...)
 

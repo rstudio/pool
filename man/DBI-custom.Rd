@@ -4,6 +4,7 @@
 \alias{DBI-custom}
 \alias{dbSendQuery,Pool-method}
 \alias{dbSendStatement,Pool,ANY-method}
+\alias{dbDisconnect,Pool-method}
 \alias{dbGetInfo,Pool-method}
 \alias{dbIsValid,Pool-method}
 \alias{dbBegin,Pool-method}
@@ -15,6 +16,8 @@
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
 
 \S4method{dbSendStatement}{Pool,ANY}(conn, statement, ...)
+
+\S4method{dbDisconnect}{Pool}(conn, ...)
 
 \S4method{dbGetInfo}{Pool}(dbObj, ...)
 
@@ -46,6 +49,7 @@ Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}} and \code{\link[DBI:
 \item \code{\link[DBI:transactions]{DBI::dbBegin()}}, \code{\link[DBI:transactions]{DBI::dbRollback()}}, \code{\link[DBI:transactions]{DBI::dbCommit()}}, and
 \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}} can't work with pool because transactions are
 bound to a connection. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
+\item \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}} can't work because pool handles disconnection.
 \item \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}} returns information about the pool, not the database
 connection.
 \item \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}} returns whether or not the entire pool is valid (i.e.

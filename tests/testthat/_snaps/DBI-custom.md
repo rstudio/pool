@@ -30,4 +30,9 @@
       Error in `dbRollback()`:
       ! Not supported for pool objects
       i Please use `poolWithTransaction()` instead
+    Code
+      dbDisconnect(pool)
+    Condition
+      Error in `dbDisconnect()`:
+      ! Not supported for pool objects
 

@@ -15,6 +15,8 @@
 #'   [DBI::dbWithTransaction()] can't work with pool because transactions are
 #'   bound to a connection. Instead use [poolWithTransaction()].
 #'
+#' * [DBI::dbDisconnect()] can't work because pool handles disconnection.
+#'
 #' * [DBI::dbGetInfo()] returns information about the pool, not the database
 #'   connection.
 #'
@@ -43,6 +45,14 @@ setMethod("dbSendStatement", "Pool", function(conn, statement, ...) {
   abort(c(
     "Not supported for pool objects",
     i = "Please use `dbExecute()` instead"
+  ))
+})
+
+#' @export
+#' @rdname DBI-custom
+setMethod("dbDisconnect", "Pool", function(conn, ...) {
+  abort(c(
+    "Not supported for pool objects"
   ))
 })
 

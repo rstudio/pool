@@ -131,18 +131,6 @@ setMethod("dbIsReadOnly", "Pool", DBI_wrap("dbIsReadOnly"))
 
 #' @export
 #' @rdname DBI-wrap
-setMethod("make.db.names", "Pool", DBI_wrap("make.db.names"))
-
-#' @export
-#' @rdname DBI-wrap
-setMethod("isSQLKeyword", "Pool", DBI_wrap("isSQLKeyword"))
-
-#' @export
-#' @rdname DBI-wrap
-setMethod("SQLKeywords", "Pool", DBI_wrap("SQLKeywords"))
-
-#' @export
-#' @rdname DBI-wrap
 setMethod("sqlData", "Pool", DBI_wrap("sqlData"))
 
 #' @export
