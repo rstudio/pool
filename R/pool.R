@@ -95,7 +95,7 @@ Pool <- R6::R6Class("Pool",
 
       ## set up a task to destroy the object after `idleTimeout`
       ## secs, if we're over the minimum number of objects
-      taskHandle <- scheduleTask(
+      taskHandle <- later::later(
         function() {
           if (self$counters$free + self$counters$taken > self$minSize) {
             private$changeObjectStatus(object, NULL)
