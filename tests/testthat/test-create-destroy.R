@@ -25,9 +25,10 @@ describe("destroyObject", {
     ## since we're over the minSize, once we return `b` to
     ## the pool, it will be destroyed immediately (since
     ## we set `idleTimeout = 0`)
-
-    local_options(warn = 2)
-    expect_error({poolReturn(b); later::run_now()}, "Destruction failed")
+    expect_snapshot({
+      poolReturn(b)
+      later::run_now()
+    })
 
     checkCounts(pool, free = 0, taken = 1)
     failOnDestroy <<- FALSE

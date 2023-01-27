@@ -197,11 +197,9 @@ Pool <- R6::R6Class("Pool",
         private$cancelScheduledTask(object, "destroyHandle")
         onDestroy(object)
       }, error = function(e) {
-        warning("Object of class ", is(object)[1],
-          " could not be destroyed properly, ",
-          "but was successfully removed from pool. ",
-          "Error message: ", conditionMessage(e), immediate. = TRUE)
-
+        cat("<pool> Object could not be destroyed but was removed from the pool.\n")
+        cat("<pool> Original error:\n")
+        cat(conditionMessage(e))
       })
     },
 
