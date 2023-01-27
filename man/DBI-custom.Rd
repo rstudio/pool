@@ -4,7 +4,6 @@
 \alias{DBI-custom}
 \alias{dbSendQuery,Pool-method}
 \alias{dbSendStatement,Pool,ANY-method}
-\alias{dbListResults,Pool-method}
 \alias{dbGetInfo,Pool-method}
 \alias{dbIsValid,Pool-method}
 \alias{dbBegin,Pool-method}
@@ -16,8 +15,6 @@
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
 
 \S4method{dbSendStatement}{Pool,ANY}(conn, statement, ...)
-
-\S4method{dbListResults}{Pool}(conn, ...)
 
 \S4method{dbGetInfo}{Pool}(dbObj, ...)
 
@@ -37,66 +34,21 @@
 \item{statement, code, ...}{See DBI documentation.}
 }
 \description{
-Pool methods for DBI generics generally check out a connection
-(with \code{\link[=poolCheckout]{poolCheckout()}}), perform the operation, and the return the connection
-to the pool (with \code{\link[=poolReturn]{poolReturn()}}). This page describes the exceptions.
+Most pool methods for DBI generics check out a connection, perform the
+operation, and the return the connection to the pool, as described in
+\link{DBI-wrap}.
 
-Pool cannot implement the \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}} and \code{\link[DBI:dbSendStatement]{DBI::dbSendStatement()}}
-methods because they both return result sets that are inextricably bound
-to a specific connection, and there's no guarantee that connection will
-still be alive once you retrieve the results. Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}
-and \code{\link[DBI:dbExecute]{DBI::dbExecute()}}.
-
-Similarly, pool cannot implement the \code{\link[DBI:transactions]{DBI::dbBegin()}}, \code{\link[DBI:transactions]{DBI::dbRollback()}},
-or \code{\link[DBI:transactions]{DBI::dbCommit()}} generics because there's no guarantee that you'll get
-the same connection from call to call. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
-}
-\examples{
-if (requireNamespace("RSQLite", quietly = TRUE)) {
-  mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
-  mtcars2 <- mtcars[-c(1:16), ] # second half of the mtcars dataset
-
-  pool <- dbPool(RSQLite::SQLite(), dbname = ":memory:")
-
-  # write the mtcars1 table into the database
-  dbWriteTable(pool, "mtcars", mtcars1, row.names = TRUE)
-
-  # list the current tables in the database
-  dbListTables(pool)
-
-  # read the "mtcars" table from the database (only 16 rows)
-  dbReadTable(pool, "mtcars")
-
-  # append mtcars2 to the "mtcars" table already in the database
-  dbWriteTable(pool, "mtcars", mtcars2, row.names = TRUE, append = TRUE)
-
-  # read the "mtcars" table from the database (all 32 rows)
-  dbReadTable(pool, "mtcars")
-
-  # get the names of the columns in the databases's table
-  dbListFields(pool, "mtcars")
-
-  # use dbExecute to change the "mpg" and "cyl" values of the 1st row
-  dbExecute(pool,
-    paste(
-      "UPDATE mtcars",
-      "SET mpg = '22.0', cyl = '10'",
-      "WHERE row_names = 'Mazda RX4'"
-    )
-  )
-
-  # read the 1st row of "mtcars" table to confirm the previous change
-  dbGetQuery(pool, "SELECT * FROM mtcars WHERE row_names = 'Mazda RX4'")
-
-  # drop the "mtcars" table from the database
-  dbRemoveTable(pool, "mtcars")
-
-  # list the current tables in the database
-  dbListTables(pool)
-
-  poolClose(pool)
-
-} else {
-  message("Please install the 'RSQLite' package to run this example")
+This page describes the exceptions:
+\itemize{
+\item \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}} and \code{\link[DBI:dbSendStatement]{DBI::dbSendStatement()}} can't work with pool
+because they return result sets that are bound to a specific connection.
+Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}} and \code{\link[DBI:dbExecute]{DBI::dbExecute()}}.
+\item \code{\link[DBI:transactions]{DBI::dbBegin()}}, \code{\link[DBI:transactions]{DBI::dbRollback()}}, \code{\link[DBI:transactions]{DBI::dbCommit()}}, and
+\code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}} can't work with pool because transactions are
+bound to a connection. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
+\item \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}} returns information about the pool, not the database
+connection.
+\item \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}} returns whether or not the entire pool is valid (i.e.
+not closed).
 }
 }
