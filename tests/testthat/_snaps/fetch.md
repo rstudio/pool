@@ -6,7 +6,7 @@
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object
     Condition
-      Error:
+      Error in `poolCheckout()`:
       ! Object does not appear to be valid.
       Caused by error in `onActivate()`:
       ! Activation failed...
@@ -19,7 +19,7 @@
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object
     Condition
-      Error:
+      Error in `poolCheckout()`:
       ! Object does not appear to be valid.
       Caused by error in `onValidate()`:
       ! Validation failed...
@@ -50,6 +50,6 @@
     Code
       poolCheckout(pool)
     Condition
-      Error in `pool$fetch()`:
+      Error in `poolCheckout()`:
       ! This pool is no longer valid. Cannot fetch new objects.
 

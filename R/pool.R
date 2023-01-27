@@ -42,9 +42,12 @@ Pool <- R6::R6Class("Pool",
     },
 
     ## calls activate and returns an object
-    fetch = function() {
+    fetch = function(error_call = caller_env()) {
       if (!self$valid) {
-        abort("This pool is no longer valid. Cannot fetch new objects.")
+        abort(
+          "This pool is no longer valid. Cannot fetch new objects.",
+          call = error_call
+        )
       }
 
       ## see if there's any free objects
@@ -63,7 +66,7 @@ Pool <- R6::R6Class("Pool",
 
       private$cancelScheduledTask(object, "validateHandle")
       ## call onActivate, onValidate and change object status
-      object <- private$checkValid(object)
+      object <- private$checkValid(object, error_call = error_call)
       private$changeObjectStatus(object, "taken")
 
       return(object)
@@ -292,7 +295,7 @@ Pool <- R6::R6Class("Pool",
     ## the first time around, warn, destroy that object and try
     ## again with a new object; **returns** the object
     ## if both tries fail, throw an error
-    checkValid = function(object) {
+    checkValid = function(object, error_call = caller_env()) {
       object <- private$checkValidTemplate(object,
         function(e) {
           pool_warn(c(
@@ -302,7 +305,11 @@ Pool <- R6::R6Class("Pool",
 
           private$checkValidTemplate(private$createObject(),
             function(e) {
-              abort("Object does not appear to be valid.", parent = e)
+              abort(
+                "Object does not appear to be valid.",
+                call = error_call,
+                parent = e
+              )
             })
         })
       return(object)
