@@ -4,6 +4,8 @@
   you now get a more informative message and the object is automatically 
   cleaned up (#95).
 
+* Added support for SAP HANA databases (@marcosci, #103).
+
 # pool 0.1.6
 
 * `left_join()` and friends once again work with pool objects (#111).

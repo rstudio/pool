@@ -3,18 +3,36 @@
 \name{poolCheckout}
 \alias{poolCheckout}
 \alias{poolCheckout,Pool-method}
-\title{Checks out an object from the pool.}
+\alias{poolReturn}
+\alias{poolReturn,ANY-method}
+\title{Check out and return object from the pool}
 \usage{
 poolCheckout(pool)
 
 \S4method{poolCheckout}{Pool}(pool)
+
+poolReturn(object)
+
+\S4method{poolReturn}{ANY}(object)
 }
 \arguments{
 \item{pool}{The pool to get the object from.}
+
+\item{object}{Object to return}
 }
 \description{
-Should be called by the end user if they need a persistent
-object, that is not returned to the pool automatically.
-When you don't longer need the object, be sure to return it
-to the pool using \code{poolReturn(object)}.
+Use \code{poolCheckout()} to check out an object from the pool and
+\code{poolReturn()} to return it. You will receive a warning if all objects
+aren't returned before the pool is closed.
+
+Note that validation is only performed when the object is checked out,
+so you generally want to keep the checked out around for as little time as
+possible.
+}
+\examples{
+pool <- dbPool(RSQLite::SQLite())
+con <- poolCheckout(pool)
+con
+poolReturn(con)
+poolClose(pool)
 }

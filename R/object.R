@@ -1,6 +1,3 @@
-#' @include pool-methods.R
-NULL
-
 #' Pooled object methods.
 #'
 #' For backend authors only. Authors should implement all of these,

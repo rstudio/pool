@@ -1,6 +1,3 @@
-#' @include utils.R
-NULL
-
 ## Used in the Pool class. This function builds on top of `scheduleTask`
 ## to schedule recurring tasks. It uses the same mechanics: the return
 ## value is a function that cancels the scheduling of future tasks.
