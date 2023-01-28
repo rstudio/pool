@@ -206,7 +206,7 @@ Pool <- R6::R6Class("Pool",
       tryCatch({
         pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
         if (!pool_metadata$valid) {
-          pool_warn("object was destroyed twice.")
+          pool_warn("Object was destroyed twice.")
           return()
         }
         pool_metadata$valid <- FALSE
@@ -287,7 +287,7 @@ Pool <- R6::R6Class("Pool",
 
       pool_warn(c(
         "Failed to activate and/or validate existing object.",
-        "Trying again with a new object"
+        "Trying again with a new object."
       ))
       private$changeObjectStatus(object, NULL)
       object <- private$createObject()
@@ -297,7 +297,7 @@ Pool <- R6::R6Class("Pool",
         error = function(e) {
           private$changeObjectStatus(object, NULL)
           abort(
-            "Object does not appear to be valid.",
+            "Freshly created object does not appear to be valid.",
             call = error_call,
             parent = e
           )

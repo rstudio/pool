@@ -4,10 +4,10 @@
       poolCheckout(pool)
     Output
       <pool> Failed to activate and/or validate existing object.
-      <pool> Trying again with a new object
+      <pool> Trying again with a new object.
     Condition
       Error in `poolCheckout()`:
-      ! Object does not appear to be valid.
+      ! Freshly created object does not appear to be valid.
       Caused by error in `onActivate()`:
       ! Activation failed...
 
@@ -17,10 +17,10 @@
       poolCheckout(pool)
     Output
       <pool> Failed to activate and/or validate existing object.
-      <pool> Trying again with a new object
+      <pool> Trying again with a new object.
     Condition
       Error in `poolCheckout()`:
-      ! Object does not appear to be valid.
+      ! Freshly created object does not appear to be valid.
       Caused by error in `onValidate()`:
       ! Validation failed...
 
@@ -30,7 +30,7 @@
       obj <- get_private(pool)$checkValid(badObject)
     Output
       <pool> Failed to activate and/or validate existing object.
-      <pool> Trying again with a new object
+      <pool> Trying again with a new object.
 
 ---
 
@@ -38,10 +38,10 @@
       get_private(pool)$checkValid(obj)
     Output
       <pool> Failed to activate and/or validate existing object.
-      <pool> Trying again with a new object
+      <pool> Trying again with a new object.
     Condition
       Error:
-      ! Object does not appear to be valid.
+      ! Freshly created object does not appear to be valid.
       Caused by error in `onValidate()`:
       ! Validation failed...
 
