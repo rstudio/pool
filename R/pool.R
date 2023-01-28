@@ -151,7 +151,7 @@ Pool <- R6::R6Class("Pool",
     },
 
     print = function(...) {
-      cat("<Pool> of ", self$objClass, " objects\n", sep = "")
+      cat("<Pool> of ", self$objClass %||% "unknown", " objects\n", sep = "")
       cat("  Objects checked out: ", self$counters$taken, "\n", sep = "")
       cat("  Available in pool: ", self$counters$free, "\n", sep = "")
       cat("  Max size: ", self$maxSize, "\n", sep = "")

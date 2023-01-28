@@ -38,3 +38,14 @@
     Code
       poolReturn(x2)
 
+# empty pool has useful print method
+
+    Code
+      pool
+    Output
+      <Pool> of unknown objects
+        Objects checked out: 0
+        Available in pool: 0
+        Max size: Inf
+        Valid: TRUE
+

@@ -79,3 +79,12 @@ test_that("pool has useful print method", {
     poolReturn(x2)
   })
 })
+
+test_that("empty pool has useful print method", {
+  pool <- poolCreate(function() 10, minSize = 0)
+  on.exit(poolClose(pool))
+
+  expect_snapshot({
+    pool
+  })
+})
