@@ -73,12 +73,9 @@ Pool <- R6::R6Class("Pool",
     ## (sets up task to destroy the object if the number of
     ## total objects exceeds the minimum)
     release = function(object, error_call = caller_env()) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object, error_call = error_call())
       if (pool_metadata$state == "free") {
         abort("This object was already returned to the pool.", call = error_call)
-      }
-      if (is.null(pool_metadata) || !pool_metadata$valid) {
-        abort("Invalid object.", call = error_call)
       }
       ## immediately destroy object if pool has already been closed
       if (!self$valid) {
@@ -185,11 +182,12 @@ Pool <- R6::R6Class("Pool",
       pool_metadata$pool <- self
       pool_metadata$valid <- TRUE
       pool_metadata$state <- NULL
-      pool_metadata$lastValidated <- NULL
+      # force validation to happen immediately to surface any issues
+      pool_metadata$lastValidated <- Sys.time() - self$validationInterval - 1
 
       ## detect leaked connections and destroy them
       reg.finalizer(pool_metadata, function(e) {
-        if (pool_metadata$valid) {
+        if (e$valid) {
           pool_warn(c(
             "Checked-out object deleted before being returned.",
             "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
@@ -203,15 +201,17 @@ Pool <- R6::R6Class("Pool",
 
     ## tries to run onDestroy
     destroyObject = function(object) {
+      pool_metadata <- pool_metadata(object, check_valid = FALSE)
+      if (!pool_metadata$valid) {
+        pool_warn("Object was destroyed twice.")
+        return()
+      }
+
+      pool_metadata$valid <- FALSE
+      private$cancelScheduledTask(object, "validateHandle")
+      private$cancelScheduledTask(object, "destroyHandle")
+
       tryCatch({
-        pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
-        if (!pool_metadata$valid) {
-          pool_warn("Object was destroyed twice.")
-          return()
-        }
-        pool_metadata$valid <- FALSE
-        private$cancelScheduledTask(object, "validateHandle")
-        private$cancelScheduledTask(object, "destroyHandle")
         onDestroy(object)
       }, error = function(e) {
         pool_warn(c(
@@ -226,7 +226,7 @@ Pool <- R6::R6Class("Pool",
     ## gets taken and vice versa. Valid values for `from`
     ## and `to` are: NULL, "free", "taken"
     changeObjectStatus = function(object, to) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object)
       id <- pool_metadata$id
       from <- pool_metadata$state
 
@@ -265,7 +265,7 @@ Pool <- R6::R6Class("Pool",
     },
 
     cancelScheduledTask = function(object, task) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object, check_valid = FALSE)
       taskHandle <- pool_metadata[[task]]
       if (!is.null(taskHandle)) {
         pool_metadata[[task]] <- NULL
@@ -315,7 +315,7 @@ Pool <- R6::R6Class("Pool",
     ## secs have passed since the last validation (this allows
     ## us some performance gains)
     validate = function(object) {
-      pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
+      pool_metadata <- pool_metadata(object)
       lastValidated <- pool_metadata$lastValidated
       ## if the object has never been validated, set `lastValidated`
       ## to guarantee that it will be validated now

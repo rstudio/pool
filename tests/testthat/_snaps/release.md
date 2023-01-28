@@ -14,14 +14,6 @@
       Error in `poolReturn()`:
       ! This object was already returned to the pool.
 
-# release: throws if object is not valid
-
-    Code
-      poolReturn(obj)
-    Condition
-      Error in `poolReturn()`:
-      ! Invalid object.
-
 # release: warns if onPassivate fails
 
     Code
@@ -64,4 +56,12 @@
     Output
       <pool> You still have checked out objects.
       <pool> Use `poolReturn()` them to the pool so they can be destroyed.
+
+# poolReturn() errors if object is not valid
+
+    Code
+      poolReturn("x")
+    Condition
+      Error in `poolReturn()`:
+      ! `object` is not an pooled object.
 

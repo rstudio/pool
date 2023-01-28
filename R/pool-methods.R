@@ -101,11 +101,7 @@ setGeneric("poolReturn", function(object) {
 #' @export
 #' @rdname poolCheckout
 setMethod("poolReturn", "ANY", function(object) {
-  pool_metadata <- attr(object, "pool_metadata", exact = TRUE)
-  if (is.null(pool_metadata) || !pool_metadata$valid) {
-    stop("Invalid object.")
-  }
-  pool <- pool_metadata$pool
+  pool <- pool_metadata(object)$pool
   pool$release(object)
 })
 

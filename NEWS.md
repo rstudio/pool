@@ -1,5 +1,10 @@
 # pool (development version)
 
+* `dbPool()`'s `validateQuery` is now actually used (#153).
+
+* Connections are now validated once on first checkout to ensure that the
+  connection and validation strategy are both ok.
+
 * DBI methods should dispatch correctly in more cases; in particular 
   `dbReadTable()` and friends will now work correctly when used with
   `DBI::Id()` (#120).
