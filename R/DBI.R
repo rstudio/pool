@@ -45,7 +45,7 @@ dbPool <- function(drv,
   # Force dots
   dots <- list(...)
   if (length(dots) > 0 && !is_named(dots)) {
-    stop("All arguments to `dbPool` must be named")
+    abort("All arguments to `dbPool` must be named")
   }
 
   state <- new.env(parent = emptyenv())

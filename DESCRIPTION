@@ -24,7 +24,7 @@ Imports:
     rlang (>= 1.0.0)
 Suggests:
     covr,
-    dbplyr,
+    dbplyr (>= 2.0.0),
     dplyr,
     RMySQL,
     RSQLite,
@@ -36,3 +36,16 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 Config/Needs/website: tidyverse/tidytemplate
+Collate: 
+    'DBI-custom.R'
+    'DBI-transactions.R'
+    'DBI-wrap.R'
+    'DBI.R'
+    'compat-s3-register.R'
+    'dbplyr.R'
+    'hooks.R'
+    'pool-methods.R'
+    'pool-package.R'
+    'pool.R'
+    'scheduler.R'
+    'zzz.R'

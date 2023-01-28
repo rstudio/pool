@@ -44,7 +44,8 @@ poolCreate <- function(factory,
     maxSize,
     idleTimeout,
     validationInterval,
-    state
+    state,
+    error_call = current_env()
   )
 }
 

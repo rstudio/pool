@@ -4,6 +4,12 @@
   `dbReadTable()` and friends will now work correctly when used with
   `DBI::Id()` (#120).
 
+* pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
+  using pool with dplyr (#132).
+
+* Pool errors and warnings have been reviewed with an eye to making them 
+  more immediately actionable (#145).
+
 * Added support for SAP HANA databases (@marcosci, #103).
 
 # pool 0.1.6
