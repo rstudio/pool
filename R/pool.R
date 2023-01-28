@@ -201,15 +201,17 @@ Pool <- R6::R6Class("Pool",
 
     ## tries to run onDestroy
     destroyObject = function(object) {
+      pool_metadata <- pool_metadata(object, check_valid = FALSE)
+      if (!pool_metadata$valid) {
+        pool_warn("Object was destroyed twice.")
+        return()
+      }
+
+      pool_metadata$valid <- FALSE
+      private$cancelScheduledTask(object, "validateHandle")
+      private$cancelScheduledTask(object, "destroyHandle")
+
       tryCatch({
-        pool_metadata <- pool_metadata(object, check_valid = FALSE)
-        if (!pool_metadata$valid) {
-          pool_warn("Object was destroyed twice.")
-          return()
-        }
-        pool_metadata$valid <- FALSE
-        private$cancelScheduledTask(object, "validateHandle")
-        private$cancelScheduledTask(object, "destroyHandle")
         onDestroy(object)
       }, error = function(e) {
         pool_warn(c(
