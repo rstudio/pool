@@ -1,6 +1,7 @@
 source("utils.R")
 
 describe("release", {
+  local_reproducible_output()
 
   pool <- poolCreate(MockPooledObj$new,
     minSize = 1, maxSize = 3, idleTimeout = 0)
@@ -12,9 +13,7 @@ describe("release", {
     obj3 <- poolCheckout(pool)
     checkCounts(pool, free = 0, taken = 3)
 
-    expect_error(obj4 <- poolCheckout(pool),
-      paste("Maximum number of objects in pool has been reached")
-    )
+    expect_snapshot(poolCheckout(pool), error = TRUE)
 
     checkCounts(pool, free = 0, taken = 3)
     poolReturn(obj3)
@@ -31,23 +30,15 @@ describe("release", {
     checkCounts(pool, free = 1, taken = 0)
     obj <- poolCheckout(pool)
     poolReturn(obj)
-    expect_error(poolReturn(obj),
-      "This object was already returned to the pool.")
+    expect_snapshot(poolReturn(obj), error = TRUE)
     checkCounts(pool, free = 1, taken = 0)
-  })
-
-  it("throws if object is not valid", {
-    obj <- "a"
-    expect_error(poolReturn(obj), "Invalid object.")
   })
 
   it("warns if onPassivate fails", {
     checkCounts(pool, free = 1, taken = 0)
     obj <- poolCheckout(pool)
     failOnPassivate <<- TRUE
-    expect_error(poolReturn(obj),
-      paste("Object could not be returned back to the pool.",
-            "It was destroyed instead."))
+    expect_snapshot(poolReturn(obj), error = TRUE)
     failOnPassivate <<- FALSE
     checkCounts(pool, free = 0, taken = 0)
   })
@@ -56,15 +47,24 @@ describe("release", {
     checkCounts(pool, free = 0, taken = 0)
     obj <- poolCheckout(pool)
     checkCounts(pool, free = 0, taken = 1)
-    expect_warning(poolClose(pool),
-      "You still have checked out objects.")
+    expect_snapshot(poolClose(pool))
     checkCounts(pool, free = 0, taken = 1)
     poolReturn(obj)
     checkCounts(pool, free = 0, taken = 0)
-    expect_error(poolClose(pool),
-      "The pool was already closed.")
+    expect_snapshot(poolClose(pool), error = TRUE)
   })
+
+  it("warns if object can't be returned", {
+    expect_snapshot({
+      pool <- poolCreate(function() 1)
+      obj <- poolCheckout(pool)
+      rm(obj)
+      . <- gc()
+      poolClose(pool)
+    })
+  })
+
 })
-
-
-
+test_that("poolReturn() errors if object is not valid", {
+  expect_snapshot(poolReturn("x"), error = TRUE)
+})

@@ -1,6 +1,7 @@
 source("utils.R")
 
 describe("fetch", {
+  local_reproducible_output()
 
   pool <- poolCreate(MockPooledObj$new, minSize = 1, maxSize = 3,
     validationInterval = 1)
@@ -9,11 +10,7 @@ describe("fetch", {
     checkCounts(pool, free = 1, taken = 0)
 
     failOnActivate <<- TRUE
-    expect_error(
-      expect_warning(obj <- poolCheckout(pool),
-        paste("It wasn't possible to activate and/or validate",
-          "the object. Trying again with a new object.")),
-      "Object does not appear to be valid.")
+    expect_snapshot(poolCheckout(pool), error = TRUE)
     checkCounts(pool, free = 0, taken = 0)
     failOnActivate <<- FALSE
   })
@@ -21,11 +18,7 @@ describe("fetch", {
   it("throws if onValidate fails", {
     checkCounts(pool, free = 0, taken = 0)
     failOnValidate <<- TRUE
-    expect_error(
-      expect_warning(poolCheckout(pool),
-        paste("It wasn't possible to activate and/or validate",
-          "the object. Trying again with a new object.")),
-      "Object does not appear to be valid.")
+    expect_snapshot(poolCheckout(pool), error = TRUE)
     checkCounts(pool, free = 0, taken = 0)
     failOnValidate <<- FALSE
   })
@@ -33,14 +26,14 @@ describe("fetch", {
   it("only validates after validationInterval", {
     obj <- poolCheckout(pool)
     t0 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t0 <- pool_metadata$lastValidated
 
     poolReturn(obj)
 
     obj <- poolCheckout(pool)
     t1 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t1 <- pool_metadata$lastValidated
 
     if (difftime(t1, t0, units = "secs") < pool$validationInterval) {
@@ -54,7 +47,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t2 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t2 <- pool_metadata$lastValidated
 
     if (difftime(t2, t0, units = "secs") < pool$validationInterval) {
@@ -70,7 +63,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t3 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t3 <- pool_metadata$lastValidated
 
     if (difftime(t3, t0, units = "secs") > pool$validationInterval) {
@@ -84,7 +77,7 @@ describe("fetch", {
 
     obj <- poolCheckout(pool)
     t4 <- Sys.time()
-    pool_metadata <- attr(obj, "pool_metadata", exact = TRUE)
+    pool_metadata <- pool_metadata(obj)
     lastValidated_t4 <- pool_metadata$lastValidated
 
     if (difftime(t4, t3, units = "secs") < pool$validationInterval) {
@@ -113,9 +106,7 @@ describe("fetch", {
 
     Sys.sleep(pool$validationInterval + 1)
     attr(badObject, "bad") <- TRUE
-    expect_warning(obj <- get_private(pool)$checkValid(badObject),
-      paste("It wasn't possible to activate and/or validate",
-        "the object. Trying again with a new object."))
+    expect_snapshot(obj <- get_private(pool)$checkValid(badObject))
 
     Sys.sleep(pool$validationInterval + 1)
     ## check that the new object is valid
@@ -128,11 +119,8 @@ describe("fetch", {
     ## cannot validate bad object, so creates new one and tries again
     ## new object's activation and validation also fails: throw
     failOnValidate <<- TRUE
-    expect_error(
-      expect_warning(get_private(pool)$checkValid(obj),
-        paste("It wasn't possible to activate and/or validate",
-          "the object. Trying again with a new object.")),
-      "Object does not appear to be valid.")
+
+    expect_snapshot(get_private(pool)$checkValid(obj), error = TRUE)
     failOnValidate <<- FALSE
 
     ## since we couldn't validate the object the first or the second
@@ -140,16 +128,13 @@ describe("fetch", {
     ## in the pool
     checkCounts(pool, free = 0, taken = 0)
   })
+  poolClose(pool)
 
   it("throws if the pool was closed", {
-    checkCounts(pool, free = 0, taken = 0)
-    obj <- poolCheckout(pool)
-    poolReturn(obj)
-
-    checkCounts(pool, free = 1, taken = 0)
+    pool <- poolCreate(function() 1)
     poolClose(pool)
-    checkCounts(pool, free = 0, taken = 0)
-    expect_error(poolCheckout(pool),
-      "This pool is no longer valid. Cannot fetch new objects.")
+
+    expect_snapshot(poolCheckout(pool), error = TRUE)
   })
+
 })

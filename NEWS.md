@@ -2,6 +2,21 @@
 
 * Pools now get a useful print method (#140).
 
+* `dbPool()`'s `validateQuery` is now actually used (#153).
+
+* Connections are now validated once on first checkout to ensure that the
+  connection and validation strategy are both ok.
+
+* DBI methods should dispatch correctly in more cases; in particular 
+  `dbReadTable()` and friends will now work correctly when used with
+  `DBI::Id()` (#120).
+
+* pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
+  using pool with dplyr (#132).
+
+* Pool errors and warnings have been reviewed with an eye to making them 
+  more immediately actionable (#145).
+
 * Added support for SAP HANA databases (@marcosci, #103).
 
 # pool 0.1.6
