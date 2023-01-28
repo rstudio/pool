@@ -12,7 +12,7 @@
       ! Object creation failed.
       * The `factory` must not return `NULL`
 
-# destroyObject: throws if onDestroy fails
+# useful warning if onDestroy fails
 
     Code
       poolReturn(b)

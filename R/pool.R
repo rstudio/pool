@@ -273,43 +273,42 @@ Pool <- R6::R6Class("Pool",
       }
     },
 
-    ## try to validate + activate an object; if that fails,
-    ## destroy the object and run whatever more cleanup is
-    ## necessary (provided through `errorFun`)
-    checkValidTemplate = function(object, errorFun) {
-      tryCatch({
-        onActivate(object)
-        private$validate(object)
-        return(object)
+    ## tries to validate + activate the object; if that fails,
+    ## warn, destroy that object and try once more
+    ## if second attempt fails, throw an error
+    checkValid = function(object, error_call = caller_env()) {
+      tryCatch(
+        {
+          private$activateAndValidate(object)
+          return(object)
+        },
+        error = function(e) {}
+      )
 
-      }, error = function(e) {
-        private$changeObjectStatus(object, NULL)
-        errorFun(e)
-      })
+      pool_warn(c(
+        "Failed to activate and/or validate existing object.",
+        "Trying again with a new object"
+      ))
+      private$changeObjectStatus(object, NULL)
+      object <- private$createObject()
+
+      withCallingHandlers(
+        private$activateAndValidate(object),
+        error = function(e) {
+          private$changeObjectStatus(object, NULL)
+          abort(
+            "Object does not appear to be valid.",
+            call = error_call,
+            parent = e
+          )
+        }
+      )
+      object
     },
 
-    ## tries to validate + activate the object; if that fails,
-    ## the first time around, warn, destroy that object and try
-    ## again with a new object; **returns** the object
-    ## if both tries fail, throw an error
-    checkValid = function(object, error_call = caller_env()) {
-      object <- private$checkValidTemplate(object,
-        function(e) {
-          pool_warn(c(
-            "Failed to activate and/or validate existing object.",
-            "Trying again with a new object"
-          ))
-
-          private$checkValidTemplate(private$createObject(),
-            function(e) {
-              abort(
-                "Object does not appear to be valid.",
-                call = error_call,
-                parent = e
-              )
-            })
-        })
-      return(object)
+    activateAndValidate = function(object) {
+      onActivate(object)
+      private$validate(object)
     },
 
     ## run onValidate on the object only if over `validationInterval`

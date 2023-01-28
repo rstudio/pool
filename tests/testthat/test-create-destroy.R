@@ -7,36 +7,25 @@ test_that("createObject throws if `factory` throws or returns NULL", {
   })
 })
 
-describe("destroyObject", {
+test_that("useful warning if onDestroy fails", {
+  pool <- poolCreate(MockPooledObj$new, idleTimeout = 0)
 
-  pool <- poolCreate(MockPooledObj$new,
-    minSize = 1, maxSize = 3, idleTimeout = 0)
+  checkCounts(pool, free = 1, taken = 0)
+  failOnDestroy <<- TRUE
 
-  it("throws if onDestroy fails", {
-    checkCounts(pool, free = 1, taken = 0)
-    failOnDestroy <<- TRUE
+  a <- poolCheckout(pool)
+  b <- poolCheckout(pool)
 
-    a <- poolCheckout(pool)
-    b <- poolCheckout(pool)
-    checkCounts(pool, free = 0, taken = 2)
-
-    ## since we're over the minSize, once we return `b` to
-    ## the pool, it will be destroyed immediately (since
-    ## we set `idleTimeout = 0`)
-
-    expect_snapshot({
-      poolReturn(b)
-      later::run_now()
-    })
-
-    checkCounts(pool, free = 0, taken = 1)
-    failOnDestroy <<- FALSE
-
-    ## cleanup: return `a`
-    poolReturn(a)
-    checkCounts(pool, free = 1, taken = 0)
+  # since we're over minSize, returning `b` destroy it
+  expect_snapshot({
+    poolReturn(b)
+    later::run_now()
   })
 
+  checkCounts(pool, free = 0, taken = 1)
+  failOnDestroy <<- FALSE
+
+  poolReturn(a)
   poolClose(pool)
   gc()
 })
