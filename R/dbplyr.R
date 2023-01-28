@@ -1,6 +1,3 @@
-#' @include DBI.R
-NULL
-
 #' Use pool with dbplyr
 #'
 #' Wrappers for key dplyr (and dbplyr) methods so that pool works seemlessly
