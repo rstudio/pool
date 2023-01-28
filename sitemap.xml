@@ -40,9 +40,6 @@
     <loc>http://rstudio.github.io/pool/reference/dbPool.html</loc>
   </url>
   <url>
-    <loc>http://rstudio.github.io/pool/reference/dplyr-db-methods.html</loc>
-  </url>
-  <url>
     <loc>http://rstudio.github.io/pool/reference/index.html</loc>
   </url>
   <url>
@@ -59,5 +56,8 @@
   </url>
   <url>
     <loc>http://rstudio.github.io/pool/reference/show-Pool-method.html</loc>
+  </url>
+  <url>
+    <loc>http://rstudio.github.io/pool/reference/tbl.Pool.html</loc>
   </url>
 </urlset>
