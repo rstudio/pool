@@ -1,5 +1,69 @@
-#' @include object.R
+#' Pooled object methods.
+#'
+#' For backend authors only. Authors should implement all of these,
+#' which are then called by the Pool class methods. These should
+#' not be called directly either by backend authors or by the end
+#' users.
+#'
+#' @keywords internal
+#' @param object A pooled object.
+#' @name hooks
 NULL
+
+#' @export
+#' @rdname hooks
+setGeneric("onActivate", function(object) {
+  standardGeneric("onActivate")
+})
+
+#' @export
+#' @rdname hooks
+setGeneric("onPassivate", function(object) {
+  standardGeneric("onPassivate")
+})
+
+#' @export
+#' @rdname hooks
+setGeneric("onDestroy", function(object) {
+  standardGeneric("onDestroy")
+})
+
+#' @param query A simple query that can be used to verify that
+#' the `object` functions as expected.
+#' @export
+#' @rdname hooks
+setGeneric("onValidate", function(object, query) {
+  standardGeneric("onValidate")
+})
+
+
+# Defaults ----------------------------------------------------------------
+
+#' @export
+#' @rdname hooks
+setMethod("onActivate", "ANY", function(object) {
+  invisible()
+})
+
+#' @export
+#' @rdname hooks
+setMethod("onPassivate", "ANY", function(object) {
+  invisible()
+})
+
+#' @export
+#' @rdname hooks
+setMethod("onDestroy", "ANY", function(object) {
+  invisible()
+})
+
+#' @export
+#' @rdname hooks
+setMethod("onValidate", "ANY", function(object, query) {
+  invisible()
+})
+
+# DBI ---------------------------------------------------------------------
 
 ## This method used to attempt to clean up for you if it
 ## detected open results sets. However, different database
@@ -10,19 +74,19 @@ NULL
 ## checking out connections -- only necessary for pretty
 ## complicated transactions).
 #' @export
-#' @rdname object
+#' @rdname hooks
 setMethod("onPassivate", "DBIConnection", function(object) {
   invisible()
 })
 
 #' @export
-#' @rdname object
+#' @rdname hooks
 setMethod("onDestroy", "DBIConnection", function(object) {
   DBI::dbDisconnect(object)
 })
 
 #' @export
-#' @rdname object
+#' @rdname hooks
 setMethod("onValidate", "DBIConnection", function(object) {
   pool <- pool_metadata(object)$pool
   query <- pool$state$validateQuery
@@ -72,3 +136,4 @@ setMethod("onValidate", "DBIConnection", function(object) {
     conditionCall(cond)
   ))
 })
+

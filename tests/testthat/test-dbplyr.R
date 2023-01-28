@@ -1,107 +1,55 @@
-source("utils.R")
+test_that("can copy and collect", {
+  pool <- local_pool()
 
-describe("pool package", {
+  df <- tibble::tibble(x = 1:10, y = 1:10)
+  db <- dplyr::copy_to(
+    pool,
+    df,
+    temporary = FALSE,
+    indexes = list(c("x", "y"), "y")
+  )
+  expect_equal(dplyr::collect(db), df)
 
-  if (requireNamespace("RSQLite", quietly = TRUE)) {
-
-    pool <- dbPool(RSQLite::SQLite())
-    on.exit(poolClose(pool))
-
-    it("can create local SQLite pool", {
-      expect_equal(class(pool), c("Pool", "R6"))
-      info <- list(
-        class = "Pool",
-        valid = TRUE,
-        minSize = 1,
-        maxSize = Inf,
-        idleTimeout = 60,
-        pooledObjectClass = "SQLiteConnection",
-        numberFreeObjects = 0,
-        numberTakenObjects = 1
-      )
-      expect_equal(dbGetInfo(pool), info)
-      checkCounts(pool, free = 1, taken = 0)
-    })
-
-    it("can use dplyr syntax to copy table to DB", {
-
-      checkCounts(pool, free = 1, taken = 0)
-      dplyr::copy_to(pool, flights, "flights",
-        temporary = FALSE,
-        indexes = list(
-          c("year", "month", "day"),
-          "carrier",
-          "tailnum",
-          "dest"
-        )
-      )
-      checkCounts(pool, free = 1, taken = 0)
-      expect_true(dbExistsTable(pool, "flights"))
-    })
-
-    it("can use dplyr syntax to get a table from DB", {
-      checkCounts(pool, free = 1, taken = 0)
-      flights_db <- dplyr::tbl(pool, "flights")
-      expect_s3_class(flights_db$src$con, "Pool")
-      checkCounts(pool, free = 1, taken = 0)
-      expect_s3_class(flights_db, "tbl_Pool")
-    })
-
-    it("can use dplyr syntax to select", {
-      checkCounts(pool, free = 1, taken = 0)
-      flights_db <- dplyr::tbl(pool, "flights")
-      s <- dplyr::select(flights_db, year:day, dep_delay, arr_delay)
-      expect_equal(tibble::as_tibble(s),
-        tibble::tibble(
-          year = rep(2013L, 10),
-          month = rep(1L, 10),
-          day = rep(1L, 10),
-          dep_delay = c(2, 4, 2, -1, -6, -4, -5, -3, -3, -2),
-          arr_delay = c(11, 20, 33, -18, -25, 12, 19, -14, -8, 8)
-        )
-      )
-      checkCounts(pool, free = 1, taken = 0)
-    })
-
-    it("can use dplyr syntax to filter", {
-      checkCounts(pool, free = 1, taken = 0)
-      flights_db <- dplyr::tbl(pool, "flights")
-      f <- dplyr::filter(flights_db, dep_delay > 0)
-      ft <- tibble::as_tibble(f)
-      expect_equal(ft$dep_time, c(517, 533, 542))
-      expect_equal(ft$arr_time, c(830, 850, 923))
-      checkCounts(pool, free = 1, taken = 0)
-    })
-
-    it("can use dplyr syntax to `collect`", {
-      checkCounts(pool, free = 1, taken = 0)
-      flights_db <- dplyr::tbl(pool, "flights")
-      c <- dplyr::collect(flights_db)
-      expect_equal(c, flights)
-      expect_equal(nrow(c), 10)
-      checkCounts(pool, free = 1, taken = 0)
-    })
-
-    it("throws error when `temporary = TRUE`", {
-      expect_error(dplyr::copy_to(pool, flights, "temp"),
-        "You cannot use `temporary = TRUE`"
-      )
-    })
-  }
+  # But copy_to must not be temporary
+  expect_snapshot(dplyr::copy_to(pool, df), error = TRUE)
 })
 
-test_that("left join works", {
-  pool <- dbPool(RSQLite::SQLite())
-  on.exit(poolClose(pool))
+test_that("can use one-table verbs", {
+  pool <- local_pool()
 
-  db <- dplyr::copy_to(pool, data.frame(x = 1), "df", temporary = FALSE)
-  out <- dplyr::collect(dplyr::left_join(db, db, by = "x"))
-  expect_equal(out, tibble::tibble(x = 1))
+  df <- tibble::tibble(letters = letters[1:3], x = 1:3, z = 3:1)
+  db <- dplyr::copy_to(pool, df, temporary = FALSE)
+
+  out <- df %>%
+    dplyr::select(-z) %>%
+    dplyr::filter(x < 2) %>%
+    dplyr::group_by(letters) %>%
+    dplyr::summarise(n = dplyr::n())
+  expect_equal(dplyr::collect(out), tibble::tibble(letters = "a", n = 1))
+})
+
+test_that("dplyr verbs throw error when `temporary = TRUE`", {
+  pool <- local_pool()
+
+  expect_snapshot(error = TRUE, {
+    dplyr::copy_to(pool, data.frame(x = 1), "df")
+    dplyr::compute(dplyr::tbl(pool, "mtcars"))
+  })
+})
+
+test_that("joins, semi_joins, and set ops work", {
+  pool <- local_pool()
+
+  db1 <- dplyr::copy_to(pool, data.frame(x = 1), temporary = FALSE)
+  db2 <- dplyr::copy_to(pool, data.frame(x = 2), temporary = FALSE)
+
+  expect_no_error(dplyr::collect(dplyr::left_join(db1, db1, by = "x")))
+  expect_no_error(dplyr::collect(dplyr::semi_join(db1, db2, by = "x")))
+  expect_no_error(dplyr::collect(dplyr::union(db1, db2)))
 })
 
 test_that("can use schemas with pool", {
-  pool <- dbPool(RSQLite::SQLite())
-  on.exit(poolClose(pool))
+  pool <- local_pool()
 
   df <- tibble::tibble(x = 1:5)
 
@@ -113,4 +61,16 @@ test_that("can use schemas with pool", {
 
   tbl <- dplyr::tbl(pool, dbplyr::in_schema("main", "df"))
   expect_equal(dplyr::collect(tbl), df)
+})
+
+test_that("wrapper looks good", {
+  # Skip in test coverage runs because covr instrumentation is injected
+   # into function body
+   skip_if_not(is.null(getOption("covr.flags")))
+
+   expect_snapshot({
+    dbplyr_wrap("db_collect")
+    "with temporary argument"
+    dbplyr_wrap("db_compute")
+  })
 })
