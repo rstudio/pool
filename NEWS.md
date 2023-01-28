@@ -1,5 +1,8 @@
 # pool (development version)
 
+* Pool errors and warnings have been reviewed with an eye to making them 
+  more immediately actionable (#145).
+
 * Added support for SAP HANA databases (@marcosci, #103).
 
 # pool 0.1.6
