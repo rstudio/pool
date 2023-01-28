@@ -1,8 +1,7 @@
 # pool (development version)
 
-* If you `poolCheckout()` an object and forget to return it before it's deleted,
-  you now get a more informative message and the object is automatically 
-  cleaned up (#95).
+* Pool errors and warnings have been reviewed with an eye to making them 
+  more immediately actionable (#145).
 
 * Added support for SAP HANA databases (@marcosci, #103).
 
