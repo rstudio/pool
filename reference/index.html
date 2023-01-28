@@ -56,40 +56,9 @@
 
       <dl><dt>
           
-          <code><a href="DBI-connection-interpolate.html">sqlInterpolate(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-interpolate.html">sqlParseVariables(<i>&lt;Pool&gt;</i>)</a></code> 
+          <code><a href="DBI-custom.html">dbSendQuery(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbSendStatement(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbDisconnect(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbGetInfo(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbIsValid(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbBegin(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbCommit(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbRollback(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbWithTransaction(<i>&lt;Pool&gt;</i>)</a></code> 
         </dt>
-        <dd>Safely interpolate values into an SQL string and parse them back.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-connection-quote.html">dbQuoteIdentifier(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-connection-quote.html">dbUnquoteIdentifier(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-quote.html">dbQuoteLiteral(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-quote.html">dbQuoteString(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> 
-        </dt>
-        <dd>SQL quoting.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-connection-sql.html">sqlData(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-sql.html">sqlCreateTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-sql.html">sqlAppendTable(<i>&lt;Pool&gt;</i>)</a></code> 
-        </dt>
-        <dd>Creating and manipulating SQL tables.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-connection-transaction.html">dbBegin(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-transaction.html">dbCommit(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-transaction.html">dbRollback(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection-transaction.html">dbWithTransaction(<i>&lt;Pool&gt;</i>)</a></code> 
-        </dt>
-        <dd>DBIConnection transaction methods are not supported for
-Pool objects.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-connection.html">dbSendQuery(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbSendStatement(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbGetQuery(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbExecute(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbListResults(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbListFields(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbListTables(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbListObjects(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbReadTable(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbWriteTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbCreateTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbAppendTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbExistsTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbRemoveTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-connection.html">dbIsReadOnly(<i>&lt;Pool&gt;</i>)</a></code> 
-        </dt>
-        <dd>DBIConnection methods.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-object-deprecated.html">make.db.names(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-object-deprecated.html">isSQLKeyword(<i>&lt;Pool&gt;</i>,<i>&lt;character&gt;</i>)</a></code> <code><a href="DBI-object-deprecated.html">SQLKeywords(<i>&lt;Pool&gt;</i>)</a></code> 
-        </dt>
-        <dd>Make R identifiers into legal SQL identifiers.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="DBI-object.html">dbDataType(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-object.html">dbGetInfo(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-object.html">dbIsValid(<i>&lt;Pool&gt;</i>)</a></code> 
-        </dt>
-        <dd>DBIObject methods.</dd>
+        <dd>DBI methods</dd>
       </dl><dl><dt>
           
           <code><a href="Pool-class.html">poolCreate()</a></code> <code><a href="Pool-class.html">poolClose()</a></code> 
@@ -107,7 +76,7 @@ Pool objects.</dd>
         <dd>Check out and return object from the pool</dd>
       </dl><dl><dt>
           
-          <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code> <code><a href="poolWithTransaction.html">dbBreak()</a></code> 
+          <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code> 
         </dt>
         <dd>Self-contained database transactions using pool</dd>
       </dl><dl><dt>

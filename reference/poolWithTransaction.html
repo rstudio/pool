@@ -49,7 +49,7 @@ you don't leak connections or forget to commit/rollback a transaction."><!-- mat
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Self-contained database transactions using pool</h1>
-      <small class="dont-index">Source: <a href="https://github.com/rstudio/pool/blob/HEAD/R/DBI-connection-transaction.R" class="external-link"><code>R/DBI-connection-transaction.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/rstudio/pool/blob/HEAD/R/DBI-transactions.R" class="external-link"><code>R/DBI-transactions.R</code></a></small>
       <div class="d-none name"><code>poolWithTransaction.Rd</code></div>
     </div>
 
@@ -63,9 +63,7 @@ you don't leak connections or forget to commit/rollback a transaction.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">poolWithTransaction</span><span class="op">(</span><span class="va">pool</span>, <span class="va">func</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">dbBreak</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">poolWithTransaction</span><span class="op">(</span><span class="va">pool</span>, <span class="va">func</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -107,7 +105,7 @@ is called. In addition, if you modify the local R environment from within
 <code>func</code> (e.g. setting global variables, writing to disk), these
 changes will persist after the function has returned.</p>
 <p>Also, like <code><a href="https://dbi.r-dbi.org/reference/dbWithTransaction.html" class="external-link">DBI::dbWithTransaction()</a></code>, there is also a special
-function called <code>dbBreak()</code> that allows for an early, silent exit
+function called <code><a href="https://dbi.r-dbi.org/reference/dbWithTransaction.html" class="external-link">dbBreak()</a></code> that allows for an early, silent exit
 with rollback. It can be called only from inside <code>poolWithTransaction</code>.</p>
     </div>
 
@@ -142,7 +140,7 @@ with rollback. It can be called only from inside <code>poolWithTransaction</code
 <span class="r-in"><span>  <span class="fu">poolWithTransaction</span><span class="op">(</span><span class="va">pool</span>, <span class="kw">function</span><span class="op">(</span><span class="va">conn</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"INSERT INTO cars (speed, dist) VALUES (1, 1);"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"INSERT INTO cars (speed, dist) VALUES (2, 2);"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"cars"</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">7</span><span class="op">)</span> <span class="fu">dbBreak</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"cars"</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">7</span><span class="op">)</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWithTransaction.html" class="external-link">dbBreak</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"INSERT INTO cars (speed, dist) VALUES (3, 3);"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable</a></span><span class="op">(</span><span class="va">pool</span>, <span class="st">"cars"</span><span class="op">)</span>   <span class="co"># still 6 rows</span></span></span>
