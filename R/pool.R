@@ -2,6 +2,7 @@
 Pool <- R6::R6Class("Pool",
   public = list(
 
+    objClass = NULL,
     valid = NULL,
     counters = NULL,
     minSize = NULL,
@@ -31,7 +32,7 @@ Pool <- R6::R6Class("Pool",
         self$validationInterval <- validationInterval
         self$state <- state
 
-        private$objClass <- NULL
+        self$objClass <- NULL
 
         private$freeObjects <- new.env(parent = emptyenv())
 
@@ -150,7 +151,7 @@ Pool <- R6::R6Class("Pool",
     },
 
     print = function(...) {
-      cat("<Pool> of ", private$objClass, " objects\n", sep = "")
+      cat("<Pool> of ", self$objClass, " objects\n", sep = "")
       cat("  Objects checked out: ", self$counters$taken, "\n", sep = "")
       cat("  Available in pool: ", self$counters$free, "\n", sep = "")
       cat("  Max size: ", self$maxSize, "\n", sep = "")
@@ -164,7 +165,6 @@ Pool <- R6::R6Class("Pool",
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
-    objClass = NULL,
 
     ## creates an object, assigns it to the
     ## free environment and returns it
@@ -184,8 +184,8 @@ Pool <- R6::R6Class("Pool",
         )
       }
 
-      if (is.null(private$objClass)) {
-        private$objClass <- class(object)
+      if (is.null(self$objClass)) {
+        self$objClass <- class(object)
       }
 
       ## attach metadata about the object

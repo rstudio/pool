@@ -59,15 +59,13 @@ setMethod("dbDisconnect", "Pool", function(conn, ...) {
 #' @export
 #' @rdname DBI-custom
 setMethod("dbGetInfo", "Pool", function(dbObj, ...) {
-  pooledObj <- poolCheckout(dbObj)
-  on.exit(poolReturn(pooledObj))
   list(
     class = is(dbObj),
     valid = dbObj$valid,
     minSize = dbObj$minSize,
     maxSize = dbObj$maxSize,
     idleTimeout = dbObj$idleTimeout,
-    pooledObjectClass = is(pooledObj)[1],
+    pooledObjectClass = dbObj$objClass[[1]],
     numberFreeObjects = dbObj$counters$free,
     numberTakenObjects = dbObj$counters$taken
   )
