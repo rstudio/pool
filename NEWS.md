@@ -1,5 +1,8 @@
 # pool (development version)
 
+* pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
+  using pool with dplyr (#132).
+
 * Pool errors and warnings have been reviewed with an eye to making them 
   more immediately actionable (#145).
 
