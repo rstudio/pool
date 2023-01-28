@@ -31,26 +31,8 @@ Suggests:
     testthat (>= 3.0.0),
     tibble,
     withr
+Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Collate:
-    'pool-methods.R'
-    'DBI-connection-interpolate.R'
-    'DBI-connection-quote.R'
-    'DBI-connection-sql.R'
-    'DBI-connection-transaction.R'
-    'DBI-connection.R'
-    'DBI-object-deprecated.R'
-    'DBI-object.R'
-    'object.R'
-    'DBI-pool.R'
-    'DBI.R'
-    'compat-s3-register.R'
-    'dbplyr.R'
-    'pool-package.R'
-    'pool.R'
-    'scheduler.R'
-    'zzz.R'
-Config/testthat/edition: 3
-Config/Needs/website: tidyverse/tidytemplate

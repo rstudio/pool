@@ -1,5 +1,9 @@
 # pool (development version)
 
+* DBI methods should dispatch correctly in more cases; in particular 
+  `dbReadTable()` and friends will now work correctly when used with
+  `DBI::Id()` (#120).
+
 * pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
   using pool with dplyr (#132).
 
