@@ -61,4 +61,7 @@
       <pool> Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`
     Code
       poolClose(pool)
+    Output
+      <pool> You still have checked out objects.
+      <pool> Use `poolReturn()` them to the pool so they can be destroyed.
 

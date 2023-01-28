@@ -194,7 +194,6 @@ Pool <- R6::R6Class("Pool",
             "Checked-out object deleted before being returned.",
             "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
           ))
-          self$release(object, error_call = error_call)
         }
       }, onexit = TRUE)
 
