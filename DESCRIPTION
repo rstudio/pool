@@ -24,7 +24,7 @@ Imports:
     rlang (>= 1.0.0)
 Suggests:
     covr,
-    dbplyr,
+    dbplyr (>= 2.0.0),
     dplyr,
     RMySQL,
     RSQLite,
@@ -46,6 +46,7 @@ Collate:
     'object.R'
     'DBI-pool.R'
     'DBI.R'
+    'compat-s3-register.R'
     'dbplyr.R'
     'pool-package.R'
     'pool.R'
