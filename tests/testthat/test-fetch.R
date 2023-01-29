@@ -105,11 +105,11 @@ describe("fetch", {
 
     Sys.sleep(pool$validationInterval + .1)
     attr(badObject, "bad") <- TRUE
-    expect_snapshot(obj <- get_private(pool)$checkValid(badObject))
+    expect_snapshot(obj <- get_private(pool)$checkObjectValid(badObject))
 
     Sys.sleep(pool$validationInterval + .1)
     ## check that the new object is valid
-    expect_identical(obj, get_private(pool)$checkValid(obj))
+    expect_identical(obj, get_private(pool)$checkObjectValid(obj))
 
     ## back to having one free, valid object
     checkCounts(pool, free = 1, taken = 0)
@@ -119,7 +119,7 @@ describe("fetch", {
     ## new object's activation and validation also fails: throw
     failOnValidate <<- TRUE
 
-    expect_snapshot(get_private(pool)$checkValid(obj), error = TRUE)
+    expect_snapshot(get_private(pool)$checkObjectValid(obj), error = TRUE)
     failOnValidate <<- FALSE
 
     ## since we couldn't validate the object the first or the second

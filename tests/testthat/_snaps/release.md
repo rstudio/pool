@@ -38,8 +38,8 @@
     Code
       poolClose(pool)
     Condition
-      Error in `pool$close()`:
-      ! The pool was already closed.
+      Error in `poolClose()`:
+      ! The pool has been closed.
 
 # release: warns if object can't be returned
 

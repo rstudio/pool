@@ -27,7 +27,7 @@
 # fetch: warns if validation fails once, creates new object and tries again
 
     Code
-      obj <- get_private(pool)$checkValid(badObject)
+      obj <- get_private(pool)$checkObjectValid(badObject)
     Output
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object.
@@ -35,7 +35,7 @@
 ---
 
     Code
-      get_private(pool)$checkValid(obj)
+      get_private(pool)$checkObjectValid(obj)
     Output
       <pool> Failed to activate and/or validate existing object.
       <pool> Trying again with a new object.
@@ -51,5 +51,5 @@
       poolCheckout(pool)
     Condition
       Error in `poolCheckout()`:
-      ! This pool is no longer valid. Cannot fetch new objects.
+      ! The pool has been closed.
 
