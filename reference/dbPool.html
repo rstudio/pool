@@ -112,6 +112,13 @@ options, but these don't work for all databases.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># You use a dbPool in the same way as a standard DBI connection</span></span></span>
 <span class="r-in"><span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu">dbPool</span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pool</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;Pool&gt; of SQLiteConnection objects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Objects checked out: 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Available in pool: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Max size: Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Valid: TRUE</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">pool</span>, <span class="st">"mtcars"</span>, <span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">pool</span>, <span class="st">"SELECT * FROM mtcars LIMIT 4"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    mpg cyl disp  hp drat    wt  qsec vs am gear carb</span>
