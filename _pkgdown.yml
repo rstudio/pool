@@ -1,5 +1,6 @@
 url: http://rstudio.github.io/pool/
 template:
+  package: tidytemplate
   bootstrap: 5
 
 articles:
