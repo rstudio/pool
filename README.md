@@ -7,9 +7,9 @@ pool
 [![Codecov test coverage](https://codecov.io/gh/rstudio/pool/branch/main/graph/badge.svg)](https://codecov.io/gh/rstudio/pool?branch=main)
 <!-- badges: end -->
 
-The goal of the **pool** package is to abstract away the logic of database connection management and the performance cost of repeated connection creation. These concerns are especially prominent in interactive contexts, e.g. Shiny apps that connect to a remote database). pool provides objects that work seamlessly with the DBI and dplyr, so in most cases using pool is as simple replacing `DBI::dbConnect()` with `dbPool()` and adding a call to `poolClose()`.
+The goal of the **pool** package is to abstract away the challenges of database connection management, which is particularly relevant in interactive contexts like Shiny apps that connect to a database. 
 
-The `pool` package adds a new level of abstraction when connecting to a database: instead of directly fetching a connection from the database, you will create an object (called a pool) with a reference to that database. The pool holds a number of connections to the database. Some of these may be currently in-use and some of these may be idle, waiting for a query to request them. Each time you make a query, you are querying the pool, rather than the database. Under the hood, the pool will either give you an idle connection that it previously fetched from the database or, if it has no free connections, fetch one and give it to you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. 
+Instead of creating and close connections yourself, you create a "pool" of connections, and the pool package manages them for you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. The pool works seamlessly with DBI and dplyr, so in most cases using the pool package is as simple replacing `DBI::dbConnect()` with `dbPool()` and adding a call to `poolClose()`.
 
 Learn more about why pool is needed in `vignette("why-pool")`.
 

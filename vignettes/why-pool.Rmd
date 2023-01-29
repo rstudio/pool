@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+library(shiny)
 onStop <- function(...) {
   shiny::onStop(...)
   invisible()
@@ -197,6 +198,6 @@ if (interactive())
 ```
 
 By default, the pool will maintain one idle connection.
-When you make a query to the pool, it will always that connection, unless it happens to already be busy.
+When you make a query to the pool, it will always use that connection, unless it happens to already be busy.
 In that case, the pool will create another connection, use it, and then return it to the pool.
 If that second connection isn't used for more then a minute (by default), the pool will disconnect it.
