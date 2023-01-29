@@ -1,6 +1,7 @@
 source("utils.R")
 
 describe("pool", {
+  local_reproducible_output()
 
   describe("basic mechanics", {
     pool <- poolCreate(MockPooledObj$new,
@@ -45,17 +46,45 @@ describe("pool", {
     })
 
     it("enforces maxSize", {
+      pool <- poolCreate(function() 1, maxSize = 3)
+
       a <- poolCheckout(pool)
       b <- poolCheckout(pool)
       c <- poolCheckout(pool)
-      expect_error(poolCheckout(pool),
-        "Maximum number of objects in pool has been reached")
+      expect_snapshot(poolCheckout(pool), error = TRUE)
       objs <- list(a, b, c)
       lapply(objs, poolReturn)
+
+      poolClose(pool)
     })
 
     poolClose(pool)
   })
 })
 
+test_that("pool has useful print method", {
+  pool <- poolCreate(function() 10)
+  on.exit(poolClose(pool))
 
+  expect_snapshot({
+    pool
+
+    x1 <- poolCheckout(pool)
+    x2 <- poolCheckout(pool)
+    pool
+
+    poolReturn(x1)
+    pool
+
+    poolReturn(x2)
+  })
+})
+
+test_that("empty pool has useful print method", {
+  pool <- poolCreate(function() 10, minSize = 0)
+  on.exit(poolClose(pool))
+
+  expect_snapshot({
+    pool
+  })
+})

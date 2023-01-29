@@ -1,6 +1,3 @@
-#' @include object.R
-NULL
-
 #' Create a pool of database connections
 #'
 #' `dbPool()` is a drop-in replacement for [DBI::dbConnect()] that
@@ -20,6 +17,8 @@ NULL
 #' @examples
 #' # You use a dbPool in the same way as a standard DBI connection
 #' pool <- dbPool(RSQLite::SQLite())
+#' pool
+#'
 #' DBI::dbWriteTable(pool, "mtcars", mtcars)
 #' dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
 #'
@@ -48,7 +47,7 @@ dbPool <- function(drv,
   # Force dots
   dots <- list(...)
   if (length(dots) > 0 && !is_named(dots)) {
-    stop("All arguments to `dbPool` must be named")
+    abort("All arguments to `dbPool` must be named")
   }
 
   state <- new.env(parent = emptyenv())

@@ -21,41 +21,23 @@ Imports:
     DBI,
     later (>= 1.0.0),
     R6,
-    rlang
+    rlang (>= 1.0.0)
 Suggests:
     covr,
-    dbplyr,
+    dbplyr (>= 2.0.0),
     dplyr,
     knitr,
     rmarkdown,
-    shiny,
     RMySQL,
     RSQLite,
+    shiny,
     testthat (>= 3.0.0),
     tibble,
     withr
+VignetteBuilder: 
+    knitr
+Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
 Encoding: UTF-8
-LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Collate:
-    'utils.R'
-    'scheduler.R'
-    'pool.R'
-    'pool-methods.R'
-    'object.R'
-    'DBI.R'
-    'DBI-connection-interpolate.R'
-    'DBI-connection-quote.R'
-    'DBI-connection-sql.R'
-    'DBI-connection-transaction.R'
-    'DBI-connection.R'
-    'DBI-driver.R'
-    'DBI-object-deprecated.R'
-    'DBI-object.R'
-    'DBI-pool.R'
-    'dbplyr.R'
-    'zzz-hooks.R'
-Config/testthat/edition: 3
-Config/Needs/website: tidyverse/tidytemplate
-VignetteBuilder: knitr
