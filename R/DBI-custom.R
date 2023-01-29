@@ -1,4 +1,4 @@
-#' DBI methods
+#' Unsupported DBI methods
 #'
 #' @description
 #' Most pool methods for DBI generics check out a connection, perform the

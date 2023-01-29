@@ -22,6 +22,8 @@
 #' DBI::dbWriteTable(pool, "mtcars", mtcars)
 #' dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
 #'
+#' poolClose(pool)
+#'
 #' # Using the RMySQL package
 #' if (requireNamespace("RMySQL", quietly = TRUE)) {
 #'   pool <- dbPool(
