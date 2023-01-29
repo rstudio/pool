@@ -3,8 +3,7 @@ source("utils.R")
 describe("fetch", {
   local_reproducible_output()
 
-  pool <- poolCreate(MockPooledObj$new, minSize = 1, maxSize = 3,
-    validationInterval = 1)
+  pool <- poolCreate(MockPooledObj$new, validationInterval = 0.1)
 
   it("throws if onActivate fails", {
     checkCounts(pool, free = 1, taken = 0)
@@ -59,7 +58,7 @@ describe("fetch", {
     poolReturn(obj)
     checkCounts(pool, free = 1, taken = 0)
 
-    Sys.sleep(pool$validationInterval + 1)
+    Sys.sleep(pool$validationInterval + .1)
 
     obj <- poolCheckout(pool)
     t3 <- Sys.time()
@@ -104,18 +103,18 @@ describe("fetch", {
     badObject <- poolCheckout(pool)
     checkCounts(pool, free = 0, taken = 1)
 
-    Sys.sleep(pool$validationInterval + 1)
+    Sys.sleep(pool$validationInterval + .1)
     attr(badObject, "bad") <- TRUE
     expect_snapshot(obj <- get_private(pool)$checkValid(badObject))
 
-    Sys.sleep(pool$validationInterval + 1)
+    Sys.sleep(pool$validationInterval + .1)
     ## check that the new object is valid
     expect_identical(obj, get_private(pool)$checkValid(obj))
 
     ## back to having one free, valid object
     checkCounts(pool, free = 1, taken = 0)
 
-    Sys.sleep(pool$validationInterval + 1)
+    Sys.sleep(pool$validationInterval + .1)
     ## cannot validate bad object, so creates new one and tries again
     ## new object's activation and validation also fails: throw
     failOnValidate <<- TRUE
