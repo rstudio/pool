@@ -1,5 +1,7 @@
 # pool (development version)
 
+* Pools now get a useful print method (#140).
+
 * `dbPool()`'s `validateQuery` is now actually used (#153).
 
 * Connections are now validated once on first checkout to ensure that the

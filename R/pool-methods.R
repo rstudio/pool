@@ -104,16 +104,3 @@ setMethod("poolReturn", "ANY", function(object) {
   pool <- pool_metadata(object)$pool
   pool$release(object)
 })
-
-
-#' Show method
-#' @param object A Pool object.
-#' @export
-setMethod("show", "Pool", function(object) {
-  pooledObj <- poolCheckout(object)
-  on.exit(poolReturn(pooledObj))
-  cat("<Pool>\n", "  pooled object class: ",
-      is(pooledObj)[1], sep = "")
-})
-
-

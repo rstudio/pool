@@ -2,6 +2,7 @@
 Pool <- R6::R6Class("Pool",
   public = list(
 
+    objClass = NULL,
     valid = NULL,
     counters = NULL,
     minSize = NULL,
@@ -30,6 +31,8 @@ Pool <- R6::R6Class("Pool",
         self$idleTimeout <- idleTimeout
         self$validationInterval <- validationInterval
         self$state <- state
+
+        self$objClass <- NULL
 
         private$freeObjects <- new.env(parent = emptyenv())
 
@@ -145,6 +148,15 @@ Pool <- R6::R6Class("Pool",
           "Use `poolReturn()` them to the pool so they can be destroyed."
         ))
       }
+    },
+
+    print = function(...) {
+      cat("<Pool> of ", self$objClass %||% "unknown", " objects\n", sep = "")
+      cat("  Objects checked out: ", self$counters$taken, "\n", sep = "")
+      cat("  Available in pool: ", self$counters$free, "\n", sep = "")
+      cat("  Max size: ", self$maxSize, "\n", sep = "")
+      cat("  Valid: ", self$valid, "\n", sep = "")
+      invisible(self)
     }
   ),
 
@@ -170,6 +182,10 @@ Pool <- R6::R6Class("Pool",
           ),
           call = error_call
         )
+      }
+
+      if (is.null(self$objClass)) {
+        self$objClass <- class(object)
       }
 
       ## attach metadata about the object

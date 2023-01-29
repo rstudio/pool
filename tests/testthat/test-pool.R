@@ -62,4 +62,29 @@ describe("pool", {
   })
 })
 
+test_that("pool has useful print method", {
+  pool <- poolCreate(function() 10)
+  on.exit(poolClose(pool))
 
+  expect_snapshot({
+    pool
+
+    x1 <- poolCheckout(pool)
+    x2 <- poolCheckout(pool)
+    pool
+
+    poolReturn(x1)
+    pool
+
+    poolReturn(x2)
+  })
+})
+
+test_that("empty pool has useful print method", {
+  pool <- poolCreate(function() 10, minSize = 0)
+  on.exit(poolClose(pool))
+
+  expect_snapshot({
+    pool
+  })
+})
