@@ -59,8 +59,6 @@ Pool <- R6::R6Class("Pool",
         object <- private$createObject(error_call = error_call)
       }
 
-      private$cancelScheduledTask(object, "validateHandle")
-      ## call onActivate, onValidate and change object status
       object <- private$checkObjectValid(object, error_call = error_call)
       private$changeObjectStatus(object, "taken")
 
@@ -216,7 +214,6 @@ Pool <- R6::R6Class("Pool",
       }
 
       pool_metadata$valid <- FALSE
-      private$cancelScheduledTask(object, "validateHandle")
       private$cancelScheduledTask(object, "destroyHandle")
 
       tryCatch({
@@ -241,13 +238,9 @@ Pool <- R6::R6Class("Pool",
       # Remove from environment if necessary, and
       # decrement counter
       if (!is.null(from)) {
-        removeFrom <- switch(from,
-          free = private$freeObjects,
-          NULL
-        )
-        if (!is.null(removeFrom)) {
-          if (exists(id, envir = removeFrom)) {
-            rm(list = id, envir = removeFrom)
+        if (from == "free") {
+          if (exists(id, envir = private$freeObjects)) {
+            rm(list = id, envir = private$freeObjects)
           } else {
             abort("Object could not be found.")
           }
@@ -257,12 +250,8 @@ Pool <- R6::R6Class("Pool",
 
       if (!is.null(to)) {
         # Add to environment if necessary, and increment counter
-        addTo <- switch(to,
-          free = private$freeObjects,
-          NULL
-        )
-        if (!is.null(addTo)) {
-          assign(id, object, envir = addTo)
+        if (to == "free") {
+          assign(id, object, envir = private$freeObjects)
         }
         self$counters[[to]] <- self$counters[[to]] + 1
         pool_metadata$state <- to
@@ -324,12 +313,8 @@ Pool <- R6::R6Class("Pool",
     ## us some performance gains)
     validate = function(object) {
       pool_metadata <- pool_metadata(object)
+
       lastValidated <- pool_metadata$lastValidated
-      ## if the object has never been validated, set `lastValidated`
-      ## to guarantee that it will be validated now
-      if (is.null(lastValidated)) {
-        lastValidated <- Sys.time() - self$validationInterval
-      }
       interval <- difftime(Sys.time(), lastValidated, units = "secs")
 
       if (interval >= self$validationInterval) {
