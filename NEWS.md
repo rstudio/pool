@@ -1,5 +1,9 @@
 # pool (development version)
 
+* `dbPool()` and `poolCreate()` now default to validating every 60s, rather
+  than every 600s. This makes pools a little more robust to shorter connection
+  timeouts (#149).
+
 * Pools now get a useful print method (#140).
 
 * `dbPool()`'s `validateQuery` is now actually used (#153).
