@@ -12,6 +12,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(shiny)
+onStop <- function(...) {
+  shiny::onStop(...)
+  invisible()
+}
 ```
 
 ```{r setup}
@@ -94,6 +99,6 @@ if (interactive())
   shinyApp(ui, server)
 ```
 
-There's one other important tool to note: `local()`. This tells dbplyr to run `input$cyl` locally (retrieving the value the user typed), rather than trying to convert it to SQL.
+There's one other important tool to note: `dbplyr::local()`. This tells dbplyr to run `input$cyl` locally (retrieving the value the user typed), rather than trying to convert it to SQL.
 
 Note that there is no need to do your own input sanitizing for SQL injection prevention (i.e. no need to call a function like `DBI::sqlInterpolate()`) because dbplyr takes care of that for you.
