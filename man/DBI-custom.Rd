@@ -11,7 +11,7 @@
 \alias{dbCommit,Pool-method}
 \alias{dbRollback,Pool-method}
 \alias{dbWithTransaction,Pool-method}
-\title{DBI methods}
+\title{Unsupported DBI methods}
 \usage{
 \S4method{dbSendQuery}{Pool}(conn, statement, ...)
 

@@ -9,3 +9,16 @@ articles:
   - why-pool
   - articles/pool-dplyr
   - articles/advanced-pool
+
+reference:
+- title: Generic pool tools
+  contents:
+  - poolCreate
+  - poolCheckout
+
+- title: Database functions
+  contents:
+  - dbPool
+  - 'DBI-custom'
+  - poolWithTransaction
+  - tbl.Pool
