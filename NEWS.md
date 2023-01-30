@@ -1,5 +1,9 @@
 # pool (development version)
 
+* `dbPool()` gains an `onCreate` parameter that allows you do something to
+  every connection that pool creates. This is useful for setting options that
+  you want to apply to every connection (#98).
+
 * New `localCheckout()` checkouts and then automatically returns an object.
   It only works in function scope.
 
