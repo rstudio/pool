@@ -10,7 +10,7 @@ Authors@R: c(
 Description: Enables the creation of object pools, which make it less
     computationally expensive to fetch a new object. Currently the only
     supported pooled objects are 'DBI' connections.
-License: GPL-3
+License: MIT + file LICENSE
 URL: https://github.com/rstudio/pool,
     http://rstudio.github.io/pool/
 BugReports: https://github.com/rstudio/pool/issues
