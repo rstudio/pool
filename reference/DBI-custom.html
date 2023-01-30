@@ -5,7 +5,8 @@ DBI-wrap.
 This page describes the exceptions:
 DBI::dbSendQuery() and DBI::dbSendStatement() can't work with pool
 because they return result sets that are bound to a specific connection.
-Instead use DBI::dbGetQuery() and DBI::dbExecute().
+Instead use DBI::dbGetQuery(), DBI::dbExecute(), or
+localCheckout().
 DBI::dbBegin(), DBI::dbRollback(), DBI::dbCommit(), and
 DBI::dbWithTransaction() can't work with pool because transactions are
 bound to a connection. Instead use poolWithTransaction().
@@ -21,7 +22,8 @@ DBI-wrap.
 This page describes the exceptions:
 DBI::dbSendQuery() and DBI::dbSendStatement() can't work with pool
 because they return result sets that are bound to a specific connection.
-Instead use DBI::dbGetQuery() and DBI::dbExecute().
+Instead use DBI::dbGetQuery(), DBI::dbExecute(), or
+localCheckout().
 DBI::dbBegin(), DBI::dbRollback(), DBI::dbCommit(), and
 DBI::dbWithTransaction() can't work with pool because transactions are
 bound to a connection. Instead use poolWithTransaction().
@@ -91,7 +93,8 @@ operation, and the return the connection to the pool, as described in
 <a href="DBI-wrap.html">DBI-wrap</a>.</p>
 <p>This page describes the exceptions:</p><ul><li><p><code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">DBI::dbSendQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbSendStatement.html" class="external-link">DBI::dbSendStatement()</a></code> can't work with pool
 because they return result sets that are bound to a specific connection.
-Instead use <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code>.</p></li>
+Instead use <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">DBI::dbGetQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code>, or
+<code><a href="poolCheckout.html">localCheckout()</a></code>.</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbBegin()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbRollback()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbCommit()</a></code>, and
 <code><a href="https://dbi.r-dbi.org/reference/dbWithTransaction.html" class="external-link">DBI::dbWithTransaction()</a></code> can't work with pool because transactions are
 bound to a connection. Instead use <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>.</p></li>
