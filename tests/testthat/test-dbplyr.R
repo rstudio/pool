@@ -1,5 +1,5 @@
 test_that("can copy and collect", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
   df <- tibble::tibble(x = 1:10, y = 1:10)
   db <- dplyr::copy_to(
@@ -15,7 +15,7 @@ test_that("can copy and collect", {
 })
 
 test_that("can use one-table verbs", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
   df <- tibble::tibble(letters = letters[1:3], x = 1:3, z = 3:1)
   db <- dplyr::copy_to(pool, df, temporary = FALSE)
@@ -29,7 +29,8 @@ test_that("can use one-table verbs", {
 })
 
 test_that("dplyr verbs throw error when `temporary = TRUE`", {
-  pool <- local_pool()
+  pool <- local_db_pool()
+  DBI::dbWriteTable(pool, "mtcars", mtcars)
 
   expect_snapshot(error = TRUE, {
     dplyr::copy_to(pool, data.frame(x = 1), "df")
@@ -38,7 +39,7 @@ test_that("dplyr verbs throw error when `temporary = TRUE`", {
 })
 
 test_that("joins, semi_joins, and set ops work", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
   db1 <- dplyr::copy_to(pool, data.frame(x = 1), temporary = FALSE)
   db2 <- dplyr::copy_to(pool, data.frame(x = 2), temporary = FALSE)
@@ -49,7 +50,7 @@ test_that("joins, semi_joins, and set ops work", {
 })
 
 test_that("can use schemas with pool", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
   df <- tibble::tibble(x = 1:5)
 

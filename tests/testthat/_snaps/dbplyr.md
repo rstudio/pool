@@ -7,7 +7,7 @@
       ! Can't use temporary tables with Pool objects
       x Temporary tables are local to a connection
       i Either use `temporary = FALSE`, or
-      i Check-out & return a connection with `poolCheckout()`/`poolReturn()`
+      i Check out a local connection with `localCheckout()`
 
 # dplyr verbs throw error when `temporary = TRUE`
 
@@ -18,7 +18,7 @@
       ! Can't use temporary tables with Pool objects
       x Temporary tables are local to a connection
       i Either use `temporary = FALSE`, or
-      i Check-out & return a connection with `poolCheckout()`/`poolReturn()`
+      i Check out a local connection with `localCheckout()`
     Code
       dplyr::compute(dplyr::tbl(pool, "mtcars"))
     Condition
@@ -26,7 +26,7 @@
       ! Can't use temporary tables with Pool objects
       x Temporary tables are local to a connection
       i Either use `temporary = FALSE`, or
-      i Check-out & return a connection with `poolCheckout()`/`poolReturn()`
+      i Check out a local connection with `localCheckout()`
 
 # wrapper looks good
 

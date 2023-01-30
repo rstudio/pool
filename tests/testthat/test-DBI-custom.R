@@ -1,5 +1,5 @@
 test_that("unsupported functions give useful errors", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
   expect_snapshot(error = TRUE, {
     dbSendQuery(pool)
