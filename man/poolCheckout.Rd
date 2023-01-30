@@ -5,6 +5,7 @@
 \alias{poolCheckout,Pool-method}
 \alias{poolReturn}
 \alias{poolReturn,ANY-method}
+\alias{localCheckout}
 \title{Check out and return object from the pool}
 \usage{
 poolCheckout(pool)
@@ -14,6 +15,8 @@ poolCheckout(pool)
 poolReturn(object)
 
 \S4method{poolReturn}{ANY}(object)
+
+localCheckout(pool, env = parent.frame())
 }
 \arguments{
 \item{pool}{The pool to get the object from.}
@@ -25,6 +28,11 @@ Use \code{poolCheckout()} to check out an object from the pool and
 \code{poolReturn()} to return it. You will receive a warning if all objects
 aren't returned before the pool is closed.
 
+\code{localCheckout()} is a convenience function that can be used inside
+functions (and other function-scoped operations like \code{shiny::reactive()}
+and \code{local()}). It checks out an object and automatically returns it when
+the function exits
+
 Note that validation is only performed when the object is checked out,
 so you generally want to keep the checked out around for as little time as
 possible.
@@ -34,5 +42,12 @@ pool <- dbPool(RSQLite::SQLite())
 con <- poolCheckout(pool)
 con
 poolReturn(con)
+
+f <- function() {
+  con <- localCheckout()
+  # do something ...
+}
+f()
+
 poolClose(pool)
 }

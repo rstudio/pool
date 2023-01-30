@@ -3,6 +3,7 @@
 export(Pool)
 export(dbBreak)
 export(dbPool)
+export(localCheckout)
 export(onActivate)
 export(onDestroy)
 export(onPassivate)

@@ -115,7 +115,7 @@ stop_if_temporary <- function(temporary) {
       "Can't use temporary tables with Pool objects",
       x = "Temporary tables are local to a connection",
       i = "Either use `temporary = FALSE`, or",
-      i = "Check-out & return a connection with `poolCheckout()`/`poolReturn()`"
+      i = "Check out a local connection with `localCheckout()`"
     ),
     call = NULL
   )

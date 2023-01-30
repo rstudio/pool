@@ -45,7 +45,8 @@ This page describes the exceptions:
 \itemize{
 \item \code{\link[DBI:dbSendQuery]{DBI::dbSendQuery()}} and \code{\link[DBI:dbSendStatement]{DBI::dbSendStatement()}} can't work with pool
 because they return result sets that are bound to a specific connection.
-Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}} and \code{\link[DBI:dbExecute]{DBI::dbExecute()}}.
+Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}, \code{\link[DBI:dbExecute]{DBI::dbExecute()}}, or
+\code{\link[=localCheckout]{localCheckout()}}.
 \item \code{\link[DBI:transactions]{DBI::dbBegin()}}, \code{\link[DBI:transactions]{DBI::dbRollback()}}, \code{\link[DBI:transactions]{DBI::dbCommit()}}, and
 \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}} can't work with pool because transactions are
 bound to a connection. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.

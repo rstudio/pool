@@ -69,6 +69,11 @@ setMethod("poolClose", "Pool", function(pool) {
 #' `poolReturn()` to return it. You will receive a warning if all objects
 #' aren't returned before the pool is closed.
 #'
+#' `localCheckout()` is a convenience function that can be used inside
+#' functions (and other function-scoped operations like `shiny::reactive()`
+#' and `local()`). It checks out an object and automatically returns it when
+#' the function exits
+#'
 #' Note that validation is only performed when the object is checked out,
 #' so you generally want to keep the checked out around for as little time as
 #' possible.
@@ -80,6 +85,13 @@ setMethod("poolClose", "Pool", function(pool) {
 #' con <- poolCheckout(pool)
 #' con
 #' poolReturn(con)
+#'
+#' f <- function() {
+#'   con <- localCheckout()
+#'   # do something ...
+#' }
+#' f()
+#'
 #' poolClose(pool)
 setGeneric("poolCheckout", function(pool) {
   standardGeneric("poolCheckout")
@@ -104,3 +116,11 @@ setMethod("poolReturn", "ANY", function(object) {
   pool <- pool_metadata(object)$pool
   pool$release(object)
 })
+
+#' @export
+#' @rdname poolCheckout
+localCheckout <- function(pool, env = parent.frame()) {
+  obj <- poolCheckout(pool)
+  withr::defer(poolReturn(obj), envir = env)
+  obj
+}
