@@ -87,7 +87,7 @@ setMethod("poolClose", "Pool", function(pool) {
 #' poolReturn(con)
 #'
 #' f <- function() {
-#'   con <- localCheckout()
+#'   con <- localCheckout(pool)
 #'   # do something ...
 #' }
 #' f()
@@ -119,6 +119,8 @@ setMethod("poolReturn", "ANY", function(object) {
 
 #' @export
 #' @rdname poolCheckout
+#' @param env Environment corresponding to the execution frame. For expert
+#'   use only.
 localCheckout <- function(pool, env = parent.frame()) {
   obj <- poolCheckout(pool)
   withr::defer(poolReturn(obj), envir = env)

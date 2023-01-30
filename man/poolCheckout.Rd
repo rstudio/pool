@@ -22,6 +22,9 @@ localCheckout(pool, env = parent.frame())
 \item{pool}{The pool to get the object from.}
 
 \item{object}{Object to return}
+
+\item{env}{Environment corresponding to the execution frame. For expert
+use only.}
 }
 \description{
 Use \code{poolCheckout()} to check out an object from the pool and
@@ -44,7 +47,7 @@ con
 poolReturn(con)
 
 f <- function() {
-  con <- localCheckout()
+  con <- localCheckout(pool)
   # do something ...
 }
 f()
