@@ -70,6 +70,7 @@ to the database if needed.</p>
 <span>  <span class="va">...</span>,</span>
 <span>  minSize <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  maxSize <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  onCreate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  idleTimeout <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  validationInterval <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  validateQuery <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -90,6 +91,13 @@ identify the database and provide needed authentication.</p></dd>
 
 <dt>minSize, maxSize</dt>
 <dd><p>The minimum and maximum number of objects in the pool.</p></dd>
+
+
+<dt>onCreate</dt>
+<dd><p>A function that takes a single argument, a connection,
+and is called when the connection is created. Use this with
+<code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code> to set default options on every connection created
+by the pool.</p></dd>
 
 
 <dt>idleTimeout</dt>
@@ -135,6 +143,7 @@ options, but these don't work for all databases.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Always close a pool when you're done using it</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="Pool-class.html">poolClose</a></span><span class="op">(</span><span class="va">pool</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Using the RMySQL package</span></span></span>

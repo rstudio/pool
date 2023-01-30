@@ -54,7 +54,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="pool-development-version">pool (development version)<a class="anchor" aria-label="anchor" href="#pool-development-version"></a></h2>
-<ul><li><p>New <code><a href="../reference/poolCheckout.html">localCheckout()</a></code> checkouts and then automatically returns an object. It only works in function scope.</p></li>
+<ul><li><p><code><a href="../reference/dbPool.html">dbPool()</a></code> gains an <code>onCreate</code> parameter that allows you do something to every connection that pool creates. This is useful for setting options that you want to apply to every connection (<a href="https://github.com/rstudio/pool/issues/98" class="external-link">#98</a>).</p></li>
+<li><p>New <code><a href="../reference/poolCheckout.html">localCheckout()</a></code> checkouts and then automatically returns an object. It only works in function scope.</p></li>
 <li><p>Pools now get a useful print method (<a href="https://github.com/rstudio/pool/issues/140" class="external-link">#140</a>).</p></li>
 <li><p><code><a href="../reference/dbPool.html">dbPool()</a></code>’s <code>validateQuery</code> is now actually used (<a href="https://github.com/rstudio/pool/issues/153" class="external-link">#153</a>).</p></li>
 <li><p>Connections are now validated once on first checkout to ensure that the connection and validation strategy are both ok.</p></li>
