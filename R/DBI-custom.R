@@ -1,4 +1,4 @@
-#' DBI methods
+#' Unsupported DBI methods
 #'
 #' @description
 #' Most pool methods for DBI generics check out a connection, perform the
@@ -9,7 +9,8 @@
 #'
 #' * [DBI::dbSendQuery()] and [DBI::dbSendStatement()] can't work with pool
 #'   because they return result sets that are bound to a specific connection.
-#'   Instead use [DBI::dbGetQuery()] and [DBI::dbExecute()].
+#'   Instead use [DBI::dbGetQuery()], [DBI::dbExecute()], or
+#'   [localCheckout()].
 #'
 #' * [DBI::dbBegin()], [DBI::dbRollback()], [DBI::dbCommit()], and
 #'   [DBI::dbWithTransaction()] can't work with pool because transactions are
