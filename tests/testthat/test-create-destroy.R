@@ -1,5 +1,3 @@
-source("utils.R")
-
 test_that("createObject throws if `factory` throws or returns NULL", {
   expect_snapshot(error = TRUE, {
     poolCreate(MockPooledObj)

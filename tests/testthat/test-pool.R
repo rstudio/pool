@@ -1,5 +1,3 @@
-source("utils.R")
-
 describe("pool", {
   local_reproducible_output()
 

@@ -1,5 +1,3 @@
-source("utils.R")
-
 describe("fetch", {
   local_reproducible_output()
 
