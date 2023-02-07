@@ -54,7 +54,7 @@ test_that("poolClose() warns about taken objects, but they can still be returned
 })
 
 test_that("warns if object can't be returned", {
-  pr_expect_snapshot({
+  expect_snapshot({
     pool <- poolCreate(function() 1)
     obj <- poolCheckout(pool)
     rm(obj)

@@ -1,4 +1,4 @@
-# release: returns the object back to the pool, and it can be recycled
+# max size is enforced
 
     Code
       poolCheckout(pool)
@@ -6,7 +6,7 @@
       Error in `poolCheckout()`:
       ! Maximum number of objects in pool has been reached
 
-# release: throws if object was already released
+# can't return the same object twice
 
     Code
       poolReturn(obj)
@@ -14,7 +14,7 @@
       Error in `poolReturn()`:
       ! This object was already returned to the pool.
 
-# release: warns if onPassivate fails
+# warns if onPassivate fails
 
     Code
       poolReturn(obj)
@@ -25,7 +25,7 @@
       Caused by error in `onPassivate()`:
       ! Passivation failed...
 
-# release: is allowed after the pool is closed
+# poolClose() warns about taken objects, but they can still be returned
 
     Code
       poolClose(pool)
@@ -33,15 +33,7 @@
       <pool> You still have checked out objects.
       <pool> Use `poolReturn()` them to the pool so they can be destroyed.
 
----
-
-    Code
-      poolClose(pool)
-    Condition
-      Error in `pool$close()`:
-      ! The pool was already closed.
-
-# release: warns if object can't be returned
+# warns if object can't be returned
 
     Code
       pool <- poolCreate(function() 1)
