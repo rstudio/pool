@@ -128,11 +128,4 @@ describe("fetch", {
   })
   poolClose(pool)
 
-  it("throws if the pool was closed", {
-    pool <- poolCreate(function() 1)
-    poolClose(pool)
-
-    expect_snapshot(poolCheckout(pool), error = TRUE)
-  })
-
 })

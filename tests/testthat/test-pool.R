@@ -8,7 +8,21 @@ test_that("can be created and closed", {
   expect_false(pool$valid)
 })
 
-test_that("it can fetch and release", {
+test_that("it requires a valid factory", {
+  expect_snapshot(error = TRUE, {
+    poolCreate(1)
+    poolCreate(function(x) NULL)
+  })
+})
+
+test_that("pool can't be closed twice", {
+  pool <- poolCreate(function() 1)
+  poolClose(pool)
+
+  expect_snapshot(poolCheckout(pool), error = TRUE)
+})
+
+test_that("can fetch and release", {
   pool <- poolCreate(function() 1)
   withr::defer(poolClose(pool))
 
@@ -20,9 +34,68 @@ test_that("it can fetch and release", {
   checkCounts(pool, free = 1, taken = 0)
 })
 
+test_that("max size is enforced", {
+  pool <- poolCreate(MockPooledObj$new, maxSize = 2)
+  withr::defer(poolClose(pool))
+
+  obj1 <- poolCheckout(pool)
+  obj2 <- poolCheckout(pool)
+
+  expect_snapshot(poolCheckout(pool), error = TRUE)
+
+  poolReturn(obj1)
+  poolReturn(obj2)
+})
+
+test_that("idle objects are reaped", {
+  pool <- poolCreate(MockPooledObj$new, idleTimeout = 0)
+  withr::defer(poolClose(pool))
+
+  obj1 <- poolCheckout(pool)
+  obj2 <- poolCheckout(pool)
+  poolReturn(obj1)
+  poolReturn(obj2)
+
+  checkCounts(pool, free = 2, taken = 0)
+  later::run_now() # force scheduler to run NOW
+  checkCounts(pool, free = 1, taken = 0)
+})
+
+test_that("can't return the same object twice", {
+  pool <- poolCreate(MockPooledObj$new)
+  withr::defer(poolClose(pool))
+
+  obj <- poolCheckout(pool)
+  poolReturn(obj)
+  expect_snapshot(poolReturn(obj), error = TRUE)
+})
+
+test_that("poolClose() warns about taken objects, but they can still be returned", {
+  pool <- poolCreate(MockPooledObj$new)
+
+  obj <- poolCheckout(pool)
+  expect_snapshot(poolClose(pool))
+
+  poolReturn(obj)
+})
+
+test_that("warns if object can't be returned", {
+  expect_snapshot({
+    pool <- poolCreate(function() 1)
+    obj <- poolCheckout(pool)
+    rm(obj)
+    . <- gc()
+    poolClose(pool)
+  })
+})
+
+test_that("poolReturn() errors if object is not valid", {
+  expect_snapshot(poolReturn("x"), error = TRUE)
+})
+
 test_that("pool has useful print method", {
   pool <- poolCreate(function() 10)
-  on.exit(poolClose(pool))
+  withr::defer(poolClose(pool))
 
   expect_snapshot({
     pool
@@ -40,9 +113,42 @@ test_that("pool has useful print method", {
 
 test_that("empty pool has useful print method", {
   pool <- poolCreate(function() 10, minSize = 0)
-  on.exit(poolClose(pool))
+  withr::defer(poolClose(pool))
 
   expect_snapshot({
     pool
   })
+})
+
+# Failure modes -----------------------------------------------------------
+
+test_that("useful warning if onDestroy fails", {
+  pool <- poolCreate(MockPooledObj$new, idleTimeout = 0)
+  withr::defer(poolClose(pool))
+
+  checkCounts(pool, free = 1, taken = 0)
+  failOnDestroy <<- TRUE
+
+  a <- poolCheckout(pool)
+  b <- poolCheckout(pool)
+
+  # since we're over minSize, returning `b` destroys it
+  expect_snapshot({
+    poolReturn(b)
+    later::run_now()
+  })
+
+  checkCounts(pool, free = 0, taken = 1)
+  failOnDestroy <<- FALSE
+  poolReturn(a)
+})
+
+test_that("warns if onPassivate fails", {
+  pool <- poolCreate(MockPooledObj$new)
+  withr::defer(poolClose(pool))
+
+  obj <- poolCheckout(pool)
+  failOnPassivate <<- TRUE
+  expect_snapshot(poolReturn(obj), error = TRUE)
+  failOnPassivate <<- FALSE
 })
