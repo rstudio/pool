@@ -18,16 +18,17 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Joe Cheng \email{joe@rstudio.com}
+\strong{Maintainer}: Hadley Wickham \email{hadley@posit.co}
 
 Authors:
 \itemize{
-  \item Barbara Borges \email{barb.b.ribeiro@gmail.com}
+  \item Joe Cheng \email{joe@posit.co}
+  \item Barbara Borges
 }
 
 Other contributors:
 \itemize{
-  \item  RStudio [copyright holder]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
