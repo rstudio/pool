@@ -143,7 +143,7 @@ test_that("useful warning if onDestroy fails", {
   poolReturn(a)
 })
 
-test_that("warns if onPassivate fails", {
+test_that("throws if onPassivate fails", {
   pool <- poolCreate(MockPooledObj$new)
   withr::defer(poolClose(pool))
 
@@ -151,4 +151,24 @@ test_that("warns if onPassivate fails", {
   failOnPassivate <<- TRUE
   expect_snapshot(poolReturn(obj), error = TRUE)
   failOnPassivate <<- FALSE
+})
+
+test_that("throws if onActivate fails", {
+  pool <- poolCreate(MockPooledObj$new)
+  withr::defer(poolClose(pool))
+
+  failOnActivate <<- TRUE
+  expect_snapshot(poolCheckout(pool), error = TRUE)
+  checkCounts(pool, free = 0, taken = 0)
+  failOnActivate <<- FALSE
+})
+
+test_that("throws if onValidate fails", {
+  pool <- poolCreate(MockPooledObj$new)
+  withr::defer(poolClose(pool))
+
+  failOnValidate <<- TRUE
+  expect_snapshot(poolCheckout(pool), error = TRUE)
+  checkCounts(pool, free = 0, taken = 0)
+  failOnValidate <<- FALSE
 })
