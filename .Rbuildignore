@@ -13,3 +13,4 @@
 ^docs$
 ^pkgdown$
 ^vignettes/articles$
+^LICENSE\.md$

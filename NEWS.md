@@ -1,5 +1,7 @@
 # pool (development version)
 
+* Pool has been re-licensed to MIT (#158).
+
 * `dbPool()` gains an `onCreate` parameter that allows you do something to
   every connection that pool creates. This is useful for setting options that
   you want to apply to every connection (#98).
