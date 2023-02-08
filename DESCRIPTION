@@ -3,16 +3,16 @@ Package: pool
 Title: Object Pooling
 Version: 0.1.6.9000
 Authors@R: c(
-    person("Joe", "Cheng", , "joe@rstudio.com", role = c("aut", "cre")),
-    person("Barbara", "Borges", , "barb.b.ribeiro@gmail.com", role = "aut"),
-    person(, "RStudio", role = "cph")
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Barbara", "Borges", role = "aut"),
+    person("Hadley", "Wickham", , "hadley@posit.co", role = c("aut", "cre")),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: Enables the creation of object pools, which make it less
     computationally expensive to fetch a new object. Currently the only
     supported pooled objects are 'DBI' connections.
 License: GPL-3
-URL: https://github.com/rstudio/pool,
-    http://rstudio.github.io/pool/
+URL: https://github.com/rstudio/pool, http://rstudio.github.io/pool/
 BugReports: https://github.com/rstudio/pool/issues
 Depends:
     methods,
