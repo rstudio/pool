@@ -121,7 +121,7 @@
       <pool> Error message:
       <pool>   Destruction failed...
 
-# warns if onPassivate fails
+# throws if onPassivate fails
 
     Code
       poolReturn(obj)
@@ -131,4 +131,30 @@
       * It was destroyed instead
       Caused by error in `onPassivate()`:
       ! Passivation failed...
+
+# throws if onActivate fails
+
+    Code
+      poolCheckout(pool)
+    Output
+      <pool> Failed to activate and/or validate existing object.
+      <pool> Trying again with a new object.
+    Condition
+      Error in `poolCheckout()`:
+      ! Freshly created object does not appear to be valid.
+      Caused by error in `onActivate()`:
+      ! Activation failed...
+
+# throws if onValidate fails
+
+    Code
+      poolCheckout(pool)
+    Output
+      <pool> Failed to activate and/or validate existing object.
+      <pool> Trying again with a new object.
+    Condition
+      Error in `poolCheckout()`:
+      ! Freshly created object does not appear to be valid.
+      Caused by error in `onValidate()`:
+      ! Validation failed...
 

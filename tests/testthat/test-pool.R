@@ -61,6 +61,30 @@ test_that("idle objects are reaped", {
   checkCounts(pool, free = 1, taken = 0)
 })
 
+test_that("validates (only) when needed", {
+  pool <- poolCreate(MockPooledObj$new, validationInterval = 0.1)
+  withr::defer(poolClose(pool))
+
+  last_validated <- function(pool) {
+    obj <- localCheckout(pool)
+    pool_metadata(obj)$lastValidated
+  }
+
+  # Capture initial validation time
+  last_validated_0 <- last_validated(pool)
+
+  # After waiting less than validationInterval, validation time shouldn't change
+  Sys.sleep(pool$validationInterval / 2)
+  last_validated_1 <- last_validated(pool)
+  expect_equal(last_validated_0, last_validated_1)
+
+  # After waiting more than validationInterval, validation time should change
+  Sys.sleep(pool$validationInterval)
+  last_validated_2 <- last_validated(pool)
+  expect_lt(last_validated_0, last_validated_2)
+})
+
+
 test_that("can't return the same object twice", {
   pool <- poolCreate(MockPooledObj$new)
   withr::defer(poolClose(pool))
