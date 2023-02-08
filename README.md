@@ -44,13 +44,14 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  city <- tbl(pool, "City")
+
   output$tbl <- renderTable({
-    pool %>% tbl("City") %>% filter(ID == !!input$ID) %>% collect()
+    city |> filter(ID == !!input$ID) |> collect()
   })
   output$popPlot <- renderPlot({
-    df <- pool %>% tbl("City") %>% head(input$nrows) %>% collect()
-    pop <- df$Population
-    names(pop) <- df$Name
+    df <- city |> head(input$nrows) |> collect() 
+    pop <- df |> pull("Population", name = "Name")
     barplot(pop)
   })
 }

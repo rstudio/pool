@@ -8,100 +8,79 @@ test_that("wrapper functions look good", {
   })
 })
 
-test_that("dbSendQuery", {
-  pool <- local_pool()
-  expect_error(DBI::dbSendQuery(pool, "SELECT * FROM mtcars"))
-})
+test_that("dbWriteTable/dbGetQuery/dbReadTable", {
+  pool <- local_db_pool()
 
-test_that("dbSendStatement", {
-  pool <- local_pool()
-  expect_error(DBI::dbSendStatement(pool, "DELETE FROM mtcars"))
-})
-
-test_that("dbGetQuery", {
-  pool <- local_pool()
-  expect_equal(DBI::dbGetQuery(pool, "SELECT * FROM mtcars"), `row.names<-`(mtcars, NULL))
-})
-
-test_that("dbReadTable", {
-  pool <- local_pool()
-  expect_equal(DBI::dbReadTable(pool, "mtcars"), `row.names<-`(mtcars, NULL))
+  df <- data.frame(x = 1:10)
+  dbWriteTable(pool, "df", df)
+  expect_equal(dbGetQuery(pool, "SELECT * FROM df"), df)
+  expect_equal(dbReadTable(pool, "df"), df)
 })
 
 test_that("dbExecute", {
-  pool <- local_pool()
-  expect_equal(DBI::dbExecute(pool, "DELETE FROM mtcars WHERE cyl = 6"), 7L)
-  expect_equal(DBI::dbGetQuery(pool, "SELECT COUNT(*) FROM mtcars")[[1]], 32L - 7L)
+  pool <- local_db_pool()
+
+  df <- data.frame(x = 1:5)
+  dbWriteTable(pool, "df", df)
+
+  expect_equal(dbExecute(pool, "DELETE FROM df WHERE x > 3"), 2)
+  expect_equal(dbReadTable(pool, "df"), data.frame(x = 1:3))
 })
 
 test_that("dbListFields", {
-  pool <- local_pool()
-  expect_identical(DBI::dbListFields(pool, "mtcars"), colnames(mtcars))
+  pool <- local_db_pool()
+  df <- data.frame(x = 1, y = 2, z = 3)
+  dbWriteTable(pool, "df", df)
+
+  expect_equal(dbListFields(pool, "df"), c("x", "y", "z"))
 })
 
 test_that("dbListTables", {
-  pool <- local_pool()
-  expect_identical(DBI::dbListTables(pool), "mtcars")
+  pool <- local_db_pool()
+  dbWriteTable(pool, "df", data.frame(x = 1))
+  expect_identical(dbListTables(pool), "df")
 })
 
 test_that("dbListObjects", {
-  pool <- local_pool()
-  expect_identical(
-    DBI::dbListObjects(pool),
-    {
-      conn <- poolCheckout(pool)
-      withr::defer(poolReturn(conn))
-      DBI::dbListObjects(conn)
-    }
-  )
-})
+  pool <- local_db_pool()
+  con <- localCheckout(pool)
 
-test_that("dbWriteTable", {
-  pool <- local_pool()
-  DBI::dbWriteTable(pool, "cars", cars)
-  expect_identical(DBI::dbGetQuery(pool, "SELECT * FROM cars"), cars)
-
-  tmp <- tempfile("pressure", fileext = ".csv")
-  withr::defer(unlink(tmp))
-  write.csv(pressure, tmp, row.names = FALSE)
-  DBI::dbWriteTable(pool, "pressure", tmp)
-  expect_identical(DBI::dbGetQuery(pool, "SELECT * FROM pressure"), read.csv(tmp))
+  expect_equal(dbListObjects(pool), dbListObjects(con))
 })
 
 test_that("dbCreateTable/dbExistsTable/dbRemoveTable", {
-  pool <- local_pool()
+  pool <- local_db_pool()
 
-  expect_false(DBI::dbExistsTable(pool, "df"))
+  expect_false(dbExistsTable(pool, "df"))
 
   df <- data.frame(x = 1:10)
-  DBI::dbCreateTable(pool, "df", df)
-  expect_equal(DBI::dbGetQuery(pool, "SELECT * FROM df"), df[0, , drop = FALSE])
-  expect_true(DBI::dbExistsTable(pool, "df"))
+  dbCreateTable(pool, "df", df)
+  expect_true(dbExistsTable(pool, "df"))
+  expect_equal(dbGetQuery(pool, "SELECT * FROM df"), df[0, , drop = FALSE])
 
   dbRemoveTable(pool, "df")
-  expect_false(DBI::dbExistsTable(pool, "df"))
+  expect_false(dbExistsTable(pool, "df"))
 })
 
 test_that("dbAppendTable", {
-  pool <- local_pool()
+  pool <- local_db_pool()
   df <- data.frame(x = 1:20)
 
-  DBI::dbCreateTable(pool, "df", df)
-  DBI::dbAppendTable(pool, "df", df)
-  DBI::dbAppendTable(pool, "df", df)
+  dbCreateTable(pool, "df", df)
+  dbAppendTable(pool, "df", df)
+  dbAppendTable(pool, "df", df)
   expect_equal(dbGetQuery(pool, "SELECT COUNT(*) FROM df")[[1]], 40)
 })
 
 test_that("dbIsReadOnly", {
-  pool <- local_pool()
-  expect_false(DBI::dbIsReadOnly(pool))
+  pool <- local_db_pool()
+  expect_false(dbIsReadOnly(pool))
 })
 
 test_that("dbUnquoteIdentifier", {
-  pool <- local_pool()
+  pool <- local_db_pool()
   expect_equal(
-    DBI::dbUnquoteIdentifier(pool, dbQuoteIdentifier(pool, "Hello"))[[1]]@name,
-    c(table = "Hello")
+    dbUnquoteIdentifier(pool, SQL("`Hello`")),
+    list(Id(table = "Hello"))
   )
 })
-

@@ -9,6 +9,7 @@ dbPool(
   ...,
   minSize = 1,
   maxSize = Inf,
+  onCreate = NULL,
   idleTimeout = 60,
   validationInterval = 600,
   validateQuery = NULL
@@ -22,6 +23,11 @@ dbPool(
 identify the database and provide needed authentication.}
 
 \item{minSize, maxSize}{The minimum and maximum number of objects in the pool.}
+
+\item{onCreate}{A function that takes a single argument, a connection,
+and is called when the connection is created. Use this with
+\code{\link[DBI:dbExecute]{DBI::dbExecute()}} to set default options on every connection created
+by the pool.}
 
 \item{idleTimeout}{The number of seconds that an idle
 object will be kept in the pool before it is destroyed (only
@@ -53,6 +59,7 @@ pool
 DBI::dbWriteTable(pool, "mtcars", mtcars)
 dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
 
+# Always close a pool when you're done using it
 poolClose(pool)
 
 # Using the RMySQL package

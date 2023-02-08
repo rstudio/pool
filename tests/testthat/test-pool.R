@@ -19,7 +19,7 @@ describe("pool", {
     })
 
     it("destroys all free objects when closed", {
-      checkCounts(pool, free = 0)
+      checkCounts(pool, free = 0, taken = 0)
     })
 
     # it("finalizer runs", {
