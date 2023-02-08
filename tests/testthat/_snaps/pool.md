@@ -28,6 +28,27 @@
       Error in `poolCheckout()`:
       ! Maximum number of objects in pool has been reached
 
+# warns if validation fails once, creates new object and tries again
+
+    Code
+      obj <- check_valid_object(badObject)
+    Output
+      <pool> Failed to activate and/or validate existing object.
+      <pool> Trying again with a new object.
+
+---
+
+    Code
+      check_valid_object(obj)
+    Output
+      <pool> Failed to activate and/or validate existing object.
+      <pool> Trying again with a new object.
+    Condition
+      Error in `check_valid_object()`:
+      ! Freshly created object does not appear to be valid.
+      Caused by error in `onValidate()`:
+      ! Validation failed...
+
 # can't return the same object twice
 
     Code

@@ -84,6 +84,39 @@ test_that("validates (only) when needed", {
   expect_lt(last_validated_0, last_validated_2)
 })
 
+test_that("warns if validation fails once, creates new object and tries again", {
+  pool <- poolCreate(MockPooledObj$new, validationInterval = 0.1)
+  withr::defer(poolClose(pool))
+
+  check_valid_object <- function(x) {
+    # Sneak into private methods
+    pool[['.__enclos_env__']]$private$checkValid(x)
+  }
+
+  # create object that will fail to validate
+  badObject <- poolCheckout(pool)
+  attr(badObject, "bad") <- TRUE
+  Sys.sleep(pool$validationInterval + .1)
+
+  # can't validate, so should create a new object
+  expect_snapshot(obj <- check_valid_object(badObject))
+
+  Sys.sleep(pool$validationInterval + .1)
+  expect_identical(obj, check_valid_object(obj))
+  # this implicitly returns badOjbect
+  checkCounts(pool, free = 1, taken = 0)
+
+  # now force all validations to fail so we get an error
+  failOnValidate <<- TRUE
+  withr::defer(failOnValidate <<- FALSE)
+
+  Sys.sleep(pool$validationInterval + .1)
+  expect_snapshot(check_valid_object(obj), error = TRUE)
+
+  # and since all objects have been destroyed the pool is empty
+  checkCounts(pool, free = 0, taken = 0)
+
+})
 
 test_that("can't return the same object twice", {
   pool <- poolCreate(MockPooledObj$new)
@@ -152,6 +185,7 @@ test_that("useful warning if onDestroy fails", {
 
   checkCounts(pool, free = 1, taken = 0)
   failOnDestroy <<- TRUE
+  withr::defer(failOnDestroy <<- FALSE)
 
   a <- poolCheckout(pool)
   b <- poolCheckout(pool)
@@ -163,7 +197,6 @@ test_that("useful warning if onDestroy fails", {
   })
 
   checkCounts(pool, free = 0, taken = 1)
-  failOnDestroy <<- FALSE
   poolReturn(a)
 })
 
@@ -173,8 +206,9 @@ test_that("throws if onPassivate fails", {
 
   obj <- poolCheckout(pool)
   failOnPassivate <<- TRUE
+  withr::defer(failOnPassivate <<- FALSE)
+
   expect_snapshot(poolReturn(obj), error = TRUE)
-  failOnPassivate <<- FALSE
 })
 
 test_that("throws if onActivate fails", {
@@ -182,9 +216,10 @@ test_that("throws if onActivate fails", {
   withr::defer(poolClose(pool))
 
   failOnActivate <<- TRUE
+  withr::defer(failOnActivate <<- FALSE)
+
   expect_snapshot(poolCheckout(pool), error = TRUE)
   checkCounts(pool, free = 0, taken = 0)
-  failOnActivate <<- FALSE
 })
 
 test_that("throws if onValidate fails", {
@@ -192,7 +227,7 @@ test_that("throws if onValidate fails", {
   withr::defer(poolClose(pool))
 
   failOnValidate <<- TRUE
+  withr::defer(failOnValidate <<- FALSE)
   expect_snapshot(poolCheckout(pool), error = TRUE)
   checkCounts(pool, free = 0, taken = 0)
-  failOnValidate <<- FALSE
 })
