@@ -12,13 +12,18 @@
       ! Object creation failed.
       * The `factory` must not return `NULL`
 
-# pool can't be closed twice
+# pool can't fetch or close after close
 
     Code
       poolCheckout(pool)
     Condition
       Error in `poolCheckout()`:
-      ! This pool is no longer valid. Cannot fetch new objects.
+      ! The pool has been closed.
+    Code
+      poolClose(pool)
+    Condition
+      Error in `poolClose()`:
+      ! The pool has been closed.
 
 # max size is enforced
 

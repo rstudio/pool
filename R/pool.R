@@ -43,12 +43,7 @@ Pool <- R6::R6Class("Pool",
 
     ## calls activate and returns an object
     fetch = function(error_call = caller_env()) {
-      if (!self$valid) {
-        abort(
-          "This pool is no longer valid. Cannot fetch new objects.",
-          call = error_call
-        )
-      }
+      self$checkValid(error_call)
 
       ## see if there's any free objects
       freeEnv <- private$freeObjects
@@ -66,7 +61,7 @@ Pool <- R6::R6Class("Pool",
 
       private$cancelScheduledTask(object, "validateHandle")
       ## call onActivate, onValidate and change object status
-      object <- private$checkValid(object, error_call = error_call)
+      object <- private$checkObjectValid(object, error_call = error_call)
       private$changeObjectStatus(object, "taken")
 
       return(object)
@@ -117,7 +112,7 @@ Pool <- R6::R6Class("Pool",
       ## set up recurring validation every `validationInterval` secs
       ## so we can catch if an idle connection gets broken somehow
       pool_metadata$validateHandle <- scheduleTaskRecurring(function() {
-          object <- private$checkValid(object)
+          object <- private$checkObjectValid(object)
           ## if we got here, the object was successfully
           ## activated and validated; now needs to be passivated
           onPassivate(object)
@@ -129,8 +124,8 @@ Pool <- R6::R6Class("Pool",
     ## can still be returned to the pool (which will
     ## immediately destroy them). Objects can no longer be
     ## checked out from the pool.
-    close = function() {
-      if (!self$valid) abort("The pool was already closed.")
+    close = function(error_call = parent.frame()) {
+      self$checkValid(error_call)
 
       self$valid <- FALSE
       freeEnv <- private$freeObjects
@@ -149,7 +144,11 @@ Pool <- R6::R6Class("Pool",
         ))
       }
     },
-
+    checkValid = function(error_call = parent.frame()) {
+      if (!self$valid) {
+        abort("The pool has been closed.", call = error_call)
+      }
+    },
     print = function(...) {
       cat("<Pool> of ", self$objClass %||% "unknown", " objects\n", sep = "")
       cat("  Objects checked out: ", self$counters$taken, "\n", sep = "")
@@ -292,7 +291,7 @@ Pool <- R6::R6Class("Pool",
     ## tries to validate + activate the object; if that fails,
     ## warn, destroy that object and try once more
     ## if second attempt fails, throw an error
-    checkValid = function(object, error_call = caller_env()) {
+    checkObjectValid = function(object, error_call = caller_env()) {
       tryCatch(
         {
           private$activateAndValidate(object)

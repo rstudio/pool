@@ -15,11 +15,14 @@ test_that("it requires a valid factory", {
   })
 })
 
-test_that("pool can't be closed twice", {
+test_that("pool can't fetch or close after close", {
   pool <- poolCreate(function() 1)
   poolClose(pool)
 
-  expect_snapshot(poolCheckout(pool), error = TRUE)
+  expect_snapshot(error = TRUE, {
+    poolCheckout(pool)
+    poolClose(pool)
+  })
 })
 
 test_that("can fetch and release", {
@@ -90,7 +93,7 @@ test_that("warns if validation fails once, creates new object and tries again", 
 
   check_valid_object <- function(x) {
     # Sneak into private methods
-    pool[['.__enclos_env__']]$private$checkValid(x)
+    pool[['.__enclos_env__']]$private$checkObjectValid(x)
   }
 
   # create object that will fail to validate
