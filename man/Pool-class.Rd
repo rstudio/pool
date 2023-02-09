@@ -14,7 +14,7 @@ poolCreate(
   minSize = 1,
   maxSize = Inf,
   idleTimeout = 60,
-  validationInterval = 600,
+  validationInterval = 60,
   state = NULL
 )
 

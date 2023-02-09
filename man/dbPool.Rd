@@ -11,7 +11,7 @@ dbPool(
   maxSize = Inf,
   onCreate = NULL,
   idleTimeout = 60,
-  validationInterval = 600,
+  validationInterval = 60,
   validateQuery = NULL
 )
 }

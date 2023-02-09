@@ -1,5 +1,9 @@
 # pool (development version)
 
+* `dbPool()` and `poolCreate()` now default to validating every 60s, rather
+   than every 600s. This makes pools a little more robust to shorter connection
+   timeouts (#149).
+
 * Pool has been re-licensed to MIT (#158).
 
 * `dbPool()` gains an `onCreate` parameter that allows you do something to
