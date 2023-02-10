@@ -14,7 +14,7 @@ poolCreate(
   minSize = 1,
   maxSize = Inf,
   idleTimeout = 60,
-  validationInterval = 600,
+  validationInterval = 60,
   state = NULL
 )
 
@@ -23,27 +23,23 @@ poolClose(pool)
 \S4method{poolClose}{Pool}(pool)
 }
 \arguments{
-\item{factory}{A factory function used to create responsible for the generation of
-the objects that the pool will hold (ex: for DBI database connections,
-this function is \code{dbConnect}). It must take no arguments.}
+\item{factory}{A zero-argument function called to create the objects that
+the pool will hold (e.g. for DBI database connections, \code{\link[=dbPool]{dbPool()}} uses
+a wrapper around \code{DBI::dbConnect()}).}
 
 \item{minSize, maxSize}{The minimum and maximum number of objects in the pool.}
 
-\item{idleTimeout}{The number of seconds that an idle
-object will be kept in the pool before it is destroyed (only
-applies if the number of objects is over the \code{minSize}).
-Use \code{Inf} if you want created objects never to be destroyed
-(there isn't a great reason for this usually).}
+\item{idleTimeout}{Number of seconds to wait before destroying idle objects
+(i.e. objects available for checkout over and above \code{minSize}).}
 
-\item{validationInterval}{The minimum number of seconds that
-\code{pool} will wait before running a validation check on the
-next checked out object. By not necessarily validating every
-checked out object, there can be substantial performance gains
-(especially if the interval between checking out new objects is
-very small).}
+\item{validationInterval}{Number of seconds to wait between validating
+objects that are available for checkout. These objects are validated
+in the background to keep them alive.
 
-\item{state}{A \code{pool} public variable to be used by
-backend authors as necessary.}
+To force objects to be validated on every checkout, set
+\code{validationInterval = 0}.}
+
+\item{state}{A \code{pool} public variable to be used by backend authors.}
 
 \item{pool}{A Pool object previously created with \code{poolCreate}}
 }

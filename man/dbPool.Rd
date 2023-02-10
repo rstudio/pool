@@ -11,7 +11,7 @@ dbPool(
   maxSize = Inf,
   onCreate = NULL,
   idleTimeout = 60,
-  validationInterval = 600,
+  validationInterval = 60,
   validateQuery = NULL
 )
 }
@@ -29,18 +29,15 @@ and is called when the connection is created. Use this with
 \code{\link[DBI:dbExecute]{DBI::dbExecute()}} to set default options on every connection created
 by the pool.}
 
-\item{idleTimeout}{The number of seconds that an idle
-object will be kept in the pool before it is destroyed (only
-applies if the number of objects is over the \code{minSize}).
-Use \code{Inf} if you want created objects never to be destroyed
-(there isn't a great reason for this usually).}
+\item{idleTimeout}{Number of seconds to wait before destroying idle objects
+(i.e. objects available for checkout over and above \code{minSize}).}
 
-\item{validationInterval}{The minimum number of seconds that
-\code{pool} will wait before running a validation check on the
-next checked out object. By not necessarily validating every
-checked out object, there can be substantial performance gains
-(especially if the interval between checking out new objects is
-very small).}
+\item{validationInterval}{Number of seconds to wait between validating
+objects that are available for checkout. These objects are validated
+in the background to keep them alive.
+
+To force objects to be validated on every checkout, set
+\code{validationInterval = 0}.}
 
 \item{validateQuery}{A simple query that can be used to verify that the
 connetction is valid. If not provided, \code{dbPool()} will try a few common
