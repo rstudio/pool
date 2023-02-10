@@ -79,7 +79,7 @@ connections.</p>
 <span>  minSize <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  maxSize <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>  idleTimeout <span class="op">=</span> <span class="fl">60</span>,</span>
-<span>  validationInterval <span class="op">=</span> <span class="fl">600</span>,</span>
+<span>  validationInterval <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  state <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -92,9 +92,9 @@ connections.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>factory</dt>
-<dd><p>A factory function used to create responsible for the generation of
-the objects that the pool will hold (ex: for DBI database connections,
-this function is <code>dbConnect</code>). It must take no arguments.</p></dd>
+<dd><p>A zero-argument function called to create the objects that
+the pool will hold (e.g. for DBI database connections, <code><a href="dbPool.html">dbPool()</a></code> uses
+a wrapper around <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect()</a></code>).</p></dd>
 
 
 <dt>minSize, maxSize</dt>
@@ -102,25 +102,20 @@ this function is <code>dbConnect</code>). It must take no arguments.</p></dd>
 
 
 <dt>idleTimeout</dt>
-<dd><p>The number of seconds that an idle
-object will be kept in the pool before it is destroyed (only
-applies if the number of objects is over the <code>minSize</code>).
-Use <code>Inf</code> if you want created objects never to be destroyed
-(there isn't a great reason for this usually).</p></dd>
+<dd><p>Number of seconds to wait before destroying idle objects
+(i.e. objects available for checkout over and above <code>minSize</code>).</p></dd>
 
 
 <dt>validationInterval</dt>
-<dd><p>The minimum number of seconds that
-<code>pool</code> will wait before running a validation check on the
-next checked out object. By not necessarily validating every
-checked out object, there can be substantial performance gains
-(especially if the interval between checking out new objects is
-very small).</p></dd>
+<dd><p>Number of seconds to wait between validating
+objects that are available for checkout. These objects are validated
+in the background to keep them alive.</p>
+<p>To force objects to be validated on every checkout, set
+<code>validationInterval = 0</code>.</p></dd>
 
 
 <dt>state</dt>
-<dd><p>A <code>pool</code> public variable to be used by
-backend authors as necessary.</p></dd>
+<dd><p>A <code>pool</code> public variable to be used by backend authors.</p></dd>
 
 
 <dt>pool</dt>
