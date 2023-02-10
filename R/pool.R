@@ -111,12 +111,17 @@ Pool <- R6::R6Class("Pool",
 
       ## set up recurring validation every `validationInterval` secs
       ## so we can catch if an idle connection gets broken somehow
-      pool_metadata$validateHandle <- scheduleTaskRecurring(function() {
-          object <- private$checkObjectValid(object)
-          ## if we got here, the object was successfully
-          ## activated and validated; now needs to be passivated
-          onPassivate(object)
-        }, self$validationInterval)
+      if (self$validationInterval > 0) {
+        pool_metadata$validateHandle <- scheduleTaskRecurring(
+          function() {
+            object <- private$checkObjectValid(object)
+            ## if we got here, the object was successfully
+            ## activated and validated; now needs to be passivated
+            onPassivate(object)
+          },
+          self$validationInterval
+        )
+      }
     },
 
     ## cleaning up and closing the pool -- after the pool
