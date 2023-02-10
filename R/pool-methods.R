@@ -15,23 +15,20 @@ setClass("Pool")
 
 #' @export
 #' @rdname Pool-class
-#' @param factory A factory function used to create responsible for the generation of
-#'   the objects that the pool will hold (ex: for DBI database connections,
-#'   this function is `dbConnect`). It must take no arguments.
+#' @param factory A zero-argument function called to create the objects that
+#'   the pool will hold (e.g. for DBI database connections, [dbPool()] uses
+#'   a wrapper around `DBI::dbConnect()`).
 #' @param minSize,maxSize The minimum and maximum number of objects in the pool.
-#' @param idleTimeout The number of seconds that an idle
-#'   object will be kept in the pool before it is destroyed (only
-#'   applies if the number of objects is over the `minSize`).
-#'   Use `Inf` if you want created objects never to be destroyed
-#'   (there isn't a great reason for this usually).
-#' @param validationInterval The minimum number of seconds that
-#'  `pool` will wait before running a validation check on the
-#'  next checked out object. By not necessarily validating every
-#'  checked out object, there can be substantial performance gains
-#'  (especially if the interval between checking out new objects is
-#'  very small).
-#' @param  state A `pool` public variable to be used by
-#'  backend authors as necessary.
+#' @param idleTimeout Number of seconds to wait before destroying idle objects
+#'   (i.e. objects available for checkout over and above `minSize`).
+#' @param validationInterval Number of seconds to wait between validating free
+#'   objects (i.e. objects available for checkout). Reserved objects (i.e.
+#'   the objects preserved by the pool to respect `minSize`) will the validated
+#'   in the background to keep them alive.
+#'
+#'   To turn off background validation and force objects to be validated on
+#'   every checkout, set `validationInterval = 0`.
+#' @param  state A `pool` public variable to be used by backend authors.
 poolCreate <- function(factory,
                        minSize = 1,
                        maxSize = Inf,
