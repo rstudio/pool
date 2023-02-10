@@ -1,4 +1,4 @@
-# pool (development version)
+# pool 1.0.0
 
 ## New features
 
