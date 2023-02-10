@@ -1,8 +1,6 @@
 # pool (development version)
 
-* `dbPool()` and `poolCreate()` now default to validating every 60s, rather
-   than every 600s. This makes pools a little more robust to shorter connection
-   timeouts (#149).
+## New features
 
 * Pool has been re-licensed to MIT (#158).
 
@@ -13,16 +11,9 @@
 * New `localCheckout()` checkouts and then automatically returns an object.
   It only works in function scope.
 
+## Minor improvements and bug fixes
+
 * Pools now get a useful print method (#140).
-
-* `dbPool()`'s `validateQuery` is now actually used (#153).
-
-* Connections are now validated once on first checkout to ensure that the
-  connection and validation strategy are both ok.
-
-* DBI methods should dispatch correctly in more cases; in particular 
-  `dbReadTable()` and friends will now work correctly when used with
-  `DBI::Id()` (#120).
 
 * pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
   using pool with dplyr (#132).
@@ -30,7 +21,20 @@
 * Pool errors and warnings have been reviewed with an eye to making them 
   more immediately actionable (#145).
 
+* Objects are now validated once on first checkout to ensure that the
+  object and validation strategy are both ok.
+
 * Added support for SAP HANA databases (@marcosci, #103).
+
+* `dbPool()` and `poolCreate()` now default to validating every 60s, rather
+   than every 600s. This makes pools a little more robust to shorter connection
+   timeouts (#149).
+
+* `dbPool()`'s `validateQuery` is now actually used (#153).
+
+* DBI methods should dispatch correctly in more cases; in particular 
+  `dbReadTable()` and friends will now work correctly when used with
+  `DBI::Id()` (#120).
 
 # pool 0.1.6
 
