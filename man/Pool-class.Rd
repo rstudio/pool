@@ -32,13 +32,12 @@ a wrapper around \code{DBI::dbConnect()}).}
 \item{idleTimeout}{Number of seconds to wait before destroying idle objects
 (i.e. objects available for checkout over and above \code{minSize}).}
 
-\item{validationInterval}{Number of seconds to wait between validating free
-objects (i.e. objects available for checkout). Reserved objects (i.e.
-the objects preserved by the pool to respect \code{minSize}) will the validated
+\item{validationInterval}{Number of seconds to wait between validating
+objects that are available for checkout. These objects are validated
 in the background to keep them alive.
 
-To turn off background validation and force objects to be validated on
-every checkout, set \code{validationInterval = 0}.}
+To force objects to be validated on every checkout, set
+\code{validationInterval = 0}.}
 
 \item{state}{A \code{pool} public variable to be used by backend authors.}
 

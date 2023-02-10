@@ -110,7 +110,7 @@ Pool <- R6::R6Class("Pool",
       private$changeObjectStatus(object, "free")
 
       ## set up recurring validation every `validationInterval` secs
-      ## so we can catch if an idle connection gets broken somehow
+      ## so we can catch if a free connection gets broken somehow
       if (self$validationInterval > 0) {
         pool_metadata$validateHandle <- scheduleTaskRecurring(
           function() {
