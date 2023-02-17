@@ -8,6 +8,7 @@ test_that("can copy and collect", {
     temporary = FALSE,
     indexes = list(c("x", "y"), "y")
   )
+  expect_s3_class(dbplyr::remote_con(db), "Pool")
   expect_equal(dplyr::collect(db), df)
 
   # But copy_to must not be temporary
