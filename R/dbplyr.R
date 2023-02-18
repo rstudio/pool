@@ -44,17 +44,21 @@ copy_to.Pool <- function(dest,
                          ...) {
   stop_if_temporary(temporary)
 
-  db_con <- poolCheckout(dest)
-  on.exit(poolReturn(db_con))
+  local({
+    db_con <- poolCheckout(dest)
+    on.exit(poolReturn(db_con))
 
-  dplyr::copy_to(
-    dest = db_con,
-    df = df,
-    name = name,
-    overwrite = overwrite,
-    temporary = temporary,
-    ...
-  )
+    dplyr::copy_to(
+      dest = db_con,
+      df = df,
+      name = name,
+      overwrite = overwrite,
+      temporary = temporary,
+      ...
+    )
+  })
+
+  tbl.Pool(dest, name)
 }
 
 # Lazily registered wrapped functions ------------------------------------------
@@ -74,6 +78,7 @@ dbplyr_register_methods <- function() {
     dbplyr_s3_register("db_connection_describe")
     dbplyr_s3_register("db_sql_render")
     dbplyr_s3_register("sql_translation")
+    dbplyr_s3_register("sql_join_suffix")
   })
 }
 
