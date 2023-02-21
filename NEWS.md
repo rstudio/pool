@@ -2,7 +2,8 @@
 
 * `copy_to()` now returns a tbl that uses the Pool.
 
-* Added missing method for `sql_join_suffix()` (#165).
+* Added missing methods for `sql_join_suffix()` (#165) and 
+  `sql_query_explain()` (#167).
 
 # pool 1.0.0
 
