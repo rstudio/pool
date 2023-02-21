@@ -1,4 +1,4 @@
-# pool (development version)
+# pool 1.0.1
 
 * `copy_to()` now returns a tbl that uses the Pool.
 
