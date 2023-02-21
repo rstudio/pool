@@ -80,9 +80,9 @@
 <!-- badges: start -->
 
 <p>The goal of the <strong>pool</strong> package is to abstract away the challenges of database connection management, which is particularly relevant in interactive contexts like Shiny apps that connect to a database.</p>
-<p>Instead of creating and close connections yourself, you create a “pool” of connections, and the pool package manages them for you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. The pool works seamlessly with DBI and dplyr, so in most cases using the pool package is as simple replacing <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect()</a></code> with <code><a href="reference/dbPool.html">dbPool()</a></code> and adding a call to <code><a href="reference/Pool-class.html">poolClose()</a></code>.</p>
+<p>Instead of creating and closing connections yourself, you create a “pool” of connections, and the pool package manages them for you. You never have to create or close connections directly: The pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. The pool works seamlessly with DBI and dplyr, so in most cases using the pool package is as simple replacing <code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">DBI::dbConnect()</a></code> with <code><a href="reference/dbPool.html">dbPool()</a></code> and adding a call to <code><a href="reference/Pool-class.html">poolClose()</a></code>.</p>
 <p>Learn more about why pool is needed in <code><a href="articles/why-pool.html">vignette("why-pool")</a></code>.</p>
-<p>(The pool package is actually general enough to allow you to construct a pool of any kind of object, not just database connections, but database connections are currently it’s primary claim to fame.)</p>
+<p>(The pool package is actually general enough to allow you to construct a pool of any kind of object, not just database connections, but database connections are currently its primary claim to fame.)</p>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
@@ -131,6 +131,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=pool" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/rstudio/pool/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/rstudio/pool/issues" class="external-link">Report a bug</a></li>
 </ul>
