@@ -9,11 +9,11 @@ pool
 
 The goal of the **pool** package is to abstract away the challenges of database connection management, which is particularly relevant in interactive contexts like Shiny apps that connect to a database. 
 
-Instead of creating and close connections yourself, you create a "pool" of connections, and the pool package manages them for you. You never have to create or close connections directly: the pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. The pool works seamlessly with DBI and dplyr, so in most cases using the pool package is as simple replacing `DBI::dbConnect()` with `dbPool()` and adding a call to `poolClose()`.
+Instead of creating and closing connections yourself, you create a "pool" of connections, and the pool package manages them for you. You never have to create or close connections directly: The pool knows when it should grow, shrink or keep steady. You only need to close the pool when you’re done. The pool works seamlessly with DBI and dplyr, so in most cases using the pool package is as simple replacing `DBI::dbConnect()` with `dbPool()` and adding a call to `poolClose()`.
 
 Learn more about why pool is needed in `vignette("why-pool")`.
 
-(The pool package is actually general enough to allow you to construct a pool of any kind of object, not just database connections, but database connections are currently it's primary claim to fame.)
+(The pool package is actually general enough to allow you to construct a pool of any kind of object, not just database connections, but database connections are currently its primary claim to fame.)
 
 ## Usage
 
