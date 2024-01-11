@@ -93,6 +93,8 @@ dbplyr_register_methods <- function() {
     dbplyr_s3_register("db_collect")
     dbplyr_s3_register("db_compute")
     dbplyr_s3_register("db_connection_describe")
+    dbplyr_s3_register("db_copy_to")
+    dbplyr_s3_register("db_col_types")
     dbplyr_s3_register("db_sql_render")
     dbplyr_s3_register("sql_translation")
     dbplyr_s3_register("sql_join_suffix")
