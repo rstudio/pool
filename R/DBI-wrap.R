@@ -68,8 +68,7 @@ DBI_wrap <- function(fun_name) {
   recall <- call2(ns_fun, !!!call_args)
 
   body <- expr({
-    db_con <- poolCheckout(!!con_arg)
-    on.exit(poolReturn(db_con))
+    db_con <- localCheckout(!!con_arg)
 
     !!recall
   })

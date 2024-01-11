@@ -1,6 +1,6 @@
 local_db_pool <- function(env = parent.frame()) {
   pool <- dbPool(RSQLite::SQLite())
-  withr::defer(poolClose(pool), envir = env)
+  defer(poolClose(pool), envir = env)
   pool
 }
 

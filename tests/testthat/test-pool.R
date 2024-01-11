@@ -27,7 +27,7 @@ test_that("pool can't fetch or close after close", {
 
 test_that("can fetch and release", {
   pool <- poolCreate(function() 1)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   obj <- poolCheckout(pool)
   expect_equal(obj, 1, ignore_attr = TRUE)
@@ -39,7 +39,7 @@ test_that("can fetch and release", {
 
 test_that("max size is enforced", {
   pool <- poolCreate(MockPooledObj$new, maxSize = 2)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   obj1 <- poolCheckout(pool)
   obj2 <- poolCheckout(pool)
@@ -52,7 +52,7 @@ test_that("max size is enforced", {
 
 test_that("idle objects are reaped", {
   pool <- poolCreate(MockPooledObj$new, idleTimeout = 0)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   obj1 <- poolCheckout(pool)
   obj2 <- poolCheckout(pool)
@@ -66,7 +66,7 @@ test_that("idle objects are reaped", {
 
 test_that("validates (only) when needed", {
   pool <- poolCreate(MockPooledObj$new, validationInterval = 0.1)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   last_validated <- function(pool) {
     obj <- localCheckout(pool)
@@ -89,7 +89,7 @@ test_that("validates (only) when needed", {
 
 test_that("warns if validation fails once, creates new object and tries again", {
   pool <- poolCreate(MockPooledObj$new, validationInterval = 0.1)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   check_valid_object <- function(x) {
     # Sneak into private methods
@@ -111,7 +111,7 @@ test_that("warns if validation fails once, creates new object and tries again", 
 
   # now force all validations to fail so we get an error
   failOnValidate <<- TRUE
-  withr::defer(failOnValidate <<- FALSE)
+  defer(failOnValidate <<- FALSE)
 
   Sys.sleep(pool$validationInterval + .1)
   expect_snapshot(check_valid_object(obj), error = TRUE)
@@ -123,7 +123,7 @@ test_that("warns if validation fails once, creates new object and tries again", 
 
 test_that("can't return the same object twice", {
   pool <- poolCreate(MockPooledObj$new)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   obj <- poolCheckout(pool)
   poolReturn(obj)
@@ -155,7 +155,7 @@ test_that("poolReturn() errors if object is not valid", {
 
 test_that("pool has useful print method", {
   pool <- poolCreate(function() 10)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   expect_snapshot({
     pool
@@ -173,7 +173,7 @@ test_that("pool has useful print method", {
 
 test_that("empty pool has useful print method", {
   pool <- poolCreate(function() 10, minSize = 0)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   expect_snapshot({
     pool
@@ -184,11 +184,11 @@ test_that("empty pool has useful print method", {
 
 test_that("useful warning if onDestroy fails", {
   pool <- poolCreate(MockPooledObj$new, idleTimeout = 0)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   checkCounts(pool, free = 1, taken = 0)
   failOnDestroy <<- TRUE
-  withr::defer(failOnDestroy <<- FALSE)
+  defer(failOnDestroy <<- FALSE)
 
   a <- poolCheckout(pool)
   b <- poolCheckout(pool)
@@ -205,21 +205,21 @@ test_that("useful warning if onDestroy fails", {
 
 test_that("throws if onPassivate fails", {
   pool <- poolCreate(MockPooledObj$new)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   obj <- poolCheckout(pool)
   failOnPassivate <<- TRUE
-  withr::defer(failOnPassivate <<- FALSE)
+  defer(failOnPassivate <<- FALSE)
 
   expect_snapshot(poolReturn(obj), error = TRUE)
 })
 
 test_that("throws if onActivate fails", {
   pool <- poolCreate(MockPooledObj$new)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   failOnActivate <<- TRUE
-  withr::defer(failOnActivate <<- FALSE)
+  defer(failOnActivate <<- FALSE)
 
   expect_snapshot(poolCheckout(pool), error = TRUE)
   checkCounts(pool, free = 0, taken = 0)
@@ -227,10 +227,10 @@ test_that("throws if onActivate fails", {
 
 test_that("throws if onValidate fails", {
   pool <- poolCreate(MockPooledObj$new)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   failOnValidate <<- TRUE
-  withr::defer(failOnValidate <<- FALSE)
+  defer(failOnValidate <<- FALSE)
   expect_snapshot(poolCheckout(pool), error = TRUE)
   checkCounts(pool, free = 0, taken = 0)
 })

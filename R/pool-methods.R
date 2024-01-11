@@ -119,6 +119,6 @@ setMethod("poolReturn", "ANY", function(object) {
 #'   use only.
 localCheckout <- function(pool, env = parent.frame()) {
   obj <- poolCheckout(pool)
-  withr::defer(poolReturn(obj), envir = env)
+  defer(poolReturn(obj), envir = env)
   obj
 }

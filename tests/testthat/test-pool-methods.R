@@ -1,6 +1,6 @@
 test_that("localCheckout works", {
   pool <- poolCreate(function(x) 1)
-  withr::defer(poolClose(pool))
+  defer(poolClose(pool))
 
   f <- function() {
     localCheckout(pool)

@@ -78,8 +78,7 @@
 #'   message("Please install the 'RSQLite' package to run this example")
 #' }
 poolWithTransaction <- function(pool, func) {
-  conn <- poolCheckout(pool)
-  on.exit(poolReturn(conn))
+  conn <- localCheckout(pool)
   DBI::dbWithTransaction(conn, func(conn))
 }
 
