@@ -27,14 +27,15 @@ tbl.Pool <- function(src, from, ..., vars = NULL) {
   on.exit(poolReturn(con))
 
   if (is.null(vars)) {
-    from_sql <- dbplyr::as.sql(from, con)
-    vars <- dplyr::db_query_fields(con, from_sql)
+    vars <- dplyr::db_query_fields(con, from)
   }
 
   dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ..., vars = vars)
 }
 
 #' @rdname tbl.Pool
+#' @param name Name for remote table. Defaults to the name of `df`, if it's
+#'   an identifier, otherwise uses a random name.
 #' @inheritParams dbplyr::copy_to.src_sql
 copy_to.Pool <- function(dest,
                          df,

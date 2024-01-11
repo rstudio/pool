@@ -7,14 +7,7 @@
 \usage{
 tbl.Pool(src, from, ..., vars = NULL)
 
-copy_to.Pool(
-  dest,
-  df,
-  name = deparse(substitute(df)),
-  overwrite = FALSE,
-  temporary = TRUE,
-  ...
-)
+copy_to.Pool(dest, df, name = NULL, overwrite = FALSE, temporary = TRUE, ...)
 }
 \arguments{
 \item{src, dest}{A \link{dbPool}.}
@@ -31,7 +24,8 @@ from another source. If from another source, all data must transition
 through R in one pass, so it is only suitable for transferring small
 amounts of data.}
 
-\item{name}{name for new remote table.}
+\item{name}{Name for remote table. Defaults to the name of \code{df}, if it's
+an identifier, otherwise uses a random name.}
 
 \item{overwrite}{If \code{TRUE}, will overwrite an existing table with
 name \code{name}. If \code{FALSE}, will throw an error if \code{name} already
