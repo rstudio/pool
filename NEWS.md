@@ -1,5 +1,10 @@
 # pool (development version)
 
+* Pool no longer generates spurious messages about needing to use 
+  `in_schema()` or avoiding the use of `ident_q()`.
+
+* Add support for new DBI generics that return Arrow objects.
+
 # pool 1.0.1
 
 * `copy_to()` now returns a tbl that uses the Pool.

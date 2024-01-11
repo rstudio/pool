@@ -24,6 +24,12 @@
 \alias{dbUnquoteIdentifier,Pool-method}
 \alias{dbQuoteLiteral,Pool-method}
 \alias{dbQuoteString,Pool,ANY-method}
+\alias{dbAppendTableArrow,Pool-method}
+\alias{dbCreateTableArrow,Pool-method}
+\alias{dbGetQueryArrow,Pool-method}
+\alias{dbReadTableArrow,Pool-method}
+\alias{dbSendQueryArrow,Pool-method}
+\alias{dbWriteTableArrow,Pool-method}
 \title{DBI methods (simple wrappers)}
 \usage{
 \S4method{dbDataType}{Pool}(dbObj, obj, ...)
@@ -69,6 +75,18 @@
 \S4method{dbQuoteLiteral}{Pool}(conn, x, ...)
 
 \S4method{dbQuoteString}{Pool,ANY}(conn, x, ...)
+
+\S4method{dbAppendTableArrow}{Pool}(conn, name, value, ...)
+
+\S4method{dbCreateTableArrow}{Pool}(conn, name, value, ...)
+
+\S4method{dbGetQueryArrow}{Pool}(conn, statement, ...)
+
+\S4method{dbReadTableArrow}{Pool}(conn, name, ...)
+
+\S4method{dbSendQueryArrow}{Pool}(conn, statement, ...)
+
+\S4method{dbWriteTableArrow}{Pool}(conn, name, value, ...)
 }
 \description{
 These pool method for DBI generics methods check out a connection

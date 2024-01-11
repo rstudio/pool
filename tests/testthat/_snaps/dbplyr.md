@@ -45,15 +45,17 @@
       # with temporary argument
       dbplyr_wrap("db_compute")
     Output
-      function (con, table, sql, temporary = TRUE, unique_indexes = list(), 
-          indexes = list(), analyze = TRUE, ...) 
+      function (con, table, sql, ..., overwrite = FALSE, temporary = TRUE, 
+          unique_indexes = list(), indexes = list(), analyze = TRUE, 
+          in_transaction = TRUE) 
       {
           stop_if_temporary(temporary)
           db_con <- poolCheckout(con)
           on.exit(poolReturn(db_con))
           dbplyr::db_compute(con = db_con, table = table, sql = sql, 
-              temporary = temporary, unique_indexes = unique_indexes, 
-              indexes = indexes, analyze = analyze, ... = ...)
+              ... = ..., overwrite = overwrite, temporary = temporary, 
+              unique_indexes = unique_indexes, indexes = indexes, analyze = analyze, 
+              in_transaction = in_transaction)
       }
       <environment: namespace:pool>
 

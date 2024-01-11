@@ -56,6 +56,7 @@ test_that("can explain", {
   db <- dplyr::copy_to(pool, data.frame(x = 1), temporary = FALSE)
   expect_output(dplyr::explain(db))
 })
+
 test_that("can use schemas with pool", {
   pool <- local_db_pool()
 
