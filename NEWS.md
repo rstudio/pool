@@ -1,5 +1,7 @@
 # pool (development version)
 
+* No longer depends on the withr package, by instead requiring R 3.6.
+
 * Pool no longer generates spurious messages about needing to use 
   `in_schema()` or avoiding the use of `ident_q()`.
 

@@ -5,8 +5,7 @@
     Output
       function (conn, statement, ...) 
       {
-          db_con <- poolCheckout(conn)
-          on.exit(poolReturn(db_con))
+          db_con <- localCheckout(conn)
           DBI::dbExecute(conn = db_con, statement = statement, ... = ...)
       }
       <environment: namespace:pool>

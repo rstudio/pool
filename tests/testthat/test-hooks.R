@@ -3,8 +3,7 @@ test_that("onValidate() caches query", {
   # reset cache from initial creation + validation
   pool$state$validateQuery <- NULL
 
-  con <- poolCheckout(pool)
-  withr::defer(poolReturn(con))
+  con <- localCheckout(pool)
   onValidate(con)
   expect_equal(pool$state$validateQuery, "SELECT 1")
 })

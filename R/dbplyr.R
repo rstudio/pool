@@ -55,8 +55,7 @@ copy_to.Pool <- function(dest,
   }
 
   local({
-    db_con <- poolCheckout(dest)
-    on.exit(poolReturn(db_con))
+    db_con <- localCheckout(dest)
 
     dplyr::copy_to(
       dest = db_con,
@@ -119,8 +118,7 @@ dbplyr_wrap <- function(fun_name) {
   body <- expr({
     !!!temporary
 
-    db_con <- poolCheckout(con)
-    on.exit(poolReturn(db_con))
+    db_con <- localCheckout(con)
 
     !!recall
   })

@@ -35,8 +35,7 @@
     Output
       function (con, sql, n = -1, warn_incomplete = TRUE, ...) 
       {
-          db_con <- poolCheckout(con)
-          on.exit(poolReturn(db_con))
+          db_con <- localCheckout(con)
           dbplyr::db_collect(con = db_con, sql = sql, n = n, warn_incomplete = warn_incomplete, 
               ... = ...)
       }
@@ -50,8 +49,7 @@
           in_transaction = TRUE) 
       {
           stop_if_temporary(temporary)
-          db_con <- poolCheckout(con)
-          on.exit(poolReturn(db_con))
+          db_con <- localCheckout(con)
           dbplyr::db_compute(con = db_con, table = table, sql = sql, 
               ... = ..., overwrite = overwrite, temporary = temporary, 
               unique_indexes = unique_indexes, indexes = indexes, analyze = analyze, 
