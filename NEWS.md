@@ -2,6 +2,9 @@
 
 * No longer depends on the withr package, by instead requiring R 3.6.
 
+* Add wrappers for dbplyr generics `db_col_types()` (#171) and 
+  `db_copy_to()` (#172).
+
 * Pool no longer generates spurious messages about needing to use 
   `in_schema()` or avoiding the use of `ident_q()`.
 
