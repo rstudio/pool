@@ -26,9 +26,9 @@ tbl.Pool <- function(src, from, ..., vars = NULL) {
   con <- poolCheckout(src)
   on.exit(poolReturn(con))
 
-  from <- dbplyr::as.sql(from, con)
   if (is.null(vars)) {
-    vars <- dplyr::db_query_fields(con, from)
+    from_sql <- dbplyr::as.sql(from, con)
+    vars <- dplyr::db_query_fields(con, from_sql)
   }
 
   dbplyr::tbl_sql("Pool", dbplyr::src_dbi(src), from, ..., vars = vars)
@@ -38,11 +38,20 @@ tbl.Pool <- function(src, from, ..., vars = NULL) {
 #' @inheritParams dbplyr::copy_to.src_sql
 copy_to.Pool <- function(dest,
                          df,
-                         name = deparse(substitute(df)),
+                         name = NULL,
                          overwrite = FALSE,
                          temporary = TRUE,
                          ...) {
   stop_if_temporary(temporary)
+
+  if (is.null(name)) {
+    name <- substitute(df)
+    if (is_symbol(name)) {
+      name <- deparse(name)
+    } else {
+      name <- random_table_name()
+    }
+  }
 
   local({
     db_con <- poolCheckout(dest)
@@ -60,6 +69,13 @@ copy_to.Pool <- function(dest,
 
   tbl.Pool(dest, name)
 }
+
+random_table_name <- function(prefix = "") {
+  vals <- c(letters, LETTERS, 0:9)
+  name <- paste0(sample(vals, 10, replace = TRUE), collapse = "")
+  paste0(prefix, "pool_", name)
+}
+
 
 # Lazily registered wrapped functions ------------------------------------------
 
