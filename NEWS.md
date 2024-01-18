@@ -1,3 +1,5 @@
+# pool (development version)
+
 # pool 1.0.2
 
 * No longer depends on the withr package, by instead requiring R 3.6.
