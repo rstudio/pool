@@ -78,7 +78,7 @@
 
 \S4method{dbAppendTableArrow}{Pool}(conn, name, value, ...)
 
-\S4method{dbCreateTableArrow}{Pool}(conn, name, value, ...)
+\S4method{dbCreateTableArrow}{Pool}(conn, name, value, ..., temporary = FALSE)
 
 \S4method{dbGetQueryArrow}{Pool}(conn, statement, ...)
 
