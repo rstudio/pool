@@ -8,3 +8,8 @@
 #' @importFrom later later
 #' @import rlang
 NULL
+
+## usethis namespace: start
+#' @importFrom utils packageVersion
+## usethis namespace: end
+NULL

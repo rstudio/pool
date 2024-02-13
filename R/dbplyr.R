@@ -79,6 +79,8 @@ dbplyr_register_methods <- function() {
 
   # Wrappers inspect formals so can only be executed if dbplyr is available
   on_package_load("dbplyr", {
+    check_dbplyr()
+
     dbplyr_s3_register <- function(fun_name) {
       s3_register(paste0("dbplyr::", fun_name), "Pool", dbplyr_wrap(fun_name))
     }
@@ -93,6 +95,19 @@ dbplyr_register_methods <- function() {
     dbplyr_s3_register("sql_query_explain")
     dbplyr_s3_register("sql_query_fields")
   })
+}
+
+check_dbplyr <- function() {
+  if (packageVersion("dbplyr") < "2.4.0") {
+    inform(
+      c(
+        "!" = "Pool works best with dbplyr 2.4.0 or greater.",
+        i = paste0("You have dbplyr ", packageVersion("dbplyr"), "."),
+        i = "Please consider upgrading."
+      ),
+      class = c("packageStartupMessage", "simpleMessage")
+    )
+  }
 }
 
 dbplyr_wrap <- function(fun_name) {
