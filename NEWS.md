@@ -1,3 +1,5 @@
+# pool (development version)
+
 # pool 1.0.3
 
 * Now explicitly requires DBI 1.2.0 (#178) and messages if you're using an 
