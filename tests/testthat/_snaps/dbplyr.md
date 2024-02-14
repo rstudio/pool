@@ -57,3 +57,12 @@
       }
       <environment: namespace:pool>
 
+# warns if dbplyr is old
+
+    Code
+      check_dbplyr()
+    Message
+      ! Pool works best with dbplyr 2.4.0 or greater.
+      i You have dbplyr 1.0.0.
+      i Please consider upgrading.
+

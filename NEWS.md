@@ -1,5 +1,8 @@
 # pool (development version)
 
+* Now requires DBI 1.2.0 (#178) and messages if you're using an old dbplyr 
+  (#179).
+
 # pool 1.0.2
 
 * No longer depends on the withr package, by instead requiring R 3.6.
