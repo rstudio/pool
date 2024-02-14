@@ -6,6 +6,11 @@
 #' little computational cost. The pool should be created only once
 #' and closed when it is no longer needed, to prevent leaks.
 #'
+#' Every usage of `poolCreate()` should always be paired with a call to
+#' `poolClose()` to avoid "leaking" resources. In shiny app, you should
+#' create the pool outside of the server function and close it on stop,
+#' i.e. `onStop(function() pool::poolClose(pool))`.
+#'
 #' See [dbPool()] for an example of object pooling applied to DBI database
 #' connections.
 #'

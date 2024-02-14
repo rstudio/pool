@@ -49,6 +49,11 @@ from the pool and released back to it at will, with very
 little computational cost. The pool should be created only once
 and closed when it is no longer needed, to prevent leaks.
 
+Every usage of \code{poolCreate()} should always be paired with a call to
+\code{poolClose()} to avoid "leaking" resources. In shiny app, you should
+create the pool outside of the server function and close it on stop,
+i.e. \code{onStop(function() pool::poolClose(pool))}.
+
 See \code{\link[=dbPool]{dbPool()}} for an example of object pooling applied to DBI database
 connections.
 }
