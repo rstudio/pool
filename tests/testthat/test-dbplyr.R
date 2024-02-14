@@ -98,6 +98,7 @@ test_that("warns if dbplyr is old", {
     check_dbplyr()
   })
 
+  skip_on_cran()
   cnd_dplyr <- class(catch_cnd(check_dbplyr()))
   cnd_startup <- class(catch_cnd(packageStartupMessage("hi")))
   cnd_startup <- c(cnd_startup[1:2], "rlang_message", cnd_startup[-(1:2)])
