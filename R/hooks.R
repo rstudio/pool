@@ -114,7 +114,10 @@ setMethod("onValidate", "DBIConnection", function(object) {
       "SELECT 1 FROM systables WHERE 0=1",
       # SAP HANA
       "SELECT 1 FROM SYS_TABLES WHERE 0=1",
-      "SELECT 1 FROM SYS.TABLES WHERE 0=1"
+      "SELECT 1 FROM SYS.TABLES WHERE 0=1",
+      # Firebird
+      # https://firebirdsql.org/file/documentation/chunk/en/refdocs/fblangref30/fblangref30-appx04-systables.html
+      "SELECT 1 FROM RDB$DATABASE WHERE 0=1"
     )
 
     ## Iterates through the possible validation queries:
