@@ -1,66 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://rstudio.github.io/pool/404.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/articles/advanced-pool.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/articles/pool-dplyr.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/articles/why-pool.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/authors.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/index.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/news/index.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/DBI-custom.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/DBI-wrap.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/Pool-class.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/dbPool.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/hooks.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/pool-package.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/poolCheckout.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/poolWithTransaction.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/reexports.html</loc>
-  </url>
-  <url>
-    <loc>http://rstudio.github.io/pool/reference/tbl.Pool.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>http://rstudio.github.io/pool/404.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/LICENSE-text.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/LICENSE.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/articles/advanced-pool.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/articles/index.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/articles/pool-dplyr.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/articles/why-pool.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/authors.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/index.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/news/index.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/DBI-custom.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/DBI-wrap.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/Pool-class.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/dbPool.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/hooks.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/index.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/pool-package.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/poolCheckout.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/poolWithTransaction.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/reexports.html</loc></url>
+<url><loc>http://rstudio.github.io/pool/reference/tbl.Pool.html</loc></url>
 </urlset>
+
