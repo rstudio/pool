@@ -39,9 +39,16 @@ the function exits
 Note that validation is only performed when the object is checked out,
 so you generally want to keep the checked out around for as little time as
 possible.
+
+When pooling DBI database connections, you normally would not use
+\code{poolCheckout()}. Instead, for single-shot queries, treat the pool object
+itself as the DBI connection object and it will perform checkout/return for
+you. And for transactions, use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
 }
 \examples{
 pool <- dbPool(RSQLite::SQLite())
+# For illustration only. You normally would not explicitly use
+# poolCheckout with a DBI connection pool (see Description).
 con <- poolCheckout(pool)
 con
 poolReturn(con)
