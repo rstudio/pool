@@ -8,7 +8,11 @@ and local()). It checks out an object and automatically returns it when
 the function exits
 Note that validation is only performed when the object is checked out,
 so you generally want to keep the checked out around for as little time as
-possible."><meta property="og:description" content="Use poolCheckout() to check out an object from the pool and
+possible.
+When pooling DBI database connections, you normally would not use
+poolCheckout(). Instead, for single-shot queries, treat the pool object
+itself as the DBI connection object and it will perform checkout/return for
+you. And for transactions, use poolWithTransaction()."><meta property="og:description" content="Use poolCheckout() to check out an object from the pool and
 poolReturn() to return it. You will receive a warning if all objects
 aren't returned before the pool is closed.
 localCheckout() is a convenience function that can be used inside
@@ -17,7 +21,11 @@ and local()). It checks out an object and automatically returns it when
 the function exits
 Note that validation is only performed when the object is checked out,
 so you generally want to keep the checked out around for as little time as
-possible."></head><body>
+possible.
+When pooling DBI database connections, you normally would not use
+poolCheckout(). Instead, for single-shot queries, treat the pool object
+itself as the DBI connection object and it will perform checkout/return for
+you. And for transactions, use poolWithTransaction()."></head><body>
     <a href="#container" class="visually-hidden-focusable">Skip to content</a>
 
 
@@ -68,6 +76,10 @@ the function exits</p>
 <p>Note that validation is only performed when the object is checked out,
 so you generally want to keep the checked out around for as little time as
 possible.</p>
+<p>When pooling DBI database connections, you normally would not use
+<code>poolCheckout()</code>. Instead, for single-shot queries, treat the pool object
+itself as the DBI connection object and it will perform checkout/return for
+you. And for transactions, use <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -106,6 +118,8 @@ use only.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="dbPool.html">dbPool</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># For illustration only. You normally would not explicitly use</span></span></span>
+<span class="r-in"><span><span class="co"># poolCheckout with a DBI connection pool (see Description).</span></span></span>
 <span class="r-in"><span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">poolCheckout</span><span class="op">(</span><span class="va">pool</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">con</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;SQLiteConnection&gt;</span>
