@@ -20,6 +20,7 @@ reference:
 - title: Database functions
   contents:
   - dbPool
-  - 'DBI-custom'
+  - 'DBI-wrap'
   - poolWithTransaction
   - tbl.Pool
+  - 'DBI-custom'

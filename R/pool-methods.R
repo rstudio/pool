@@ -82,7 +82,8 @@ setMethod("poolClose", "Pool", function(pool) {
 #' When pooling DBI database connections, you normally would not use
 #' `poolCheckout()`. Instead, for single-shot queries, treat the pool object
 #' itself as the DBI connection object and it will perform checkout/return for
-#' you. And for transactions, use [poolWithTransaction()].
+#' you. And for transactions, use [poolWithTransaction()]. See [dbPool()] for
+#' an example.
 #'
 #' @param pool The pool to get the object from.
 #' @export

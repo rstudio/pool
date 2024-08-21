@@ -17,6 +17,7 @@
 #'   bound to a connection. Instead use [poolWithTransaction()].
 #'
 #' * [DBI::dbDisconnect()] can't work because pool handles disconnection.
+#'   Use [poolClose()] instead.
 #'
 #' * [DBI::dbGetInfo()] returns information about the pool, not the database
 #'   connection.

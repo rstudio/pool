@@ -3,6 +3,18 @@
 #' `dbPool()` is a drop-in replacement for [DBI::dbConnect()] that
 #' provides a shared pool of connections that can automatically reconnect
 #' to the database if needed.
+#' See [DBI-wrap] for methods to use with pool objects,
+#' and [DBI-custom] for unsupported methods and the "pool" way of using them.
+#'
+#' A new connection is created transparently
+#'
+#' - if the pool is empty
+#' - if the currently checked out connection is invalid
+#'   (checked at most once every `validationInterval` seconds)
+#' - if the pool is not full and the connections are all in use
+#'
+#' Use [poolClose()] to close the pool and all connections in it.
+#' See [poolCraete()] for details on the internal workings of the pool.
 #'
 #' @param drv A [DBI Driver][DBI::DBIDriver-class], e.g. `RSQLite::SQLite()`,
 #'   `RPostgres::Postgres()`, `odbc::odbc()` etc.

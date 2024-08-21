@@ -51,6 +51,7 @@ Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}, \code{\link[DBI:dbE
 \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}} can't work with pool because transactions are
 bound to a connection. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
 \item \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}} can't work because pool handles disconnection.
+Use \code{\link[=poolClose]{poolClose()}} instead.
 \item \code{\link[DBI:dbGetInfo]{DBI::dbGetInfo()}} returns information about the pool, not the database
 connection.
 \item \code{\link[DBI:dbIsValid]{DBI::dbIsValid()}} returns whether or not the entire pool is valid (i.e.

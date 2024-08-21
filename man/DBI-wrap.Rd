@@ -92,6 +92,7 @@
 These pool method for DBI generics methods check out a connection
 (with \code{\link[=poolCheckout]{poolCheckout()}}), re-call the generic, then return the connection
 to the pool (with \code{\link[=poolReturn]{poolReturn()}}).
+See \link{DBI-custom} for DBI methods that do not work with pool objects.
 }
 \examples{
 mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
@@ -137,4 +138,3 @@ dbListTables(pool)
 
 poolClose(pool)
 }
-\keyword{internal}

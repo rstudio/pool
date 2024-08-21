@@ -4,9 +4,9 @@
 #' These pool method for DBI generics methods check out a connection
 #' (with [poolCheckout()]), re-call the generic, then return the connection
 #' to the pool (with [poolReturn()]).
+#' See [DBI-custom] for DBI methods that do not work with pool objects.
 #'
 #' @name DBI-wrap
-#' @keywords internal
 #' @examples
 #' mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
 #' mtcars2 <- mtcars[-c(1:16), ] # second half of the mtcars dataset
