@@ -158,6 +158,7 @@ setMethod("sqlAppendTable", "Pool", DBI_wrap("sqlAppendTable"))
 
 #' @export
 #' @inheritParams DBI::sqlInterpolate
+#' @param .dots A list of named arguments to interpolate.
 #' @rdname DBI-wrap
 setMethod("sqlInterpolate", "Pool", DBI_wrap("sqlInterpolate"))
 

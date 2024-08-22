@@ -150,6 +150,8 @@ Variables must start with a question mark and can be any valid R
 identifier, i.e. it must start with a letter or \code{.}, and be followed
 by a letter, digit, \code{.} or \verb{_}.}
 
+\item{.dots}{A list of named arguments to interpolate.}
+
 \item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
 }
 \description{
