@@ -77,113 +77,141 @@ DBI_wrap <- function(fun_name) {
 }
 
 #' @export
+#' @inheritParams DBI::dbDataType
 #' @rdname DBI-wrap
 setMethod("dbDataType", "Pool", DBI_wrap("dbDataType"))
 
 #' @export
+#' @inheritParams DBI::dbGetQuery
 #' @rdname DBI-wrap
 setMethod("dbGetQuery", "Pool", DBI_wrap("dbGetQuery"))
 
 #' @export
+#' @inheritParams DBI::dbExecute
 #' @rdname DBI-wrap
 setMethod("dbExecute", "Pool", DBI_wrap("dbExecute"))
 
 #' @export
+#' @inheritParams DBI::dbListFields
 #' @rdname DBI-wrap
 setMethod("dbListFields", "Pool", DBI_wrap("dbListFields"))
 
 #' @export
+#' @inheritParams DBI::dbListTables
 #' @rdname DBI-wrap
 setMethod("dbListTables", "Pool", DBI_wrap("dbListTables"))
 
 #' @export
+#' @inheritParams DBI::dbListObjects
 #' @rdname DBI-wrap
 setMethod("dbListObjects", "Pool", DBI_wrap("dbListObjects"))
 
 #' @export
+#' @inheritParams DBI::dbReadTable
 #' @rdname DBI-wrap
 setMethod("dbReadTable", "Pool", DBI_wrap("dbReadTable"))
 
 #' @export
+#' @inheritParams DBI::dbWriteTable
 #' @rdname DBI-wrap
 setMethod("dbWriteTable", "Pool", DBI_wrap("dbWriteTable"))
 
 #' @export
+#' @inheritParams DBI::dbCreateTable
 #' @rdname DBI-wrap
 setMethod("dbCreateTable", "Pool", DBI_wrap("dbCreateTable"))
 
 #' @export
+#' @inheritParams DBI::dbAppendTable
 #' @rdname DBI-wrap
 setMethod("dbAppendTable", "Pool", DBI_wrap("dbAppendTable"))
 
 #' @export
+#' @inheritParams DBI::dbExistsTable
 #' @rdname DBI-wrap
 setMethod("dbExistsTable", "Pool", DBI_wrap("dbExistsTable"))
 
 #' @export
+#' @inheritParams DBI::dbRemoveTable
 #' @rdname DBI-wrap
 setMethod("dbRemoveTable", "Pool", DBI_wrap("dbRemoveTable"))
 
 #' @export
+#' @inheritParams DBI::dbIsReadOnly
 #' @rdname DBI-wrap
 setMethod("dbIsReadOnly", "Pool", DBI_wrap("dbIsReadOnly"))
 
 #' @export
+#' @inheritParams DBI::sqlData
 #' @rdname DBI-wrap
 setMethod("sqlData", "Pool", DBI_wrap("sqlData"))
 
 #' @export
+#' @inheritParams DBI::sqlCreateTable
 #' @rdname DBI-wrap
 setMethod("sqlCreateTable", "Pool", DBI_wrap("sqlCreateTable"))
 
 #' @export
+#' @inheritParams DBI::sqlAppendTable
 #' @rdname DBI-wrap
 setMethod("sqlAppendTable", "Pool", DBI_wrap("sqlAppendTable"))
 
 #' @export
+#' @inheritParams DBI::sqlInterpolate
 #' @rdname DBI-wrap
 setMethod("sqlInterpolate", "Pool", DBI_wrap("sqlInterpolate"))
 
 #' @export
+#' @inheritParams DBI::sqlParseVariables
 #' @rdname DBI-wrap
 setMethod("sqlParseVariables", "Pool", DBI_wrap("sqlParseVariables"))
 
 #' @export
+#' @inheritParams DBI::dbQuoteIdentifier
 #' @rdname DBI-wrap
 setMethod("dbQuoteIdentifier", "Pool", DBI_wrap("dbQuoteIdentifier"))
 
 #' @export
+#' @inheritParams DBI::dbUnquoteIdentifier
 #' @rdname DBI-wrap
 setMethod("dbUnquoteIdentifier", "Pool", DBI_wrap("dbUnquoteIdentifier"))
 
 #' @export
+#' @inheritParams DBI::dbQuoteLiteral
 #' @rdname DBI-wrap
 setMethod("dbQuoteLiteral", "Pool", DBI_wrap("dbQuoteLiteral"))
 
 #' @export
+#' @inheritParams DBI::dbQuoteString
 #' @rdname DBI-wrap
 setMethod("dbQuoteString", "Pool", DBI_wrap("dbQuoteString"))
 
 #' @export
+#' @inheritParams DBI::dbAppendTableArrow
 #' @rdname DBI-wrap
 setMethod("dbAppendTableArrow", "Pool", DBI_wrap("dbAppendTableArrow"))
 
 #' @export
+#' @inheritParams DBI::dbCreateTableArrow
 #' @rdname DBI-wrap
 setMethod("dbCreateTableArrow", "Pool", DBI_wrap("dbCreateTableArrow"))
 
 #' @export
+#' @inheritParams DBI::dbGetQueryArrow
 #' @rdname DBI-wrap
 setMethod("dbGetQueryArrow", "Pool", DBI_wrap("dbGetQueryArrow"))
 
 #' @export
+#' @inheritParams DBI::dbReadTableArrow
 #' @rdname DBI-wrap
 setMethod("dbReadTableArrow", "Pool", DBI_wrap("dbReadTableArrow"))
 
 #' @export
+#' @inheritParams DBI::dbSendQueryArrow
 #' @rdname DBI-wrap
 setMethod("dbSendQueryArrow", "Pool", DBI_wrap("dbSendQueryArrow"))
 
 #' @export
+#' @inheritParams DBI::dbWriteTableArrow
 #' @rdname DBI-wrap
 setMethod("dbWriteTableArrow", "Pool", DBI_wrap("dbWriteTableArrow"))
