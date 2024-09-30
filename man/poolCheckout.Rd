@@ -43,7 +43,8 @@ possible.
 When pooling DBI database connections, you normally would not use
 \code{poolCheckout()}. Instead, for single-shot queries, treat the pool object
 itself as the DBI connection object and it will perform checkout/return for
-you. And for transactions, use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
+you. And for transactions, use \code{\link[=poolWithTransaction]{poolWithTransaction()}}. See \code{\link[=dbPool]{dbPool()}} for
+an example.
 }
 \examples{
 pool <- dbPool(RSQLite::SQLite())

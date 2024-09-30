@@ -88,10 +88,77 @@
 
 \S4method{dbWriteTableArrow}{Pool}(conn, name, value, ...)
 }
+\arguments{
+\item{dbObj}{A object inheriting from \linkS4class{DBIDriver}
+or \linkS4class{DBIConnection}}
+
+\item{obj}{An R object whose SQL type we want to determine.}
+
+\item{...}{Other arguments passed on to methods.}
+
+\item{conn}{A \linkS4class{DBIConnection} object, as returned by
+\code{\link[DBI:dbConnect]{dbConnect()}}.}
+
+\item{statement}{a character string containing SQL.}
+
+\item{name}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
+
+\item{prefix}{A fully qualified path in the database's namespace, or \code{NULL}.
+This argument will be processed with \code{\link[DBI:dbUnquoteIdentifier]{dbUnquoteIdentifier()}}.
+If given the method will return all objects accessible through this prefix.}
+
+\item{value}{A \link{data.frame} (or coercible to data.frame).}
+
+\item{fields}{Either a character vector or a data frame.
+
+A named character vector: Names are column names, values are types.
+Names are escaped with \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}.
+Field types are unescaped.
+
+A data frame: field types are generated using
+\code{\link[DBI:dbDataType]{dbDataType()}}.}
+
+\item{row.names}{Must be \code{NULL}.}
+
+\item{temporary}{If \code{TRUE}, will generate a temporary table.}
+
+\item{con}{A database connection.}
+
+\item{table}{The table name, passed on to \code{\link[DBI:dbQuoteIdentifier]{dbQuoteIdentifier()}}. Options are:
+\itemize{
+\item a character string with the unquoted DBMS table name,
+e.g. \code{"table_name"},
+\item a call to \code{\link[DBI:Id]{Id()}} with components to the fully qualified table name,
+e.g. \code{Id(schema = "my_schema", table = "table_name")}
+\item a call to \code{\link[DBI:SQL]{SQL()}} with the quoted and fully qualified table name
+given verbatim, e.g. \code{SQL('"my_schema"."table_name"')}
+}}
+
+\item{values}{A data frame. Factors will be converted to character vectors.
+Character vectors will be escaped with \code{\link[DBI:dbQuoteString]{dbQuoteString()}}.}
+
+\item{sql}{A SQL string containing variables to interpolate.
+Variables must start with a question mark and can be any valid R
+identifier, i.e. it must start with a letter or \code{.}, and be followed
+by a letter, digit, \code{.} or \verb{_}.}
+
+\item{.dots}{A list of named arguments to interpolate.}
+
+\item{x}{A character vector, \link[DBI]{SQL} or \link[DBI]{Id} object to quote as identifier.}
+}
 \description{
 These pool method for DBI generics methods check out a connection
 (with \code{\link[=poolCheckout]{poolCheckout()}}), re-call the generic, then return the connection
 to the pool (with \code{\link[=poolReturn]{poolReturn()}}).
+See \link{DBI-custom} for DBI methods that do not work with pool objects.
 }
 \examples{
 mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
@@ -137,4 +204,3 @@ dbListTables(pool)
 
 poolClose(pool)
 }
-\keyword{internal}
