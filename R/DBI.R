@@ -20,29 +20,13 @@
 #' @export
 #' @examples
 #' # You use a dbPool in the same way as a standard DBI connection
-#' pool <- dbPool(RSQLite::SQLite())
+#' pool <- dbPool(RSQLite::SQLite(), dbname = demoDb())
 #' pool
 #'
-#' DBI::dbWriteTable(pool, "mtcars", mtcars)
 #' dbGetQuery(pool, "SELECT * FROM mtcars LIMIT 4")
 #'
 #' # Always close a pool when you're done using it
 #' poolClose(pool)
-#'
-#' # Using the RMySQL package
-#' if (requireNamespace("RMySQL", quietly = TRUE)) {
-#'   pool <- dbPool(
-#'     drv = RMySQL::MySQL(),
-#'     dbname = "shinydemo",
-#'     host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-#'     username = "guest",
-#'     password = "guest"
-#'   )
-#'
-#'   dbGetQuery(pool, "SELECT * from City LIMIT 5;")
-#'
-#'   poolClose(pool)
-#' }
 dbPool <- function(drv,
                    ...,
                    minSize = 1,

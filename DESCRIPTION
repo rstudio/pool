@@ -28,12 +28,11 @@ Suggests:
     dplyr,
     knitr,
     rmarkdown,
-    RMySQL,
     RSQLite,
     shiny,
     testthat (>= 3.0.0),
     tibble
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3

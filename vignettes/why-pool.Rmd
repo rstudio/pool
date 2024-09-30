@@ -34,39 +34,31 @@ The first extreme is have one connection per app:
 library(shiny)
 library(DBI)
 
-# In a multi-file app, you could create conn at the top of your 
+# In a multi-file app, you could create conn at the top of your
 # server.R file or in global.R
-conn <- DBI::dbConnect(
-  drv = RMySQL::MySQL(),
-  dbname = "shinydemo",
-  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-  username = "guest",
-  password = "guest"
-)
+conn <- DBI::dbConnect(RSQLite::SQLite(), dbname = pool::demoDb())
 onStop(function() {
   DBI::dbDisconnect(conn)
 })
 
 ui <- fluidPage(
-  textInput("ID", "Enter your ID:", "5"),
+  textInput("cyl", "Enter your number of cylinders:", "4"),
   tableOutput("tbl"),
-  numericInput("nrows", "How many cities to show?", 10),
+  numericInput("nrows", "How many cars to show?", 10),
   plotOutput("popPlot")
 )
 
 server <- function(input, output, session) {
   output$tbl <- renderTable({
-    sql <- "SELECT * FROM City WHERE ID = ?id;"
-    query <- sqlInterpolate(conn, sql, id = input$ID)
+    sql <- "SELECT * FROM mtcars WHERE cyl = ?cyl;"
+    query <- sqlInterpolate(conn, sql, cyl = input$cyl)
     dbGetQuery(conn, query)
   })
   output$popPlot <- renderPlot({
-    sql <- "SELECT * FROM City LIMIT ?id;"
-    query <- sqlInterpolate(conn, sql, id = input$nrows)
+    sql <- "SELECT * FROM mtcars LIMIT ?n;"
+    query <- sqlInterpolate(conn, sql, n = input$nrows)
     df <- dbGetQuery(conn, query)
-    pop <- df$Population
-    names(pop) <- df$Name
-    barplot(pop)
+    barplot(setNames(df$mpg, df$model))
   })
 }
 
@@ -89,19 +81,13 @@ library(shiny)
 library(DBI)
 
 connect <- function() {
-  DBI::dbConnect(
-    drv = RMySQL::MySQL(),
-    dbname = "shinydemo",
-    host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-    username = "guest",
-    password = "guest"
-  )
+  DBI::dbConnect(RSQLite::SQLite(), dbname = pool::demoDb())
 }
 
 ui <- fluidPage(
-  textInput("ID", "Enter your ID:", "5"),
+  textInput("cyl", "Enter your number of cylinders:", "4"),
   tableOutput("tbl"),
-  numericInput("nrows", "How many cities to show?", 10),
+  numericInput("nrows", "How many cars to show?", 10),
   plotOutput("popPlot")
 )
 
@@ -110,8 +96,8 @@ server <- function(input, output, session) {
     conn <- connect()
     on.exit(DBI::dbDisconnect(conn))
 
-    sql <- "SELECT * FROM City WHERE ID = ?id;"
-    query <- sqlInterpolate(conn, sql, id = input$ID)
+    sql <- "SELECT * FROM mtcars WHERE cyl = ?cyl;"
+    query <- sqlInterpolate(conn, sql, cyl = input$cyl)
     dbGetQuery(conn, query)
   })
 
@@ -119,12 +105,10 @@ server <- function(input, output, session) {
     conn <- connect()
     on.exit(DBI::dbDisconnect(conn))
 
-    sql <- "SELECT * FROM City LIMIT ?id;"
-    query <- sqlInterpolate(conn, sql, id = input$nrows)
+    sql <- "SELECT * FROM mtcars LIMIT ?n;"
+    query <- sqlInterpolate(conn, sql, n = input$nrows)
     df <- dbGetQuery(conn, query)
-    pop <- df$Population
-    names(pop) <- df$Name
-    barplot(pop)
+    barplot(setNames(df$mpg, df$model))
   })
 }
 
@@ -158,37 +142,27 @@ The code is just as simple as the connection per app approach: all you need to d
 library(shiny)
 library(DBI)
 
-pool <- pool::dbPool(
-  drv = RMySQL::MySQL(),
-  dbname = "shinydemo",
-  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-  username = "guest",
-  password = "guest"
-)
+pool <- pool::dbPool(RSQLite::SQLite(), dbname = pool::demoDb())
 onStop(function() {
   pool::poolClose(pool)
 })
 
 ui <- fluidPage(
-  textInput("ID", "Enter your ID:", "5"),
+  textInput("cyl", "Enter your number of cylinders:", "4"),
   tableOutput("tbl"),
-  numericInput("nrows", "How many cities to show?", 10),
+  numericInput("nrows", "How many cars to show?", 10),
   plotOutput("popPlot")
 )
 
 server <- function(input, output, session) {
+  cars <- tbl(pool, "mtcars")
+
   output$tbl <- renderTable({
-    sql <- "SELECT * FROM City WHERE ID = ?id;"
-    query <- sqlInterpolate(pool, sql, id = input$ID)
-    dbGetQuery(pool, query)
+    cars |> filter(cyl == !!input$cyl) |> collect()
   })
-  
   output$popPlot <- renderPlot({
-    sql <- "SELECT * FROM City LIMIT ?id;"
-    query <- sqlInterpolate(conn, sql, id = input$nrows)
-    df <- dbGetQuery(pool, query)
-    pop <- df$Population
-    names(pop) <- df$Name
+    df <- cars |> head(input$nrows) |> collect()
+    pop <- df |> pull("mpg", name = "model")
     barplot(pop)
   })
 }

@@ -1,18 +1,20 @@
 # pool (development version)
 
+* Switched from hosted MySQL database to local SQLite database.
+
 # pool 1.0.3
 
-* Now explicitly requires DBI 1.2.0 (#178) and messages if you're using an 
+* Now explicitly requires DBI 1.2.0 (#178) and messages if you're using an
   old dbplyr (#179).
 
 # pool 1.0.2
 
 * No longer depends on the withr package, by instead requiring R 3.6.
 
-* Add wrappers for dbplyr generics `db_col_types()` (#171) and 
+* Add wrappers for dbplyr generics `db_col_types()` (#171) and
   `db_copy_to()` (#172).
 
-* Pool no longer generates spurious messages about needing to use 
+* Pool no longer generates spurious messages about needing to use
   `in_schema()` or avoiding the use of `ident_q()`.
 
 * Add support for new DBI generics that return Arrow objects.
@@ -21,7 +23,7 @@
 
 * `copy_to()` now returns a tbl that uses the Pool.
 
-* Added missing methods for `sql_join_suffix()` (#165) and 
+* Added missing methods for `sql_join_suffix()` (#165) and
   `sql_query_explain()` (#167).
 
 # pool 1.0.0
@@ -44,7 +46,7 @@
 * pool now implements the dbplyr 2.0.0 interface, eliminating warnings when
   using pool with dplyr (#132).
 
-* Pool errors and warnings have been reviewed with an eye to making them 
+* Pool errors and warnings have been reviewed with an eye to making them
   more immediately actionable (#145).
 
 * Objects are now validated once on first checkout to ensure that the
@@ -58,7 +60,7 @@
 
 * `dbPool()`'s `validateQuery` is now actually used (#153).
 
-* DBI methods should dispatch correctly in more cases; in particular 
+* DBI methods should dispatch correctly in more cases; in particular
   `dbReadTable()` and friends will now work correctly when used with
   `DBI::Id()` (#120).
 
