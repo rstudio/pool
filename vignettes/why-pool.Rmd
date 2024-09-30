@@ -158,11 +158,11 @@ server <- function(input, output, session) {
   cars <- tbl(pool, "mtcars")
 
   output$tbl <- renderTable({
-    cars |> filter(cyl == !!input$cyl) |> collect()
+    cars %>% filter(cyl == !!input$cyl) %>% collect()
   })
   output$popPlot <- renderPlot({
-    df <- cars |> head(input$nrows) |> collect()
-    pop <- df |> pull("mpg", name = "model")
+    df <- cars %>% head(input$nrows) %>% collect()
+    pop <- df %>% pull("mpg", name = "model")
     barplot(pop)
   })
 }
