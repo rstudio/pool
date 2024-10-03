@@ -11,6 +11,7 @@ DBI::dbBegin(), DBI::dbRollback(), DBI::dbCommit(), and
 DBI::dbWithTransaction() can't work with pool because transactions are
 bound to a connection. Instead use poolWithTransaction().
 DBI::dbDisconnect() can't work because pool handles disconnection.
+Use poolClose() instead.
 DBI::dbGetInfo() returns information about the pool, not the database
 connection.
 DBI::dbIsValid() returns whether or not the entire pool is valid (i.e.
@@ -28,6 +29,7 @@ DBI::dbBegin(), DBI::dbRollback(), DBI::dbCommit(), and
 DBI::dbWithTransaction() can't work with pool because transactions are
 bound to a connection. Instead use poolWithTransaction().
 DBI::dbDisconnect() can't work because pool handles disconnection.
+Use poolClose() instead.
 DBI::dbGetInfo() returns information about the pool, not the database
 connection.
 DBI::dbIsValid() returns whether or not the entire pool is valid (i.e.
@@ -84,7 +86,8 @@ Instead use <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" clas
 <li><p><code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbBegin()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbRollback()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/transactions.html" class="external-link">DBI::dbCommit()</a></code>, and
 <code><a href="https://dbi.r-dbi.org/reference/dbWithTransaction.html" class="external-link">DBI::dbWithTransaction()</a></code> can't work with pool because transactions are
 bound to a connection. Instead use <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>.</p></li>
-<li><p><code><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">DBI::dbDisconnect()</a></code> can't work because pool handles disconnection.</p></li>
+<li><p><code><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">DBI::dbDisconnect()</a></code> can't work because pool handles disconnection.
+Use <code><a href="Pool-class.html">poolClose()</a></code> instead.</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbGetInfo.html" class="external-link">DBI::dbGetInfo()</a></code> returns information about the pool, not the database
 connection.</p></li>
 <li><p><code><a href="https://dbi.r-dbi.org/reference/dbIsValid.html" class="external-link">DBI::dbIsValid()</a></code> returns whether or not the entire pool is valid (i.e.
@@ -145,7 +148,7 @@ not closed).</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
   </div></footer></body></html>

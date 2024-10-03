@@ -79,10 +79,10 @@
         <dd>Create a pool of database connections</dd>
       </dl><dl><dt>
 
-          <code><a href="DBI-custom.html">dbSendQuery(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbSendStatement(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbDisconnect(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbGetInfo(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbIsValid(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbBegin(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbCommit(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbRollback(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbWithTransaction(<i>&lt;Pool&gt;</i>)</a></code>
+          <code><a href="DBI-wrap.html">dbDataType(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbGetQuery(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbExecute(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbListFields(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbListTables(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbListObjects(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbReadTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbWriteTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbCreateTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbAppendTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbExistsTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbRemoveTable(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbIsReadOnly(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">sqlData(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">sqlCreateTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">sqlAppendTable(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">sqlInterpolate(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">sqlParseVariables(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbQuoteIdentifier(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbUnquoteIdentifier(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbQuoteLiteral(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbQuoteString(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbAppendTableArrow(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbCreateTableArrow(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbGetQueryArrow(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbReadTableArrow(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbSendQueryArrow(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-wrap.html">dbWriteTableArrow(<i>&lt;Pool&gt;</i>)</a></code>
 
         </dt>
-        <dd>Unsupported DBI methods</dd>
+        <dd>DBI methods (simple wrappers)</dd>
       </dl><dl><dt>
 
           <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>
@@ -95,6 +95,12 @@
 
         </dt>
         <dd>Use pool with dbplyr</dd>
+      </dl><dl><dt>
+
+          <code><a href="DBI-custom.html">dbSendQuery(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbSendStatement(<i>&lt;Pool&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbDisconnect(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbGetInfo(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbIsValid(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbBegin(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbCommit(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbRollback(<i>&lt;Pool&gt;</i>)</a></code> <code><a href="DBI-custom.html">dbWithTransaction(<i>&lt;Pool&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Unsupported DBI methods</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -107,7 +113,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
   </div></footer></body></html>

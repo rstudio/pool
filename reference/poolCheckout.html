@@ -12,7 +12,8 @@ possible.
 When pooling DBI database connections, you normally would not use
 poolCheckout(). Instead, for single-shot queries, treat the pool object
 itself as the DBI connection object and it will perform checkout/return for
-you. And for transactions, use poolWithTransaction()."><meta property="og:description" content="Use poolCheckout() to check out an object from the pool and
+you. And for transactions, use poolWithTransaction(). See dbPool() for
+an example."><meta property="og:description" content="Use poolCheckout() to check out an object from the pool and
 poolReturn() to return it. You will receive a warning if all objects
 aren't returned before the pool is closed.
 localCheckout() is a convenience function that can be used inside
@@ -25,7 +26,8 @@ possible.
 When pooling DBI database connections, you normally would not use
 poolCheckout(). Instead, for single-shot queries, treat the pool object
 itself as the DBI connection object and it will perform checkout/return for
-you. And for transactions, use poolWithTransaction()."></head><body>
+you. And for transactions, use poolWithTransaction(). See dbPool() for
+an example."></head><body>
     <a href="#container" class="visually-hidden-focusable">Skip to content</a>
 
 
@@ -79,7 +81,8 @@ possible.</p>
 <p>When pooling DBI database connections, you normally would not use
 <code>poolCheckout()</code>. Instead, for single-shot queries, treat the pool object
 itself as the DBI connection object and it will perform checkout/return for
-you. And for transactions, use <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>.</p>
+you. And for transactions, use <code><a href="poolWithTransaction.html">poolWithTransaction()</a></code>. See <code><a href="dbPool.html">dbPool()</a></code> for
+an example.</p>
     </div>
 
     <div class="section level2">
@@ -147,7 +150,7 @@ use only.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
   </div></footer></body></html>

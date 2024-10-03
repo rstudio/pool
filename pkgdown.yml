@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   articles/advanced-pool: advanced-pool.html
   articles/pool-dplyr: pool-dplyr.html
   why-pool: why-pool.html
-last_built: 2024-08-21T18:05Z
+last_built: 2024-10-03T12:17Z
 urls:
   reference: http://rstudio.github.io/pool/reference
   article: http://rstudio.github.io/pool/articles

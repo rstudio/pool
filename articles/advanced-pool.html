@@ -84,15 +84,9 @@ transactions.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/pool" class="external-link">pool</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbPool.html">dbPool</a></span><span class="op">(</span></span>
-<span>  drv <span class="op">=</span> <span class="fu">RMySQL</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RMySQL/man/MySQLDriver-class.html" class="external-link">MySQL</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  dbname <span class="op">=</span> <span class="st">"shinydemo"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com"</span>,</span>
-<span>  username <span class="op">=</span> <span class="st">"guest"</span>,</span>
-<span>  password <span class="op">=</span> <span class="st">"guest"</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbPool.html">dbPool</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, dbname <span class="op">=</span> <span class="fu"><a href="../reference/demoDb.html">demoDb</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">pool</span></span>
-<span><span class="co">#&gt; &lt;Pool&gt; of MySQLConnection objects</span></span>
+<span><span class="co">#&gt; &lt;Pool&gt; of SQLiteConnection objects</span></span>
 <span><span class="co">#&gt;   Objects checked out: 0</span></span>
 <span><span class="co">#&gt;   Available in pool: 1</span></span>
 <span><span class="co">#&gt;   Max size: Inf</span></span>
@@ -140,11 +134,8 @@ worried about efficiency), you could do something like:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/pool" class="external-link">pool</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dbPool.html">dbPool</a></span><span class="op">(</span></span>
-<span>  drv <span class="op">=</span> <span class="fu">RMySQL</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RMySQL/man/MySQLDriver-class.html" class="external-link">MySQL</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  dbname <span class="op">=</span> <span class="st">"shinydemo"</span>,</span>
-<span>  host <span class="op">=</span> <span class="st">"shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com"</span>,</span>
-<span>  username <span class="op">=</span> <span class="st">"guest"</span>,</span>
-<span>  password <span class="op">=</span> <span class="st">"guest"</span>,</span>
+<span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dbname <span class="op">=</span> <span class="fu"><a href="../reference/demoDb.html">demoDb</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  minSize <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  idleTimeout <span class="op">=</span> <span class="fl">60</span> <span class="op">*</span> <span class="fl">60</span></span>
 <span><span class="op">)</span></span>
@@ -191,7 +182,7 @@ different connection for each</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
   </div></footer>
