@@ -1,7 +1,7 @@
 ---
 title: "Advanced usage"
 desc: >
-  This article discusses how to customize your pool and how to handle 
+  This article discusses how to customize your pool and how to handle
   transactions.
 ---
 
@@ -32,17 +32,11 @@ First, let's get to know our Pool object:
 ```{r}
 library(pool)
 
-pool <- dbPool(
-  drv = RMySQL::MySQL(),
-  dbname = "shinydemo",
-  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-  username = "guest",
-  password = "guest"
-)
+pool <- dbPool(RSQLite::SQLite(), dbname = demoDb())
 pool
 ```
 
-As you can see, printing gives you basic information about your pool. This can be useful to learn how many connections you have open (both free/idle and in use). 
+As you can see, printing gives you basic information about your pool. This can be useful to learn how many connections you have open (both free/idle and in use).
 
 But for this section, let's turn our attention to other parameters that you can pass to `dbPool()`: `minSize`, `maxSize`, and `idleTimeout`.
 
@@ -59,11 +53,8 @@ library(DBI)
 library(pool)
 
 pool <- dbPool(
-  drv = RMySQL::MySQL(),
-  dbname = "shinydemo",
-  host = "shiny-demo.csa7qlmguqrf.us-east-1.rds.amazonaws.com",
-  username = "guest",
-  password = "guest",
+  RSQLite::SQLite(),
+  dbname = demoDb(),
   minSize = 10,
   idleTimeout = 60 * 60
 )
@@ -73,7 +64,7 @@ poolClose(pool)
 
 ## Transactions
 
-So far, we've recommended you always use the pool object directly when you need to query the database. There's one challenge where this is not possible: transactions. Because for a transaction, you need to have access to the same connection for longer than a single query. The following will not necessary work because the pool might give you a different connection for each 
+So far, we've recommended you always use the pool object directly when you need to query the database. There's one challenge where this is not possible: transactions. Because for a transaction, you need to have access to the same connection for longer than a single query. The following will not necessary work because the pool might give you a different connection for each
 
 ```{r}
 #| eval: false
