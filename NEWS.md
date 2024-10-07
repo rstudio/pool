@@ -1,6 +1,6 @@
 # pool (development version)
 
-* Switched from hosted MySQL database to local SQLite database.
+* Switched from hosted MySQL database to local SQLite database in examples.
 
 # pool 1.0.3
 
