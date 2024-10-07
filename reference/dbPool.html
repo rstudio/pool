@@ -115,13 +115,12 @@ options, but these don't work for all databases.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>A new connection is created transparently</p>
-<p>- if the pool is empty
-- if the currently checked out connection is invalid
-  (checked at most once every `validationInterval` seconds)
-- if the pool is not full and the connections are all in use</p>
-<p>Use [poolClose()] to close the pool and all connections in it.
-See [poolCraete()] for details on the internal workings of the pool.</p>
+    <p>A new connection is created transparently</p><ul><li><p>if the pool is empty</p></li>
+<li><p>if the currently checked out connection is invalid
+(checked at most once every <code>validationInterval</code> seconds)</p></li>
+<li><p>if the pool is not full and the connections are all in use</p></li>
+</ul><p>Use <code><a href="Pool-class.html">poolClose()</a></code> to close the pool and all connections in it.
+See <code><a href="Pool-class.html">poolCreate()</a></code> for details on the internal workings of the pool.</p>
     </div>
 
     <div class="section level2">
