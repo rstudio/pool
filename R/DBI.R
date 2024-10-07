@@ -14,7 +14,7 @@
 #' - if the pool is not full and the connections are all in use
 #'
 #' Use [poolClose()] to close the pool and all connections in it.
-#' See [poolCraete()] for details on the internal workings of the pool.
+#' See [poolCreate()] for details on the internal workings of the pool.
 #'
 #' @param drv A [DBI Driver][DBI::DBIDriver-class], e.g. `RSQLite::SQLite()`,
 #'   `RPostgres::Postgres()`, `odbc::odbc()` etc.
