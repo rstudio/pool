@@ -1,7 +1,3 @@
 ## revdepcheck results
 
-We checked 9 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
-
- * We saw 0 new problems
- * We failed to check 0 packages
-
+This was a fix to the examples/vignettes to fix R CMD check errors. We did not re-check the revdeps.
