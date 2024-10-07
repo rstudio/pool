@@ -89,15 +89,14 @@
 \S4method{dbWriteTableArrow}{Pool}(conn, name, value, ...)
 }
 \arguments{
-\item{dbObj}{A object inheriting from \linkS4class{DBIDriver}
-or \linkS4class{DBIConnection}}
+\item{dbObj}{A DBI Driver][DBI::DBIDriver-class] or
+\link[DBI:DBIConnection-class]{DBI Connection}.}
 
 \item{obj}{An R object whose SQL type we want to determine.}
 
 \item{...}{Other arguments passed on to methods.}
 
-\item{conn}{A \linkS4class{DBIConnection} object, as returned by
-\code{\link[DBI:dbConnect]{dbConnect()}}.}
+\item{conn}{A \link[DBI:DBIConnection-class]{DBI Connection}.}
 
 \item{statement}{a character string containing SQL.}
 

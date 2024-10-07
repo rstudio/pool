@@ -7,6 +7,9 @@
 #' See [DBI-custom] for DBI methods that do not work with pool objects.
 #'
 #' @name DBI-wrap
+#' @param dbObj A DBI Driver][DBI::DBIDriver-class] or
+#'   [DBI Connection][DBI::DBIConnection-class].
+#' @param conn A [DBI Connection][DBI::DBIConnection-class].
 #' @examples
 #' mtcars1 <- mtcars[ c(1:16), ] # first half of the mtcars dataset
 #' mtcars2 <- mtcars[-c(1:16), ] # second half of the mtcars dataset
