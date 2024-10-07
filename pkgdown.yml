@@ -5,7 +5,7 @@ articles:
   articles/advanced-pool: advanced-pool.html
   articles/pool-dplyr: pool-dplyr.html
   why-pool: why-pool.html
-last_built: 2024-10-07T14:59Z
+last_built: 2024-10-07T16:58Z
 urls:
   reference: http://rstudio.github.io/pool/reference
   article: http://rstudio.github.io/pool/articles
