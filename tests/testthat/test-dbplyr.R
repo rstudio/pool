@@ -58,6 +58,17 @@ test_that("joins, semi_joins, and set ops work", {
   expect_no_error(dplyr::collect(dplyr::union(db1, db2)))
 })
 
+test_that("sql_dialect is cached on the Pool", {
+  skip_if_not(packageVersion("dbplyr") >= "2.5.2.9000")
+
+  pool <- local_db_pool()
+
+  expect_null(pool$dbplyrDialect)
+  d <- dbplyr::sql_dialect(pool)
+  expect_s3_class(d, "sql_dialect")
+  expect_identical(pool$dbplyrDialect, d)
+})
+
 test_that("can explain", {
   pool <- local_db_pool()
 

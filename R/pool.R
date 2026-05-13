@@ -3,6 +3,7 @@ Pool <- R6::R6Class(
   "Pool",
   public = list(
     objClass = NULL,
+    dbplyrDialect = NULL,
     valid = NULL,
     counters = NULL,
     minSize = NULL,
