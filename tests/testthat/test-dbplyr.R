@@ -70,7 +70,9 @@ test_that("can use schemas with pool", {
 
   df <- tibble::tibble(x = 1:5)
 
-  dplyr::copy_to(pool, df,
+  dplyr::copy_to(
+    pool,
+    df,
     dbplyr::in_schema("main", "df"),
     temporary = FALSE,
     overwrite = TRUE
@@ -82,10 +84,10 @@ test_that("can use schemas with pool", {
 
 test_that("wrapper looks good", {
   # Skip in test coverage runs because covr instrumentation is injected
-   # into function body
-   skip_if_not(is.null(getOption("covr.flags")))
+  # into function body
+  skip_if_not(is.null(getOption("covr.flags")))
 
-   expect_snapshot({
+  expect_snapshot({
     dbplyr_wrap("db_collect")
     "with temporary argument"
     dbplyr_wrap("db_compute")

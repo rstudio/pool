@@ -39,15 +39,16 @@
 #'
 #' # Always close a pool when you're done using it
 #' poolClose(pool)
-dbPool <- function(drv,
-                   ...,
-                   minSize = 1,
-                   maxSize = Inf,
-                   onCreate = NULL,
-                   idleTimeout = 60,
-                   validationInterval = 60,
-                   validateQuery = NULL) {
-
+dbPool <- function(
+  drv,
+  ...,
+  minSize = 1,
+  maxSize = Inf,
+  onCreate = NULL,
+  idleTimeout = 60,
+  validationInterval = 60,
+  validateQuery = NULL
+) {
   # Force dots
   dots <- list(...)
   if (length(dots) > 0 && !is_named(dots)) {

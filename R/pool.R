@@ -1,7 +1,7 @@
 #' @export
-Pool <- R6::R6Class("Pool",
+Pool <- R6::R6Class(
+  "Pool",
   public = list(
-
     objClass = NULL,
     valid = NULL,
     counters = NULL,
@@ -12,33 +12,40 @@ Pool <- R6::R6Class("Pool",
     state = NULL,
 
     ## initialize the pool with min number of objects
-    initialize = function(factory, minSize, maxSize,
-      idleTimeout, validationInterval, state, error_call = caller_env()) {
-        self$valid <- TRUE
+    initialize = function(
+      factory,
+      minSize,
+      maxSize,
+      idleTimeout,
+      validationInterval,
+      state,
+      error_call = caller_env()
+    ) {
+      self$valid <- TRUE
 
-        self$counters <- new.env(parent = emptyenv())
-        self$counters$free <- 0
-        self$counters$taken <- 0
-        private$idCounter <- 1
+      self$counters <- new.env(parent = emptyenv())
+      self$counters$free <- 0
+      self$counters$taken <- 0
+      private$idCounter <- 1
 
-        if (!is.function(factory)) {
-          abort("`factory` must be a function.", call = error_call)
-        }
-        private$factory <- factory
-        self$minSize <- minSize
-        self$maxSize <- maxSize
+      if (!is.function(factory)) {
+        abort("`factory` must be a function.", call = error_call)
+      }
+      private$factory <- factory
+      self$minSize <- minSize
+      self$maxSize <- maxSize
 
-        self$idleTimeout <- idleTimeout
-        self$validationInterval <- validationInterval
-        self$state <- state
+      self$idleTimeout <- idleTimeout
+      self$validationInterval <- validationInterval
+      self$state <- state
 
-        self$objClass <- NULL
+      self$objClass <- NULL
 
-        private$freeObjects <- new.env(parent = emptyenv())
+      private$freeObjects <- new.env(parent = emptyenv())
 
-        for (i in seq_len(self$minSize)) {
-          private$createObject(error_call = error_call)
-        }
+      for (i in seq_len(self$minSize)) {
+        private$createObject(error_call = error_call)
+      }
     },
 
     ## calls activate and returns an object
@@ -48,11 +55,10 @@ Pool <- R6::R6Class("Pool",
       ## see if there's any free objects
       freeEnv <- private$freeObjects
       if (length(freeEnv) > 0) {
-        id <- ls(freeEnv)[[1]]  ## get first free object we find
+        id <- ls(freeEnv)[[1]] ## get first free object we find
         object <- freeEnv[[id]]
         ## cancel reap task if it exists
         private$cancelScheduledTask(object, "destroyHandle")
-
       } else {
         ## if we get here, there are no free objects
         ## and we must create a new one
@@ -73,7 +79,10 @@ Pool <- R6::R6Class("Pool",
     release = function(object, error_call = caller_env()) {
       pool_metadata <- pool_metadata(object, error_call = error_call())
       if (pool_metadata$state == "free") {
-        abort("This object was already returned to the pool.", call = error_call)
+        abort(
+          "This object was already returned to the pool.",
+          call = error_call
+        )
       }
       ## immediately destroy object if pool has already been closed
       if (!self$valid) {
@@ -82,19 +91,22 @@ Pool <- R6::R6Class("Pool",
       }
 
       ## passivate object (or if that fails, destroy it and throw)
-      tryCatch({
-        onPassivate(object)
-      }, error = function(e) {
-        private$changeObjectStatus(object, NULL)
-        abort(
-          c(
-            "Object could not be returned back to the pool.",
-            "It was destroyed instead"
-          ),
-          call = error_call,
-          parent = e
-        )
-      })
+      tryCatch(
+        {
+          onPassivate(object)
+        },
+        error = function(e) {
+          private$changeObjectStatus(object, NULL)
+          abort(
+            c(
+              "Object could not be returned back to the pool.",
+              "It was destroyed instead"
+            ),
+            call = error_call,
+            parent = e
+          )
+        }
+      )
 
       ## set up a task to destroy the object after `idleTimeout`
       ## secs, if we're over the minimum number of objects
@@ -165,7 +177,6 @@ Pool <- R6::R6Class("Pool",
   ),
 
   private = list(
-
     freeObjects = NULL,
     factory = NULL,
     idCounter = NULL,
@@ -174,7 +185,10 @@ Pool <- R6::R6Class("Pool",
     ## free environment and returns it
     createObject = function(error_call = parent.frame()) {
       if (self$counters$free + self$counters$taken >= self$maxSize) {
-        abort("Maximum number of objects in pool has been reached", call = error_call)
+        abort(
+          "Maximum number of objects in pool has been reached",
+          call = error_call
+        )
       }
 
       object <- private$factory()
@@ -206,14 +220,18 @@ Pool <- R6::R6Class("Pool",
       pool_metadata$lastValidated <- Sys.time() - self$validationInterval - 1
 
       ## detect leaked connections and destroy them
-      reg.finalizer(pool_metadata, function(e) {
-        if (e$valid) {
-          pool_warn(c(
-            "Checked-out object deleted before being returned.",
-            "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
-          ))
-        }
-      }, onexit = TRUE)
+      reg.finalizer(
+        pool_metadata,
+        function(e) {
+          if (e$valid) {
+            pool_warn(c(
+              "Checked-out object deleted before being returned.",
+              "Make sure to `poolReturn()` all objects retrieved with `poolCheckout().`"
+            ))
+          }
+        },
+        onexit = TRUE
+      )
 
       private$changeObjectStatus(object, "free")
       return(object)
@@ -231,15 +249,18 @@ Pool <- R6::R6Class("Pool",
       private$cancelScheduledTask(object, "validateHandle")
       private$cancelScheduledTask(object, "destroyHandle")
 
-      tryCatch({
-        onDestroy(object)
-      }, error = function(e) {
-        pool_warn(c(
-          "Object could not be destroyed, but was removed from the pool.",
-          "Error message:",
-          prefix(conditionMessage(e), "  ")
-        ))
-      })
+      tryCatch(
+        {
+          onDestroy(object)
+        },
+        error = function(e) {
+          pool_warn(c(
+            "Object could not be destroyed, but was removed from the pool.",
+            "Error message:",
+            prefix(conditionMessage(e), "  ")
+          ))
+        }
+      )
     },
 
     ## change the objects's environment when a free object
@@ -253,10 +274,7 @@ Pool <- R6::R6Class("Pool",
       # Remove from environment if necessary, and
       # decrement counter
       if (!is.null(from)) {
-        removeFrom <- switch(from,
-          free = private$freeObjects,
-          NULL
-        )
+        removeFrom <- switch(from, free = private$freeObjects, NULL)
         if (!is.null(removeFrom)) {
           if (exists(id, envir = removeFrom)) {
             rm(list = id, envir = removeFrom)
@@ -269,10 +287,7 @@ Pool <- R6::R6Class("Pool",
 
       if (!is.null(to)) {
         # Add to environment if necessary, and increment counter
-        addTo <- switch(to,
-          free = private$freeObjects,
-          NULL
-        )
+        addTo <- switch(to, free = private$freeObjects, NULL)
         if (!is.null(addTo)) {
           assign(id, object, envir = addTo)
         }
@@ -289,7 +304,7 @@ Pool <- R6::R6Class("Pool",
       taskHandle <- pool_metadata[[task]]
       if (!is.null(taskHandle)) {
         pool_metadata[[task]] <- NULL
-        taskHandle()   ## cancel the previous task
+        taskHandle() ## cancel the previous task
       }
     },
 

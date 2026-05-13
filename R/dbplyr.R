@@ -30,12 +30,14 @@ tbl.Pool <- function(src, from, ..., vars = NULL) {
 #' @param name Name for remote table. Defaults to the name of `df`, if it's
 #'   an identifier, otherwise uses a random name.
 #' @inheritParams dbplyr::copy_to.src_sql
-copy_to.Pool <- function(dest,
-                         df,
-                         name = NULL,
-                         overwrite = FALSE,
-                         temporary = TRUE,
-                         ...) {
+copy_to.Pool <- function(
+  dest,
+  df,
+  name = NULL,
+  overwrite = FALSE,
+  temporary = TRUE,
+  ...
+) {
   stop_if_temporary(temporary)
 
   if (is.null(name)) {

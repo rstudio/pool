@@ -92,12 +92,14 @@ setMethod("onValidate", "DBIConnection", function(object) {
   query <- pool$state$validateQuery
 
   if (!is.null(query)) {
-    error <- try({
-      dbGetQuery(object, query)
-      return()
-    }, silent = TRUE)
+    error <- try(
+      {
+        dbGetQuery(object, query)
+        return()
+      },
+      silent = TRUE
+    )
   } else {
-
     ## options mostly gathered from here:
     ## http://stackoverflow.com/a/3670000/6174455
     options <- c(
@@ -126,11 +128,14 @@ setMethod("onValidate", "DBIConnection", function(object) {
     ## If none succeed, validation is not possible and we
     ## throw an error.
     for (opt in options) {
-      error <- try({
-        dbGetQuery(object, opt)
-        pool$state$validateQuery <- opt
-        return()
-      }, silent = TRUE)
+      error <- try(
+        {
+          dbGetQuery(object, opt)
+          pool$state$validateQuery <- opt
+          return()
+        },
+        silent = TRUE
+      )
     }
   }
   cond <- attr(error, "condition", exact = TRUE)
@@ -139,4 +144,3 @@ setMethod("onValidate", "DBIConnection", function(object) {
     conditionCall(cond)
   ))
 })
-

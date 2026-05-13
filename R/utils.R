@@ -1,7 +1,9 @@
-pool_metadata <- function(x,
-                          check_valid = TRUE,
-                          error_call = caller_env(),
-                          error_arg = caller_arg(x)) {
+pool_metadata <- function(
+  x,
+  check_valid = TRUE,
+  error_call = caller_env(),
+  error_arg = caller_arg(x)
+) {
   meta <- attr(x, "pool_metadata", exact = TRUE)
 
   if (is.null(meta)) {

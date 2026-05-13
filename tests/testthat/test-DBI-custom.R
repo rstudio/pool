@@ -20,14 +20,17 @@ test_that("All DBI Connection methods have a wrapper", {
     any(c("con", "conn", "dbObj") %in% names(args))
   })]
   # Remove deprecated
-  dbi_con_generics <- setdiff(dbi_con_generics, c(
-    "dbCallProc",
-    "dbGetException",
-    "SQLKeywords",
-    "isSQLKeyword",
-    "make.db.names",
-    "dbListResults"
-  ))
+  dbi_con_generics <- setdiff(
+    dbi_con_generics,
+    c(
+      "dbCallProc",
+      "dbGetException",
+      "SQLKeywords",
+      "isSQLKeyword",
+      "make.db.names",
+      "dbListResults"
+    )
+  )
 
   pool_methods <- attr(methods(class = "Pool"), "info")
   provided <- pool_methods$generic[pool_methods$from == "pool"]

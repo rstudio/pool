@@ -118,7 +118,6 @@ test_that("warns if validation fails once, creates new object and tries again", 
 
   # and since all objects have been destroyed the pool is empty
   checkCounts(pool, free = 0, taken = 0)
-
 })
 
 test_that("can't return the same object twice", {
