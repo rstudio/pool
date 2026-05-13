@@ -47,7 +47,7 @@ This page describes the exceptions:
 because they return result sets that are bound to a specific connection.
 Instead use \code{\link[DBI:dbGetQuery]{DBI::dbGetQuery()}}, \code{\link[DBI:dbExecute]{DBI::dbExecute()}}, or
 \code{\link[=localCheckout]{localCheckout()}}.
-\item \code{\link[DBI:transactions]{DBI::dbBegin()}}, \code{\link[DBI:transactions]{DBI::dbRollback()}}, \code{\link[DBI:transactions]{DBI::dbCommit()}}, and
+\item \code{\link[DBI:dbBegin]{DBI::dbBegin()}}, \code{\link[DBI:dbRollback]{DBI::dbRollback()}}, \code{\link[DBI:dbCommit]{DBI::dbCommit()}}, and
 \code{\link[DBI:dbWithTransaction]{DBI::dbWithTransaction()}} can't work with pool because transactions are
 bound to a connection. Instead use \code{\link[=poolWithTransaction]{poolWithTransaction()}}.
 \item \code{\link[DBI:dbDisconnect]{DBI::dbDisconnect()}} can't work because pool handles disconnection.

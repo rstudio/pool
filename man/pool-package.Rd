@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Hadley Wickham \email{hadley@posit.co}
   \item Joe Cheng \email{joe@posit.co}
   \item Barbara Borges
 }
