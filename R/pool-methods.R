@@ -33,12 +33,14 @@ setClass("Pool")
 #'   To force objects to be validated on every checkout, set
 #'   `validationInterval = 0`.
 #' @param  state A `pool` public variable to be used by backend authors.
-poolCreate <- function(factory,
-                       minSize = 1,
-                       maxSize = Inf,
-                       idleTimeout = 60,
-                       validationInterval = 60,
-                       state = NULL) {
+poolCreate <- function(
+  factory,
+  minSize = 1,
+  maxSize = Inf,
+  idleTimeout = 60,
+  validationInterval = 60,
+  state = NULL
+) {
   Pool$new(
     factory,
     minSize,
@@ -78,7 +80,7 @@ setMethod("poolClose", "Pool", function(pool) {
 #' Note that validation is only performed when the object is checked out,
 #' so you generally want to keep the checked out around for as little time as
 #' possible.
-#' 
+#'
 #' When pooling DBI database connections, you normally would not use
 #' `poolCheckout()`. Instead, for single-shot queries, treat the pool object
 #' itself as the DBI connection object and it will perform checkout/return for

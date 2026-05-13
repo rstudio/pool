@@ -91,16 +91,10 @@ setMethod("onValidate", "DBIConnection", function(object) {
   pool <- pool_metadata(object)$pool
   query <- pool$state$validateQuery
 
-  if (!is.null(query)) {
-    error <- try({
-      dbGetQuery(object, query)
-      return()
-    }, silent = TRUE)
-  } else {
-
-    ## options mostly gathered from here:
-    ## http://stackoverflow.com/a/3670000/6174455
-    options <- c(
+  ## options mostly gathered from here:
+  ## http://stackoverflow.com/a/3670000/6174455
+  options <- query %||%
+    c(
       # Most modern databases
       "SELECT 1",
       # Oracle: https://en.wikipedia.org/wiki/DUAL_table
@@ -120,23 +114,28 @@ setMethod("onValidate", "DBIConnection", function(object) {
       "SELECT 1 FROM RDB$DATABASE WHERE 0=1"
     )
 
-    ## Iterates through the possible validation queries:
-    ## the first one that succeeds get stored in the `state`
-    ## of pool (a public variable) and we return.
-    ## If none succeed, validation is not possible and we
-    ## throw an error.
-    for (opt in options) {
-      error <- try({
+  ## Iterates through the possible validation queries:
+  ## the first one that succeeds gets stored in the `state`
+  ## of pool (a public variable) and we return.
+  ## If none succeed, validation is not possible and we
+  ## throw an error chained to the last condition.
+  last_cond <- NULL
+  for (opt in options) {
+    ok <- tryCatch(
+      {
         dbGetQuery(object, opt)
         pool$state$validateQuery <- opt
-        return()
-      }, silent = TRUE)
-    }
+        return(invisible())
+      },
+      error = function(cnd) {
+        last_cond <<- cnd
+        FALSE
+      }
+    )
   }
-  cond <- attr(error, "condition", exact = TRUE)
-  stop(simpleError(
-    paste("Validation not successful --", conditionMessage(cond)),
-    conditionCall(cond)
-  ))
+  abort(
+    "Validation not successful.",
+    parent = last_cond,
+    call = quote(onValidate())
+  )
 })
-

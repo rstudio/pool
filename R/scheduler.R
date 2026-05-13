@@ -6,8 +6,9 @@ scheduleTaskRecurring <- function(func, delay) {
   cancelled <- FALSE
   func2 <- function() {
     func()
-    if (!cancelled)
+    if (!cancelled) {
       handle <<- later::later(func2, delay)
+    }
   }
   handle <- later::later(func2, delay)
 
