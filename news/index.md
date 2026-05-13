@@ -2,6 +2,8 @@
 
 ## pool (development version)
 
+- Added compatibility for dbplyr’s upcoming dialect-based dispatch.
+
 ## pool 1.0.4
 
 CRAN release: 2024-10-07

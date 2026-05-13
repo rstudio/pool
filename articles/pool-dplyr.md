@@ -40,7 +40,7 @@ mtcars_db %>%
   filter(cyl == 8) %>% 
   head()
 #> # Source:   SQL [?? x 11]
-#> # Database: sqlite 3.52.0 [/tmp/RtmpCIjjey/file1df911690517]
+#> # Database: sqlite 3.52.0 [/tmp/RtmpXKtQMJ/file1dccfadde30]
 #>     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #> 1  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
@@ -62,7 +62,7 @@ mtcars_db %>%
   filter(cyl == 8) %>% 
   head()
 #> # Source:   SQL [?? x 11]
-#> # Database: sqlite 3.52.0 [/tmp/RtmpCIjjey/file1df911690517]
+#> # Database: sqlite 3.52.0 [/tmp/RtmpXKtQMJ/file1dccfadde30]
 #>     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #> 1  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
