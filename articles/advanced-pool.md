@@ -1,0 +1,129 @@
+# Advanced usage
+
+This article discusses some more advanced features of the pool package,
+namely customizing your pool and using pool with database transactions.
+
+``` r
+
+library(pool)
+```
+
+Get started by installing the packages you need:
+
+``` r
+
+install.packages(c("shiny", "DBI", "pool"))
+```
+
+## Customizing your pool
+
+First, let’s get to know our Pool object:
+
+``` r
+
+library(pool)
+
+pool <- dbPool(RSQLite::SQLite(), dbname = demoDb())
+pool
+#> <Pool> of SQLiteConnection objects
+#>   Objects checked out: 0
+#>   Available in pool: 1
+#>   Max size: Inf
+#>   Valid: TRUE
+```
+
+As you can see, printing gives you basic information about your pool.
+This can be useful to learn how many connections you have open (both
+free/idle and in use).
+
+But for this section, let’s turn our attention to other parameters that
+you can pass to
+[`dbPool()`](http://rstudio.github.io/pool/reference/dbPool.md):
+`minSize`, `maxSize`, and `idleTimeout`.
+
+When created, the pool will initialize `minSize` connections, and keeps
+them around until they’re requested. If all the idle connections are
+taken up when another request for a connection comes up, the pool will
+create a new connection. It’ll keep doing this as needed until it gets
+to `maxSize` connections at which point it will error.
+
+Any connection that is created when we’re over `minSize` will have a
+timer attached to it: from the moment it is returned back to the pool, a
+countdown of `idleTimeout` seconds will start. If that connection is not
+requested again during that period, it will be destroyed when the
+countdown finishes. If it *is* requested and checked out of the pool,
+the countdown will the reset when it is returned back to the pool.
+
+The optimal values of these three parameters depend on how you’re using
+your pool, as they represent a tradeoff between how adaptable your pool
+is and how efficient it is. Large values for all three parameters would
+mean that your pool is highly adaptable (it can handle spikes in traffic
+easily), but potentially not very efficient (it might be creating and
+holding on to connections that aren’t needed). On the other hand, small
+values for these parameters would mean that your pool is very strict
+about the number of connections it has (it will very rarely allow for
+idle connections) which will lead to an efficient pool if traffic is
+consistent. However, this type of pool won’t be able to handle spikes in
+traffic easily: on one hand, it will often have to do the
+computationally expensive fetching of connections directly from the
+database, since it doesn’t hold on to idle connections for long; on the
+other hand, once it hits the `maxSize` number of connections, it won’t
+be able to scale up any further.
+
+Considering where your pool falls on this spectrum, you should choose
+the value for these arguments accordingly. For example, if you want a
+stable pool that will adapt and scale up easily (and you’re not too
+worried about efficiency), you could do something like:
+
+``` r
+
+library(DBI)
+library(pool)
+
+pool <- dbPool(
+  RSQLite::SQLite(),
+  dbname = demoDb(),
+  minSize = 10,
+  idleTimeout = 60 * 60
+)
+
+poolClose(pool)
+```
+
+## Transactions
+
+So far, we’ve recommended you always use the pool object directly when
+you need to query the database. There’s one challenge where this is not
+possible: transactions. Because for a transaction, you need to have
+access to the same connection for longer than a single query. The
+following will not necessary work because the pool might give you a
+different connection for each
+
+``` r
+
+dbBegin(pool)
+dbExecute(pool, A)
+dbGetQuery(pool, B)
+dbCommit(pool)
+```
+
+DBI provides a helper for this case, but it doesn’t work either:
+
+``` r
+
+DBI::dbWithTransaction(pool, {
+  dbExecute(pool, A)
+  dbGetQuery(pool, B)
+})
+```
+
+You can instead use
+[`pool::poolWithTransaction()`](http://rstudio.github.io/pool/reference/poolWithTransaction.md):
+
+``` r
+
+pool::poolWithTransaction(pool, function(con) {
+  dbGetQuery(con, A)
+  dbGetQuery(con, B)
+})
+```
