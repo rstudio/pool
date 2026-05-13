@@ -105,7 +105,9 @@ dbplyr_register_methods <- function() {
 sql_dialect_pool <- function(con) {
   if (is.null(con$dbplyrDialect)) {
     db_con <- localCheckout(con)
-    con$dbplyrDialect <- dbplyr::sql_dialect(db_con)
+
+    sql_dialect <- utils::getFromNamespace("sql_dialect", "dbplyr")
+    con$dbplyrDialect <- sql_dialect(db_con)
   }
   con$dbplyrDialect
 }
