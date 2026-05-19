@@ -1,5 +1,7 @@
 # Changelog
 
+## pool (development version)
+
 ## pool 1.0.5
 
 CRAN release: 2026-05-19
