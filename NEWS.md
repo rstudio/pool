@@ -1,3 +1,5 @@
+# pool (development version)
+
 # pool 1.0.5
 
 * Added compatibility for dbplyr's upcoming dialect-based dispatch.
