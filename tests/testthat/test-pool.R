@@ -37,6 +37,13 @@ test_that("can fetch and release", {
   checkCounts(pool, free = 1, taken = 0)
 })
 
+test_that("releasing a non-pooled object gives an informative error", {
+  pool <- poolCreate(function() 1)
+  defer(poolClose(pool))
+
+  expect_error(pool$release(1), "not an pooled object")
+})
+
 test_that("max size is enforced", {
   pool <- poolCreate(MockPooledObj$new, maxSize = 2)
   defer(poolClose(pool))
