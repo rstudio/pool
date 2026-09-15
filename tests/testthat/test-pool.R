@@ -41,7 +41,8 @@ test_that("releasing a non-pooled object gives an informative error", {
   pool <- poolCreate(function() 1)
   defer(poolClose(pool))
 
-  expect_error(pool$release(1), "not an pooled object")
+  release <- function(object) pool$release(object)
+  expect_snapshot(release(1), error = TRUE)
 })
 
 test_that("max size is enforced", {
