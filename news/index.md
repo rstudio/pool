@@ -2,6 +2,9 @@
 
 ## pool (development version)
 
+- `Pool$release()` now forwards `error_call` correctly when reporting
+  invalid objects.
+
 ## pool 1.0.5
 
 CRAN release: 2026-05-19

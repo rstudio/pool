@@ -70,8 +70,8 @@ library(dplyr)
 pool <- dbPool(RSQLite::SQLite())
 # copy a table into the database
 copy_to(pool, mtcars, "mtcars", temporary = FALSE)
-#> # Source:   table<`mtcars`> [?? x 11]
-#> # Database: sqlite 3.52.0 []
+#> # A query:  ?? x 11
+#> # Database: sqlite 3.53.3 []
 #>      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
@@ -89,8 +89,8 @@ copy_to(pool, mtcars, "mtcars", temporary = FALSE)
 # retrieve a table
 mtcars_db <- tbl(pool, "mtcars")
 mtcars_db
-#> # Source:   table<`mtcars`> [?? x 11]
-#> # Database: sqlite 3.52.0 []
+#> # A query:  ?? x 11
+#> # Database: sqlite 3.53.3 []
 #>      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 #>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
 #>  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
@@ -105,8 +105,8 @@ mtcars_db
 #> 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
 #> # ℹ more rows
 mtcars_db %>% select(mpg, cyl, disp)
-#> # Source:   SQL [?? x 3]
-#> # Database: sqlite 3.52.0 []
+#> # A query:  ?? x 3
+#> # Database: sqlite 3.53.3 []
 #>      mpg   cyl  disp
 #>    <dbl> <dbl> <dbl>
 #>  1  21       6  160 
