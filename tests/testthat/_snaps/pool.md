@@ -25,6 +25,14 @@
       Error in `poolClose()`:
       ! The pool has been closed.
 
+# releasing a non-pooled object gives an informative error
+
+    Code
+      release(1)
+    Condition
+      Error in `release()`:
+      ! `object` is not an pooled object.
+
 # max size is enforced
 
     Code

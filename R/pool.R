@@ -78,7 +78,7 @@ Pool <- R6::R6Class(
     ## (sets up task to destroy the object if the number of
     ## total objects exceeds the minimum)
     release = function(object, error_call = caller_env()) {
-      pool_metadata <- pool_metadata(object, error_call = error_call())
+      pool_metadata <- pool_metadata(object, error_call = error_call)
       if (pool_metadata$state == "free") {
         abort(
           "This object was already returned to the pool.",

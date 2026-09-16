@@ -1,5 +1,7 @@
 # pool (development version)
 
+* `Pool$release()` now forwards `error_call` correctly when reporting invalid objects.
+
 # pool 1.0.5
 
 * Added compatibility for dbplyr's upcoming dialect-based dispatch.
