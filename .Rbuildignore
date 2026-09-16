@@ -18,3 +18,4 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^\.claude$
+^AGENTS\.md$
